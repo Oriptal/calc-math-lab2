@@ -1,0 +1,28 @@
+[
+  {
+    "label": "Configure build directory",
+    "command": "cmake -S . -B build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "never",
+    "shell": "system",
+    "show_summary": true,
+    "show_command": true,
+    "save": "none",
+  },
+  {
+    "label": "Build Project",
+    "command": "cmake --build build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "never",
+    "shell": "system",
+    "show_summary": true,
+    "show_command": true,
+    "save": "none",
+  },
+]
