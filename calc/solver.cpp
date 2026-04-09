@@ -1,11 +1,9 @@
 #include "Solvers.hpp"
+#include <iostream>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
-
-namespace {
-constexpr int kMaxIterations = 100000;
-}
 
 double Solver::df(MathFunc f, double x) {
   const double h = 1e-6;
@@ -31,7 +29,7 @@ double DihotomiaSolver::solve(MathFunc f, double a, double b) {
   }
 
   int iter = 0;
-  while ((b - a) > EPS && iter < kMaxIterations) {
+  while ((b - a) > EPS) {
     const double x_0 = (a + b) / 2.0;
     const double fx = f(x_0);
     if (std::abs(fx) <= EPS) {
@@ -57,7 +55,7 @@ double IterSolver::solve(MathFunc f, double a, double b) {
     maxDf = std::max(maxDf, std::abs(df(f, x)));
   }
 
-  if (maxDf <= 1e-12 || !std::isfinite(maxDf)) {
+  if (!std::isfinite(maxDf)) {
     return std::numeric_limits<double>::quiet_NaN();
   }
 
@@ -81,7 +79,7 @@ double IterSolver::solve(MathFunc f, double a, double b) {
 
   double xn = lambda * f(x) + x;
   int iter = 0;
-  while (std::abs(xn - x) > EPS && iter < kMaxIterations) {
+  while (std::abs(xn - x) > EPS) {
     x = xn;
     xn = lambda * f(x) + x;
     if (!std::isfinite(xn)) {
@@ -100,7 +98,7 @@ double NewtonSolver::solve(MathFunc f, double a, double b) {
   }
 
   int iter = 0;
-  while (std::abs(f(x)) > EPS && iter < kMaxIterations) {
+  while (std::abs(f(x)) > EPS) {
     const double dfx = df(f, x);
     if (std::abs(dfx) <= 1e-12) {
       return std::numeric_limits<double>::quiet_NaN();
@@ -113,4 +111,50 @@ double NewtonSolver::solve(MathFunc f, double a, double b) {
   }
 
   return x;
+}
+
+double SystemIterSolver::dfdx(SystemFunc f, double x, double y) {
+  const double h = 1e-6;
+  return (f(x + h, y) - f(x - h, y)) / (2 * h);
+}
+
+double SystemIterSolver::dfdy(SystemFunc f, double x, double y) {
+  const double h = 1e-6;
+  return (f(x, y + h) - f(x, y - h)) / (2 * h);
+}
+
+std::pair<double, double> SystemIterSolver::solve(SystemFunc phiX,
+                                                  SystemFunc phiY, double x0,
+                                                  double y0) const {
+  double x = x0;
+  double y = y0;
+
+  for (int iter = 0; iter < SystemIterSolver::kMaxIterations; ++iter) {
+    const double q1 = std::abs(dfdx(phiX, x, y)) + std::abs(dfdy(phiX, x, y));
+    const double q2 = std::abs(dfdx(phiY, x, y)) + std::abs(dfdy(phiY, x, y));
+    const double q = std::max(q1, q2);
+    if (!std::isfinite(q) || q >= 1.0) {
+      return {std::numeric_limits<double>::quiet_NaN(),
+              std::numeric_limits<double>::quiet_NaN()};
+    }
+
+    const double nextX = phiX(x, y);
+    const double nextY = phiY(x, y);
+    if (!std::isfinite(nextX) || !std::isfinite(nextY)) {
+      return {std::numeric_limits<double>::quiet_NaN(),
+              std::numeric_limits<double>::quiet_NaN()};
+    }
+
+    if (std::max(std::abs(nextX - x), std::abs(nextY - y)) <= EPS) {
+      return {nextX, nextY};
+    }
+
+    x = nextX;
+    y = nextY;
+
+    // std::cout << x << " " << y << "\n";
+  }
+
+  return {std::numeric_limits<double>::quiet_NaN(),
+          std::numeric_limits<double>::quiet_NaN()};
 }

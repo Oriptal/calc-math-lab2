@@ -2,8 +2,10 @@
 
 #include <cmath>
 #include <functional>
+#include <utility>
 
 using MathFunc = std::function<double(double)>;
+using SystemFunc = std::function<double(double, double)>;
 
 enum Status {
   SUCCESS = 0,
@@ -93,4 +95,19 @@ class IterSolver : public Solver {
 public:
   IterSolver(double EPS) : Solver(EPS) {};
   double solve(MathFunc f, double a, double b) override;
+};
+
+class SystemIterSolver {
+  double EPS;
+  static constexpr int kMaxIterations = 10'000;
+
+public:
+  explicit SystemIterSolver(double EPS) : EPS(EPS) {}
+
+  std::pair<double, double> solve(SystemFunc phiX, SystemFunc phiY, double x0,
+                                  double y0) const;
+
+private:
+  static double dfdx(SystemFunc f, double x, double y);
+  static double dfdy(SystemFunc f, double x, double y);
 };

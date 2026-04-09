@@ -37,6 +37,9 @@ qt_add_qml_module(appHelloWorldQuickProject
         assets/equation1.svg
         assets/equation2.svg
         assets/equation3.svg
+        assets/system0.svg
+        assets/system1.svg
+        assets/system2.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
