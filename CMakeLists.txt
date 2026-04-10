@@ -39,3 +39,7 @@ install(TARGETS appHelloWorldQuickProject
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_library(calc_core calc/Solvers.hpp calc/solver.cpp)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
