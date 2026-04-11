@@ -13,6 +13,7 @@ RowLayout {
         Layout.preferredWidth: 350
         property int currentEquation: 0
         property int resultStatus: -1
+        property var iterNumber: 0
         property real resultX: Number.NaN
         property real resultY: Number.NaN
         property bool hasResult: false
@@ -289,6 +290,7 @@ RowLayout {
                 const response = backend.processSystemDataByEquation(rect.currentEquation, mainColumn.borderValues);
                 rect.resultStatus = response.status;
                 rect.resultX = response.x;
+                rect.iterNumber = response.iter;
                 rect.resultY = response.y;
                 rect.hasResult = true;
                 rect.updateGraph();
@@ -301,7 +303,7 @@ RowLayout {
             anchors.topMargin: 14
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 50
-            height: 146
+            height: 165
             color: Theme.bg
             visible: rect.hasResult
 
@@ -342,6 +344,15 @@ RowLayout {
                 Text {
                     visible: rect.resultStatus === 0
                     text: "x ≈ " + rect.formattedNumber(rect.resultX) + ", y ≈ " + rect.formattedNumber(rect.resultY)
+                    color: Theme.accent
+                    font.pixelSize: 20
+                    font.bold: true
+                    font.family: "JetbrainsMono Nerd Font"
+                }
+
+                Text {
+                    visible: rect.resultStatus === 0
+                    text: "Количество итераций = " + rect.iterNumber
                     color: Theme.accent
                     font.pixelSize: 20
                     font.bold: true

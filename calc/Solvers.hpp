@@ -23,12 +23,12 @@ protected:
 public:
   Solver(double EPS) : EPS(EPS) {};
   virtual ~Solver() = default;
-  virtual double solve(MathFunc f, double a, double b) = 0;
+  virtual std::pair<int, double> solve(MathFunc f, double a, double b) = 0;
 
   static Status validate(MathFunc f, double a, double b, double EPS) {
-    if (!(a < b) || a < -5.0 || b > 5.0) {
-      return INCORRECT_BORDERS;
-    }
+    // if (!(a < b) || a < -5.0 || b > 5.0) {
+    //   return INCORRECT_BORDERS;
+    // }
     if (!(EPS > 0.0) || !std::isfinite(EPS)) {
       return INCORRECT_EPS;
     }
@@ -82,19 +82,19 @@ public:
 class DihotomiaSolver : public Solver {
 public:
   DihotomiaSolver(double EPS) : Solver(EPS) {};
-  double solve(MathFunc f, double a, double b) override;
+  std::pair<int, double> solve(MathFunc f, double a, double b) override;
 };
 
 class NewtonSolver : public Solver {
 public:
   NewtonSolver(double EPS) : Solver(EPS) {};
-  double solve(MathFunc f, double a, double b) override;
+  std::pair<int, double> solve(MathFunc f, double a, double b) override;
 };
 
 class IterSolver : public Solver {
 public:
   IterSolver(double EPS) : Solver(EPS) {};
-  double solve(MathFunc f, double a, double b) override;
+  std::pair<int, double> solve(MathFunc f, double a, double b) override;
 };
 
 class SystemIterSolver {
@@ -104,8 +104,8 @@ class SystemIterSolver {
 public:
   explicit SystemIterSolver(double EPS) : EPS(EPS) {}
 
-  std::pair<double, double> solve(SystemFunc phiX, SystemFunc phiY, double x0,
-                                  double y0) const;
+  std::pair<std::pair<int, double>, std::pair<int, double>>
+  solve(SystemFunc phiX, SystemFunc phiY, double x0, double y0) const;
 
 private:
   static double dfdx(SystemFunc f, double x, double y);

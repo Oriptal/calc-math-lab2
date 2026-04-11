@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <iostream>
 #include <limits>
 
 class Backend : public QObject {
@@ -61,21 +62,28 @@ public:
       return result;
     }
 
+    int iter = 0;
     double value = std::numeric_limits<qreal>::quiet_NaN();
     switch (method) {
     case 0: {
       DihotomiaSolver solver(eps);
-      value = solver.solve(f, left, right);
+      auto pr = solver.solve(f, left, right);
+      iter = pr.first;
+      value = pr.second;
       break;
     }
     case 1: {
       NewtonSolver solver(eps);
-      value = solver.solve(f, left, right);
+      auto pr = solver.solve(f, left, right);
+      iter = pr.first;
+      value = pr.second;
       break;
     }
     case 2: {
       IterSolver solver(eps);
-      value = solver.solve(f, left, right);
+      auto pr = solver.solve(f, left, right);
+      iter = pr.first;
+      value = pr.second;
       break;
     }
     default:
@@ -92,6 +100,8 @@ public:
 
     result.insert("status", static_cast<qint32>(SUCCESS));
     result.insert("value", value);
+    result.insert("iter", iter);
+    std::cout << SUCCESS << " " << value << " " << iter;
     return result;
   }
 
@@ -131,8 +141,8 @@ public:
     return processSystemDataByEquation(0, map);
   }
 
-  Q_INVOKABLE QVariantMap processSystemDataByEquation(
-      qint32 equation, const QVariantMap &map) const {
+  Q_INVOKABLE QVariantMap
+  processSystemDataByEquation(qint32 equation, const QVariantMap &map) const {
     QVariantMap result;
 
     bool okLeft = false;
@@ -194,7 +204,11 @@ public:
 
     SystemIterSolver solver(eps);
     for (const QPointF &guess : guesses) {
-      const auto [rootX, rootY] = solver.solve(phiX, phiY, guess.x(), guess.y());
+
+      const auto [pairFirst, pairSecond] =
+          solver.solve(phiX, phiY, guess.x(), guess.y());
+      auto [iterFirst, rootX] = pairFirst;
+      auto [iter, rootY] = pairSecond;
       if (!std::isfinite(rootX) || !std::isfinite(rootY)) {
         continue;
       }
@@ -207,6 +221,7 @@ public:
       result.insert("status", static_cast<qint32>(SUCCESS));
       result.insert("x", rootX);
       result.insert("y", rootY);
+      result.insert("iter", iter);
       return result;
     }
 
@@ -222,9 +237,10 @@ public:
     return sampleSystemCurvesByEquation(0, left, right, bottom, top, points);
   }
 
-  Q_INVOKABLE QVariantMap sampleSystemCurvesByEquation(
-      qint32 equation, qreal left, qreal right, qreal bottom, qreal top,
-      qint32 points) const {
+  Q_INVOKABLE QVariantMap sampleSystemCurvesByEquation(qint32 equation,
+                                                       qreal left, qreal right,
+                                                       qreal bottom, qreal top,
+                                                       qint32 points) const {
     QVariantMap result;
     QVariantList firstCurve;
     QVariantList secondCurve;
@@ -247,7 +263,11 @@ public:
     const int safePoints = std::clamp(static_cast<int>(points), 40, 220);
     const double stepX = (right - left) / static_cast<double>(safePoints - 1);
     const double stepY = (top - bottom) / static_cast<double>(safePoints - 1);
-    const double tolerance = 0.025;
+    // Keep contour thickness proportional to the sampling grid step.
+    // A fixed tolerance produces too many points on narrow windows and can
+    // freeze the UI.
+    const double tolerance =
+        std::clamp(std::max(stepX, stepY) * 1.25, 0.0015, 0.03);
 
     for (int ix = 0; ix < safePoints; ++ix) {
       const double x = left + ix * stepX;
@@ -307,9 +327,7 @@ private:
     case 2:
       return {
           [](double x, double y) { return std::cos(y) + x - 1.5; },
-          [](double x, double y) {
-            return 2.0 * y - std::cos(x - 0.5);
-          },
+          [](double x, double y) { return 2.0 * y - std::cos(x - 0.5); },
       };
     default:
       return {};
