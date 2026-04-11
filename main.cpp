@@ -1,10 +1,10 @@
 #include "Backend.hpp"
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <qqml.h>
 
 int main(int argc, char *argv[]) {
-  QGuiApplication app(argc, argv);
+  QApplication app(argc, argv);
 
   qmlRegisterType<Backend>("Calc", 1, 0, "Backend");
   QQmlApplicationEngine engine;

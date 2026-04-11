@@ -4,7 +4,7 @@ project(HelloWorldQuickProject VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -53,6 +53,8 @@ set_target_properties(appHelloWorldQuickProject PROPERTIES
 target_link_libraries(appHelloWorldQuickProject
     PRIVATE
         Qt6::Quick
+        Qt6::Charts
+        Qt6::Widgets
         calc_core
 )
 

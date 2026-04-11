@@ -5,8 +5,10 @@
 
 #include <QObject>
 #include <QString>
+#include <QVariantList>
 #include <QVariantMap>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -88,6 +90,38 @@ public:
 
     result.insert("status", static_cast<qint32>(SUCCESS));
     result.insert("value", value);
+    return result;
+  }
+
+  Q_INVOKABLE QVariantList sampleCurve(qint32 equation, qreal left, qreal right,
+                                       qint32 points) const {
+    QVariantList result;
+    MathFunc f;
+    if (!selectEquation(equation, f)) {
+      return result;
+    }
+
+    if (!std::isfinite(left) || !std::isfinite(right) || !(left < right)) {
+      left = -5.0;
+      right = 5.0;
+    }
+
+    const int safePoints = std::clamp(static_cast<int>(points), 20, 3000);
+    const double step = (right - left) / static_cast<double>(safePoints - 1);
+
+    for (int i = 0; i < safePoints; ++i) {
+      const double x = left + i * step;
+      const double y = f(x);
+      if (!std::isfinite(y)) {
+        continue;
+      }
+
+      QVariantMap point;
+      point.insert("x", x);
+      point.insert("y", y);
+      result.push_back(point);
+    }
+
     return result;
   }
 
