@@ -2,15 +2,80 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Calc 1.0
 import ".."
 
 RowLayout {
     MyRect {
         id: rect
         Layout.fillHeight: true
-        Layout.preferredWidth: 300
+        Layout.preferredWidth: 350
         property int currentEquation: 0
         property int currentMethod: 0
+        property int resultStatus: -1
+        property real resultValue: Number.NaN
+        property bool hasResult: false
+
+        function statusText(status) {
+            switch (status) {
+            case 0:
+                return "Успех";
+            case 1:
+                return "Некорректный интервал";
+            case 2:
+                return "Несколько корней";
+            case 3:
+                return "Корней нет";
+            case 4:
+                return "Некорректная точность";
+            case 5:
+                return "Метод не сходится";
+            default:
+                return "Неизвестная ошибка";
+            }
+        }
+
+        function statusHint(status) {
+            switch (status) {
+            case 0:
+                return "Корень найден на выбранном интервале.";
+            case 1:
+                return "Проверьте границы: l < r, l ≥ -5, r ≤ 5";
+            case 2:
+                return "На интервале найдено больше одного корня. Сузьте отрезок.";
+            case 3:
+                return "Смена знака функции не обнаружена.";
+            case 4:
+                return "Введите положительное ε.";
+            case 5:
+                return "Для выбранного метода условие сходимости не выполнено. Сузьте интервал или выберите другой метод.";
+            default:
+                return "Проверьте входные данные и попробуйте ещё раз.";
+            }
+        }
+
+        function statusColor(status) {
+            switch (status) {
+            case 0:
+                return "#16A34A";
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                return "#DC2626";
+            default:
+                return Theme.textDimmed;
+            }
+        }
+
+        function formattedRoot() {
+            return Number.isFinite(resultValue) ? Number(resultValue).toPrecision(10) : "—";
+        }
+
+        Backend {
+            id: backend
+        }
 
         Column {
             id: mainColumn
@@ -147,6 +212,7 @@ RowLayout {
             }
         }
         MyButton {
+            id: calculateButton
             text: "Вычислить"
             anchors.top: mainColumn.bottom
             anchors.margins: 40
@@ -159,9 +225,65 @@ RowLayout {
             bold: true
 
             onClicked: {
-                console.log(mainColumn.borderValues.left);
-                console.log(mainColumn.borderValues.right);
-                console.log(mainColumn.borderValues.eps);
+                const response = backend.processData(rect.currentMethod, rect.currentEquation, mainColumn.borderValues);
+                rect.resultStatus = response.status;
+                rect.resultValue = response.value;
+                rect.hasResult = true;
+            }
+        }
+
+        MyRect {
+            id: resultCard
+            anchors.top: calculateButton.bottom
+            anchors.topMargin: 14
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - 50
+            height: 132
+            color: Theme.bg
+            visible: rect.hasResult
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
+
+                Row {
+                    spacing: 8
+
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        radius: 5
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: rect.statusColor(rect.resultStatus)
+                    }
+
+                    Text {
+                        text: rect.statusText(rect.resultStatus)
+                        color: Theme.textMain
+                        font.pixelSize: 18
+                        font.bold: true
+                        font.family: "JetbrainsMono Nerd Font"
+                    }
+                }
+
+                Text {
+                    text: rect.statusHint(rect.resultStatus)
+                    color: Theme.textDimmed
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                    font.pixelSize: 14
+                    font.family: "JetbrainsMono Nerd Font"
+                }
+
+                Text {
+                    visible: rect.resultStatus === 0
+                    text: "x ≈ " + rect.formattedRoot()
+                    color: Theme.accent
+                    font.pixelSize: 20
+                    font.bold: true
+                    font.family: "JetbrainsMono Nerd Font"
+                }
             }
         }
     }

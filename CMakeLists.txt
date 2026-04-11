@@ -10,12 +10,33 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appHelloWorldQuickProject
     main.cpp
+    Backend.hpp
+)
+
+set_source_files_properties(Theme.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
 )
 
 qt_add_qml_module(appHelloWorldQuickProject
     URI HelloWorldQuickProject
     QML_FILES
         Main.qml
+        Theme.qml
+        components/Body.qml
+        components/EquationCard.qml
+        components/Header.qml
+        components/ModuleRoot.qml
+        components/ModuleSettings.qml
+        components/ModuleSystem.qml
+        components/MyButton.qml
+        components/MyRect.qml
+        components/MyText.qml
+        components/NavButton.qml
+    RESOURCES
+        assets/equation0.svg
+        assets/equation1.svg
+        assets/equation2.svg
+        assets/equation3.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -30,7 +51,9 @@ set_target_properties(appHelloWorldQuickProject PROPERTIES
 )
 
 target_link_libraries(appHelloWorldQuickProject
-    PRIVATE Qt6::Quick
+    PRIVATE
+        Qt6::Quick
+        calc_core
 )
 
 include(GNUInstallDirs)
