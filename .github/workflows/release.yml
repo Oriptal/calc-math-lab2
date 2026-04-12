@@ -19,6 +19,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             libgl1-mesa-dev \
+            patchelf \
             libxcb-cursor-dev \
             libxkbcommon-x11-0 \
             ninja-build
@@ -30,14 +31,12 @@ jobs:
           modules: qtcharts
           cache: true
 
-      - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build
-        run: cmake --build build
-
-      - name: Install
-        run: cmake --install build --prefix dist/calc-math-lab2-linux
+      - name: Package
+        env:
+          BUILD_DIR: ${{ github.workspace }}/build
+          DIST_DIR: ${{ github.workspace }}/dist/calc-math-lab2-linux
+          BUILD_TYPE: Release
+        run: ./package.sh
 
       - name: Archive
         run: |
