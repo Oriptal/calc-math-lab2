@@ -63,7 +63,7 @@ MyRect {
 
                 ModuleRoot {}
 
-                //     ModuleSystem {}
+                ModuleSystem {}
 
                 //     ModuleSettings {}
             }
