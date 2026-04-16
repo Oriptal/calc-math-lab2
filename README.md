@@ -34,3 +34,23 @@ cmake -S . -B build
 cmake --build build
 ./build/appHelloWorldQuickProject
 ```
+
+## Release Build
+
+The application uses Qt QML modules, including `QtCharts`, so a release should be packaged as a
+full deploy directory instead of distributing only the executable.
+
+```bash
+./package.sh
+```
+
+By default, the script creates a release build in `build-release/` and a distributable package in
+`dist/`.
+
+Manual equivalent:
+
+```bash
+cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
+cmake --build build-release
+cmake --install build-release --prefix "$(pwd)/dist"
+```

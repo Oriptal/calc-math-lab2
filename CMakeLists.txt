@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
+if(POLICY CMP0207)
+    cmake_policy(SET CMP0207 NEW)
+endif()
+
 project(HelloWorldQuickProject VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(QT_DEPLOY_USE_PATCHELF ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets)
 
@@ -67,6 +72,38 @@ install(TARGETS appHelloWorldQuickProject
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+set(deploy_script_args
+    TARGET appHelloWorldQuickProject
+    OUTPUT_SCRIPT deploy_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+    NO_TRANSLATIONS
+)
+
+if(UNIX AND NOT APPLE)
+    list(APPEND deploy_script_args
+        EXCLUDE_PLUGIN_TYPES
+            egldeviceintegrations
+            generic
+            imageformats
+            networkinformation
+            platforminputcontexts
+            platformthemes
+            qmltooling
+            styles
+            wayland-decoration-client
+            wayland-graphics-integration-client
+            wayland-shell-integration
+        INCLUDE_PLUGINS qxcb;qsvg;qsvgicon
+        EXCLUDE_PLUGINS qeglfs;qlinuxfb;qminimal;qminimalegl;qoffscreen;qvkkhrdisplay;qvnc;qwayland
+    )
+endif()
+
+qt_generate_deploy_qml_app_script(
+    ${deploy_script_args}
+)
+
+install(SCRIPT ${deploy_script})
 
 add_library(calc_core calc/Solvers.hpp calc/solver.cpp)
 
