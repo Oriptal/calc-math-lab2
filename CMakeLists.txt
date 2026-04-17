@@ -81,22 +81,27 @@ set(deploy_script_args
 )
 
 if(UNIX AND NOT APPLE)
-    list(APPEND deploy_script_args
-        EXCLUDE_PLUGIN_TYPES
-            egldeviceintegrations
-            generic
-            imageformats
-            networkinformation
-            platforminputcontexts
-            platformthemes
-            qmltooling
-            styles
-            wayland-decoration-client
-            wayland-graphics-integration-client
-            wayland-shell-integration
-        INCLUDE_PLUGINS qxcb;qsvg;qsvgicon
-        EXCLUDE_PLUGINS qeglfs;qlinuxfb;qminimal;qminimalegl;qoffscreen;qvkkhrdisplay;qvnc;qwayland
-    )
+    # Plugin filtering arguments are not accepted by Qt 6.8's deploy API.
+    # Keep the broader filtering only for newer Qt versions, while CI on 6.8
+    # still uses the standard deploy path.
+    if(Qt6_VERSION VERSION_GREATER_EQUAL "6.9.0")
+        list(APPEND deploy_script_args
+            EXCLUDE_PLUGIN_TYPES
+                egldeviceintegrations
+                generic
+                imageformats
+                networkinformation
+                platforminputcontexts
+                platformthemes
+                qmltooling
+                styles
+                wayland-decoration-client
+                wayland-graphics-integration-client
+                wayland-shell-integration
+            INCLUDE_PLUGINS qxcb;qsvg;qsvgicon
+            EXCLUDE_PLUGINS qeglfs;qlinuxfb;qminimal;qminimalegl;qoffscreen;qvkkhrdisplay;qvnc;qwayland
+        )
+    endif()
 endif()
 
 qt_generate_deploy_qml_app_script(
