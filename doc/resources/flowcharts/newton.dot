@@ -1,0 +1,44 @@
+digraph Newton {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label="Ввод: f(x), a, b, ε", shape=parallelogram, fillcolor="#f5f5f5"]
+
+  assign [label=<x = a>, shape=box]
+  chkStart [label=<f(x)·f''(x) &lt; 0?>, shape=diamond, fillcolor="#fff7d1"]
+  swapEnd  [label=<x = b>, shape=box]
+  initN    [label=<n = 0>, shape=box]
+
+  loopCond [label=<|f(x)| &gt; ε?>, shape=diamond, fillcolor="#fff7d1"]
+  calcDer  [label=<f'<SUB>x</SUB> = f'(x)>, shape=box]
+  chkDer   [label=<|f'<SUB>x</SUB>| ≤ 10<SUP>−12</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  errDer   [label="Метод не сходится\n(f' ≈ 0)", shape=parallelogram, fillcolor="#fde2e2"]
+
+  step     [label=<x = x − f(x)/f'<SUB>x</SUB>>, shape=box]
+  chkFinite [label=<x конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errDiv    [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
+  incr      [label=<n = n + 1>, shape=box]
+
+  output [label=<Вывод: x*, n>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> assign -> chkStart
+  chkStart -> swapEnd [label="да"]
+  chkStart -> initN  [label="нет"]
+  swapEnd -> initN
+  initN -> loopCond
+  loopCond -> output [label="нет"]
+  loopCond -> calcDer [label="да"]
+  calcDer -> chkDer
+  chkDer -> errDer [label="да"]
+  errDer -> stop
+  chkDer -> step [label="нет"]
+  step -> chkFinite
+  chkFinite -> errDiv [label="нет"]
+  errDiv -> stop
+  chkFinite -> incr [label="да"]
+  incr -> loopCond
+  output -> stop
+}

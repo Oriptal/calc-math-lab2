@@ -1,0 +1,54 @@
+digraph Dihotomy {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label="Ввод: f(x), a, b, ε", shape=parallelogram, fillcolor="#f5f5f5"]
+  init  [label=<f<SUB>a</SUB> = f(a); f<SUB>b</SUB> = f(b); n = 0>, shape=box]
+
+  chkA  [label=<|f<SUB>a</SUB>| ≤ ε?>, shape=diamond, fillcolor="#fff7d1"]
+  retA  [label=<x* = a>, shape=box]
+  chkB  [label=<|f<SUB>b</SUB>| ≤ ε?>, shape=diamond, fillcolor="#fff7d1"]
+  retB  [label=<x* = b>, shape=box]
+  chkSign [label=<f<SUB>a</SUB>·f<SUB>b</SUB> &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]
+  errNoRoot [label="Корня нет /\nнескольких корней", shape=parallelogram, fillcolor="#fde2e2"]
+
+  loopCond [label=<|b − a| &gt; ε?>, shape=diamond, fillcolor="#fff7d1"]
+  incr   [label=<n = n + 1>, shape=box]
+  mid    [label=<x<SUB>n</SUB> = (a + b) / 2; f<SUB>x</SUB> = f(x<SUB>n</SUB>)>, shape=box]
+  chkFx  [label=<|f<SUB>x</SUB>| ≤ ε?>, shape=diamond, fillcolor="#fff7d1"]
+
+  chkHalf [label=<f<SUB>a</SUB>·f<SUB>x</SUB> ≤ 0?>, shape=diamond, fillcolor="#fff7d1"]
+  setB   [label=<b = x<SUB>n</SUB>; f<SUB>b</SUB> = f<SUB>x</SUB>>, shape=box]
+  setA   [label=<a = x<SUB>n</SUB>; f<SUB>a</SUB> = f<SUB>x</SUB>>, shape=box]
+
+  finalX [label=<x* = (a + b) / 2>, shape=box]
+  output [label=<Вывод: x*, n>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chkA
+  chkA -> retA  [label="да"]
+  retA -> output
+  chkA -> chkB  [label="нет"]
+  chkB -> retB  [label="да"]
+  retB -> output
+  chkB -> chkSign [label="нет"]
+  chkSign -> errNoRoot [label="да"]
+  errNoRoot -> stop
+  chkSign -> loopCond [label="нет"]
+
+  loopCond -> incr [label="да"]
+  incr -> mid
+  mid -> chkFx
+  chkFx -> output [label="да",]
+  chkFx -> chkHalf [label="нет"]
+  chkHalf -> setB [label="да"]
+  chkHalf -> setA [label="нет"]
+  setB -> loopCond
+  setA -> loopCond
+
+  loopCond -> finalX [label="нет"]
+  finalX -> output
+  output -> stop
+}

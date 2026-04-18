@@ -1,0 +1,43 @@
+digraph SystemIter {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label=<Ввод: φ<SUB>1</SUB>(x,y), φ<SUB>2</SUB>(x,y), x<SUB>0</SUB>, y<SUB>0</SUB>, ε>, shape=parallelogram, fillcolor="#f5f5f5"]
+  initXY [label=<x = x<SUB>0</SUB>; y = y<SUB>0</SUB>; k = 0>, shape=box]
+
+  kMax   [label=<k &lt; N<SUB>max</SUB>?>, shape=diamond, fillcolor="#fff7d1"]
+  errMax [label="Превышен лимит\nитераций", shape=parallelogram, fillcolor="#fde2e2"]
+
+  rows   [label=<q<SUB>1</SUB> = |∂φ<SUB>1</SUB>/∂x| + |∂φ<SUB>1</SUB>/∂y|&#10;q<SUB>2</SUB> = |∂φ<SUB>2</SUB>/∂x| + |∂φ<SUB>2</SUB>/∂y|&#10;q = max(q<SUB>1</SUB>, q<SUB>2</SUB>)>, shape=box]
+  chkQ   [label=<q &lt; 1 и q конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errQ   [label="Условие сходимости\nне выполнено", shape=parallelogram, fillcolor="#fde2e2"]
+
+  nextXY [label=<x<SUB>k+1</SUB> = φ<SUB>1</SUB>(x<SUB>k</SUB>, y<SUB>k</SUB>)&#10;y<SUB>k+1</SUB> = φ<SUB>2</SUB>(x<SUB>k</SUB>, y<SUB>k</SUB>)>, shape=box]
+  chkFin [label=<x<SUB>k+1</SUB>, y<SUB>k+1</SUB> конечны?>, shape=diamond, fillcolor="#fff7d1"]
+  errDiv [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
+
+  stopCrit [label=<max(|x<SUB>k+1</SUB> − x<SUB>k</SUB>|, |y<SUB>k+1</SUB> − y<SUB>k</SUB>|) ≤ ε?>, shape=diamond, fillcolor="#fff7d1"]
+  shift    [label=<x<SUB>k</SUB> = x<SUB>k+1</SUB>; y<SUB>k</SUB> = y<SUB>k+1</SUB>; k = k + 1>, shape=box]
+
+  output [label=<Вывод: x*, y*, k>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> initXY -> kMax
+  kMax -> errMax [label="нет"]
+  errMax -> stop
+  kMax -> rows [label="да"]
+  rows -> chkQ
+  chkQ -> errQ [label="нет"]
+  errQ -> stop
+  chkQ -> nextXY [label="да"]
+  nextXY -> chkFin
+  chkFin -> errDiv [label="нет"]
+  errDiv -> stop
+  chkFin -> stopCrit [label="да"]
+  stopCrit -> output [label="да"]
+  output -> stop
+  stopCrit -> shift [label="нет"]
+  shift -> kMax
+}
