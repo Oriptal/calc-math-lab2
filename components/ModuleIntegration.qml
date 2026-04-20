@@ -12,7 +12,7 @@ RowLayout {
         Layout.fillHeight: true
         Layout.preferredWidth: 360
         property int currentFunction: 0
-        property int resultStatus: -1
+        property string resultStatus: ""
         property string resultMessage: ""
         property var resultsModel: []
         property bool hasResult: false
