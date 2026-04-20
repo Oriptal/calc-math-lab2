@@ -12,7 +12,7 @@ digraph Dihotomy {
   chkB  [label=<|f<SUB>b</SUB>| ≤ ε?>, shape=diamond, fillcolor="#fff7d1"]
   retB  [label=<x* = b>, shape=box]
   chkSign [label=<f<SUB>a</SUB>·f<SUB>b</SUB> &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]
-  errNoRoot [label="Корня нет /\nнескольких корней", shape=parallelogram, fillcolor="#fde2e2"]
+  errNoRoot [label="Необходимое условие\nне выполнено", shape=parallelogram, fillcolor="#fde2e2"]
 
   loopCond [label=<|b − a| &gt; ε?>, shape=diamond, fillcolor="#fff7d1"]
   incr   [label=<n = n + 1>, shape=box]
@@ -23,6 +23,7 @@ digraph Dihotomy {
   setB   [label=<b = x<SUB>n</SUB>; f<SUB>b</SUB> = f<SUB>x</SUB>>, shape=box]
   setA   [label=<a = x<SUB>n</SUB>; f<SUB>a</SUB> = f<SUB>x</SUB>>, shape=box]
 
+  setStarInner [label=<x* = x<SUB>n</SUB>>, shape=box]
   finalX [label=<x* = (a + b) / 2>, shape=box]
   output [label=<Вывод: x*, n>, shape=parallelogram, fillcolor="#f5f5f5"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
@@ -41,7 +42,8 @@ digraph Dihotomy {
   loopCond -> incr [label="да"]
   incr -> mid
   mid -> chkFx
-  chkFx -> output [label="да",]
+  chkFx -> setStarInner [label="да"]
+  setStarInner -> output
   chkFx -> chkHalf [label="нет"]
   chkHalf -> setB [label="да"]
   chkHalf -> setA [label="нет"]
