@@ -1,0 +1,62 @@
+digraph IterEq {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label="Ввод: f(x), a, b, ε", shape=parallelogram, fillcolor="#f5f5f5"]
+
+  maxDf  [label=<M = max<SUB>[a,b]</SUB> |f'(x)|>, shape=box]
+  chkM   [label=<M конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errM   [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
+
+  sign   [label=<f'((a+b)/2) ≥ 0?>, shape=diamond, fillcolor="#fff7d1"]
+  lamNeg [label=<λ = −1 / M>, shape=box]
+  lamPos [label=<λ = +1 / M>, shape=box]
+
+  qCalc  [label=<q = max<SUB>[a,b]</SUB> |1 + λ·f'(x)|>, shape=box]
+  chkQ   [label=<q &lt; 1 и q конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errQ   [label="Условие сходимости\nне выполнено", shape=parallelogram, fillcolor="#fde2e2"]
+
+  x0     [label=<x<SUB>0</SUB> = a>, shape=box]
+  chkF2  [label=<f(x<SUB>0</SUB>)·f''(x<SUB>0</SUB>) &lt; 0?>, shape=diamond, fillcolor="#fff7d1"]
+  x0b    [label=<x<SUB>0</SUB> = b>, shape=box]
+
+  firstStep [label=<x<SUB>n+1</SUB> = x<SUB>n</SUB> + λ·f(x<SUB>n</SUB>); n = 0>, shape=box]
+  loopCond  [label=<|x<SUB>n+1</SUB> − x<SUB>n</SUB>| &gt; ε?>, shape=diamond, fillcolor="#fff7d1"]
+  update    [label=<x<SUB>n</SUB> = x<SUB>n+1</SUB>>, shape=box]
+  step      [label=<x<SUB>n+1</SUB> = x<SUB>n</SUB> + λ·f(x<SUB>n</SUB>)>, shape=box]
+  chkFinite [label=<x<SUB>n+1</SUB> конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errDiv    [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
+  incr      [label=<n = n + 1>, shape=box]
+
+  output [label=<Вывод: x* = x<SUB>n+1</SUB>, n>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> maxDf -> chkM
+  chkM -> errM [label="нет"]
+  errM -> stop
+  chkM -> sign [label="да"]
+  sign -> lamNeg [label="да"]
+  sign -> lamPos [label="нет"]
+  lamNeg -> qCalc
+  lamPos -> qCalc
+  qCalc -> chkQ
+  chkQ -> errQ [label="нет"]
+  errQ -> stop
+  chkQ -> x0 [label="да"]
+  x0 -> chkF2
+  chkF2 -> x0b [label="да"]
+  chkF2 -> firstStep [label="нет"]
+  x0b -> firstStep
+  firstStep -> loopCond
+  loopCond -> output [label="нет"]
+  loopCond -> update [label="да"]
+  update -> step
+  step -> chkFinite
+  chkFinite -> errDiv [label="нет"]
+  errDiv -> stop
+  chkFinite -> incr [label="да"]
+  incr -> loopCond
+  output -> stop
+}

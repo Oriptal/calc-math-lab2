@@ -25,34 +25,34 @@ RowLayout {
         function statusText(status) {
             switch (status) {
             case 0:
-                return "Успех";
+                return "Решение найдено";
             case 1:
-                return "Некорректная область";
+                return "Неверная область";
             case 3:
-                return "Корень не найден";
+                return "Решение не найдено";
             case 4:
-                return "Некорректная точность";
+                return "Неверная точность";
             case 5:
-                return "Метод не сошёлся";
+                return "Метод расходится";
             default:
-                return "Неизвестная ошибка";
+                return "Ошибка";
             }
         }
 
         function statusHint(status) {
             switch (status) {
             case 0:
-                return "Найдено решение системы в выбранной области.";
+                return "Корень системы уточнён в заданной области.";
             case 1:
-                return "Проверьте границы: left < right и bottom < top.";
+                return "Задайте l < r и b < t.";
             case 3:
-                return "В выбранной области пересечение кривых не найдено.";
+                return "В области нет пересечения кривых.";
             case 4:
                 return "Введите положительное ε.";
             case 5:
-                return "Метод простых итераций не сошёлся. Сузьте область около корня или выберите другую систему.";
+                return "Условие сходимости не выполнено — сузьте область или выберите другую систему.";
             default:
-                return "Проверьте входные данные и попробуйте ещё раз.";
+                return "Проверьте входные данные.";
             }
         }
 
@@ -106,7 +106,7 @@ RowLayout {
             secondCurveSeries.clear();
             rootSeries.clear();
 
-            const curves = backend.sampleSystemCurvesByEquation(rect.currentEquation, left, right, bottom, top, 140);
+            const curves = backend.sampleSystemCurvesByEquation(rect.currentEquation, left, right, bottom, top, 600);
 
             const firstCurve = curves.first || [];
             const secondCurve = curves.second || [];
@@ -253,7 +253,6 @@ RowLayout {
 
                         onTextEdited: {
                             mainColumn.borderValues[parent.modelData.key] = text;
-                            rect.updateGraph();
                         }
 
                         background: Rectangle {
@@ -303,17 +302,19 @@ RowLayout {
             anchors.topMargin: 14
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 50
-            height: 165
+            height: resultColumn.implicitHeight + 24
             color: Theme.bg
             visible: rect.hasResult
 
             Column {
+                id: resultColumn
                 anchors.fill: parent
                 anchors.margins: 12
-                spacing: 8
+                spacing: 6
 
                 Row {
                     spacing: 8
+                    width: parent.width
 
                     Rectangle {
                         width: 10
@@ -326,7 +327,7 @@ RowLayout {
                     Text {
                         text: rect.statusText(rect.resultStatus)
                         color: Theme.textMain
-                        font.pixelSize: 18
+                        font.pixelSize: 17
                         font.bold: true
                         font.family: "JetbrainsMono Nerd Font"
                     }
@@ -337,24 +338,37 @@ RowLayout {
                     color: Theme.textDimmed
                     wrapMode: Text.WordWrap
                     width: parent.width
-                    font.pixelSize: 14
+                    font.pixelSize: 13
                     font.family: "JetbrainsMono Nerd Font"
                 }
 
                 Text {
                     visible: rect.resultStatus === 0
-                    text: "x ≈ " + rect.formattedNumber(rect.resultX) + ", y ≈ " + rect.formattedNumber(rect.resultY)
+                    text: "x ≈ " + rect.formattedNumber(rect.resultX)
                     color: Theme.accent
-                    font.pixelSize: 20
+                    font.pixelSize: 16
                     font.bold: true
                     font.family: "JetbrainsMono Nerd Font"
+                    width: parent.width
+                    elide: Text.ElideRight
                 }
 
                 Text {
                     visible: rect.resultStatus === 0
-                    text: "Количество итераций = " + rect.iterNumber
+                    text: "y ≈ " + rect.formattedNumber(rect.resultY)
                     color: Theme.accent
-                    font.pixelSize: 20
+                    font.pixelSize: 16
+                    font.bold: true
+                    font.family: "JetbrainsMono Nerd Font"
+                    width: parent.width
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    visible: rect.resultStatus === 0
+                    text: "Итераций: " + rect.iterNumber
+                    color: Theme.accent
+                    font.pixelSize: 16
                     font.bold: true
                     font.family: "JetbrainsMono Nerd Font"
                 }
@@ -419,18 +433,20 @@ RowLayout {
                     id: firstCurveSeries
                     axisX: axisX
                     axisY: axisY
-                    markerSize: 5
+                    markerSize: 3
                     color: Theme.accent
                     borderColor: Theme.accent
+                    useOpenGL: true
                 }
 
                 ScatterSeries {
                     id: secondCurveSeries
                     axisX: axisX
                     axisY: axisY
-                    markerSize: 5
+                    markerSize: 3
                     color: "#38BDF8"
                     borderColor: "#38BDF8"
+                    useOpenGL: true
                 }
 
                 ScatterSeries {

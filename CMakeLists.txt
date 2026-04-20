@@ -9,7 +9,7 @@ project(HelloWorldQuickProject VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_DEPLOY_USE_PATCHELF ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets Concurrent)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -63,6 +63,7 @@ target_link_libraries(appHelloWorldQuickProject
         Qt6::Quick
         Qt6::Charts
         Qt6::Widgets
+        Qt6::Concurrent
         calc_core
 )
 

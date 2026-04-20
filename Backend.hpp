@@ -8,6 +8,8 @@
 #include <QString>
 #include <QVariantList>
 #include <QVariantMap>
+#include <QVector>
+#include <QtConcurrent/QtConcurrent>
 
 #include <algorithm>
 #include <array>
@@ -242,8 +244,6 @@ public:
                                                        qreal bottom, qreal top,
                                                        qint32 points) const {
     QVariantMap result;
-    QVariantList firstCurve;
-    QVariantList secondCurve;
 
     if (!std::isfinite(left) || !std::isfinite(right) ||
         !std::isfinite(bottom) || !std::isfinite(top) || !(left < right) ||
@@ -256,48 +256,17 @@ public:
 
     const auto system = systemFunctions(equation);
     if (!system.first || !system.second) {
-      result.insert("first", firstCurve);
-      result.insert("second", secondCurve);
+      result.insert("first", QVariantList{});
+      result.insert("second", QVariantList{});
       return result;
     }
-    const int safePoints = std::clamp(static_cast<int>(points), 40, 220);
-    const double stepX = (right - left) / static_cast<double>(safePoints - 1);
-    const double stepY = (top - bottom) / static_cast<double>(safePoints - 1);
-    // Keep contour thickness proportional to the sampling grid step.
-    // A fixed tolerance produces too many points on narrow windows and can
-    // freeze the UI.
-    const double tolerance =
-        std::clamp(std::max(stepX, stepY) * 1.25, 0.0015, 0.03);
 
-    for (int ix = 0; ix < safePoints; ++ix) {
-      const double x = left + ix * stepX;
-      for (int iy = 0; iy < safePoints; ++iy) {
-        const double y = bottom + iy * stepY;
-        const double first = system.first(x, y);
-        const double second = system.second(x, y);
+    const int safePoints = std::clamp(static_cast<int>(points), 80, 800);
+    const auto tracedFirst = traceZeroCurve(system.first, left, right, bottom, top, safePoints);
+    const auto tracedSecond = traceZeroCurve(system.second, left, right, bottom, top, safePoints);
 
-        if (!std::isfinite(first) || !std::isfinite(second)) {
-          continue;
-        }
-
-        if (std::abs(first) <= tolerance) {
-          QVariantMap point;
-          point.insert("x", x);
-          point.insert("y", y);
-          firstCurve.push_back(point);
-        }
-
-        if (std::abs(second) <= tolerance) {
-          QVariantMap point;
-          point.insert("x", x);
-          point.insert("y", y);
-          secondCurve.push_back(point);
-        }
-      }
-    }
-
-    result.insert("first", firstCurve);
-    result.insert("second", secondCurve);
+    result.insert("first", toVariantList(tracedFirst));
+    result.insert("second", toVariantList(tracedSecond));
     return result;
   }
 
@@ -310,6 +279,81 @@ private:
   static double parseDouble(QString value, bool *ok) {
     value.replace(',', '.');
     return value.toDouble(ok);
+  }
+
+  static QVariantList toVariantList(const QVector<QPointF> &points) {
+    QVariantList out;
+    out.reserve(points.size());
+    for (const QPointF &p : points) {
+      out.push_back(QVariant::fromValue(p));
+    }
+    return out;
+  }
+
+  static QVector<QPointF>
+  traceZeroCurve(const std::function<double(double, double)> &F, double left,
+                 double right, double bottom, double top, int samples) {
+    if (!F || samples < 2) {
+      return {};
+    }
+
+    const double stepX = (right - left) / static_cast<double>(samples - 1);
+    const double stepY = (top - bottom) / static_cast<double>(samples - 1);
+
+    QVector<int> columnIndex(samples);
+    std::iota(columnIndex.begin(), columnIndex.end(), 0);
+
+    auto scanColumn = [&](int ix) -> QVector<QPointF> {
+      QVector<QPointF> out;
+      out.reserve(8);
+      const double x = left + ix * stepX;
+      double prevF = F(x, bottom);
+      for (int iy = 1; iy < samples; ++iy) {
+        const double y = bottom + iy * stepY;
+        const double curF = F(x, y);
+        if (std::isfinite(prevF) && std::isfinite(curF) && prevF * curF <= 0.0) {
+          const double denom = prevF - curF;
+          const double t = std::abs(denom) > 1e-18 ? prevF / denom : 0.5;
+          const double yPrev = y - stepY;
+          out.push_back(QPointF(x, yPrev + t * stepY));
+        }
+        prevF = curF;
+      }
+      return out;
+    };
+
+    auto scanRow = [&](int iy) -> QVector<QPointF> {
+      QVector<QPointF> out;
+      out.reserve(8);
+      const double y = bottom + iy * stepY;
+      double prevF = F(left, y);
+      for (int ix = 1; ix < samples; ++ix) {
+        const double x = left + ix * stepX;
+        const double curF = F(x, y);
+        if (std::isfinite(prevF) && std::isfinite(curF) && prevF * curF <= 0.0) {
+          const double denom = prevF - curF;
+          const double t = std::abs(denom) > 1e-18 ? prevF / denom : 0.5;
+          const double xPrev = x - stepX;
+          out.push_back(QPointF(xPrev + t * stepX, y));
+        }
+        prevF = curF;
+      }
+      return out;
+    };
+
+    auto columns = QtConcurrent::blockingMapped<QVector<QVector<QPointF>>>(
+        columnIndex, scanColumn);
+    auto rows = QtConcurrent::blockingMapped<QVector<QVector<QPointF>>>(
+        columnIndex, scanRow);
+
+    QVector<QPointF> merged;
+    qsizetype total = 0;
+    for (const auto &c : columns) total += c.size();
+    for (const auto &r : rows) total += r.size();
+    merged.reserve(total);
+    for (const auto &c : columns) merged.append(c);
+    for (const auto &r : rows) merged.append(r);
+    return merged;
   }
 
   static SystemFunctions systemFunctions(qint32 equation) {

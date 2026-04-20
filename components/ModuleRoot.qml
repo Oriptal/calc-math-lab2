@@ -25,38 +25,38 @@ RowLayout {
         function statusText(status) {
             switch (status) {
             case 0:
-                return "Успех";
+                return "Найден корень";
             case 1:
-                return "Некорректный интервал";
+                return "Неверный интервал";
             case 2:
                 return "Несколько корней";
             case 3:
-                return "Корней нет";
+                return "Корень не найден";
             case 4:
-                return "Некорректная точность";
+                return "Неверная точность";
             case 5:
-                return "Метод не сходится";
+                return "Метод расходится";
             default:
-                return "Неизвестная ошибка";
+                return "Ошибка";
             }
         }
 
         function statusHint(status) {
             switch (status) {
             case 0:
-                return "Корень найден на выбранном интервале.";
+                return "Корень уточнён на заданном интервале.";
             case 1:
-                return "Проверьте границы: l < r, l ≥ -5, r ≤ 5";
+                return "Задайте a < b, проверьте числа.";
             case 2:
-                return "На интервале найдено больше одного корня. Сузьте отрезок.";
+                return "На интервале > 1 корня — сузьте отрезок.";
             case 3:
-                return "Смена знака функции не обнаружена.";
+                return "Смены знака не обнаружено.";
             case 4:
                 return "Введите положительное ε.";
             case 5:
-                return "Для выбранного метода условие сходимости не выполнено. Сузьте интервал или выберите другой метод.";
+                return "Условие сходимости не выполнено — сузьте интервал или выберите другой метод.";
             default:
-                return "Проверьте входные данные и попробуйте ещё раз.";
+                return "Проверьте входные данные.";
             }
         }
 
@@ -309,17 +309,19 @@ RowLayout {
             anchors.topMargin: 14
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 50
-            height: 160
+            height: resultColumn.implicitHeight + 24
             color: Theme.bg
             visible: rect.hasResult
 
             Column {
+                id: resultColumn
                 anchors.fill: parent
                 anchors.margins: 12
-                spacing: 8
+                spacing: 6
 
                 Row {
                     spacing: 8
+                    width: parent.width
 
                     Rectangle {
                         width: 10
@@ -332,7 +334,7 @@ RowLayout {
                     Text {
                         text: rect.statusText(rect.resultStatus)
                         color: Theme.textMain
-                        font.pixelSize: 18
+                        font.pixelSize: 17
                         font.bold: true
                         font.family: "JetbrainsMono Nerd Font"
                     }
@@ -343,7 +345,7 @@ RowLayout {
                     color: Theme.textDimmed
                     wrapMode: Text.WordWrap
                     width: parent.width
-                    font.pixelSize: 14
+                    font.pixelSize: 13
                     font.family: "JetbrainsMono Nerd Font"
                 }
 
@@ -351,16 +353,16 @@ RowLayout {
                     visible: rect.resultStatus === 0
                     text: "x ≈ " + rect.formattedRoot()
                     color: Theme.accent
-                    font.pixelSize: 20
+                    font.pixelSize: 18
                     font.bold: true
                     font.family: "JetbrainsMono Nerd Font"
                 }
 
                 Text {
                     visible: rect.resultStatus === 0
-                    text: "Количество итераций = " + rect.iterNumber
+                    text: "Итераций: " + rect.iterNumber
                     color: Theme.accent
-                    font.pixelSize: 20
+                    font.pixelSize: 18
                     font.bold: true
                     font.family: "JetbrainsMono Nerd Font"
                 }
@@ -435,6 +437,7 @@ RowLayout {
                     axisY: axisY
                     color: Theme.accent
                     width: 2.2
+                    useOpenGL: true
                 }
 
                 ScatterSeries {
