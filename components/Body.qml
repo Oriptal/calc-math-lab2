@@ -50,6 +50,12 @@ MyRect {
                         active: content.currentModule === 1
                         onClicked: content.currentModule = 1
                     }
+
+                    NavButton {
+                        text: "Интегрирование"
+                        active: content.currentModule === 2
+                        onClicked: content.currentModule = 2
+                    }
                 }
             }
         }
@@ -64,6 +70,8 @@ MyRect {
                 ModuleRoot {}
 
                 ModuleSystem {}
+
+                ModuleIntegration {}
 
                 //     ModuleSettings {}
             }
