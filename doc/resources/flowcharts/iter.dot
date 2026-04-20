@@ -6,7 +6,9 @@ digraph IterEq {
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label="Ввод: f(x), a, b, ε", shape=parallelogram, fillcolor="#f5f5f5"]
 
-  maxDf  [label=<M = max<SUB>[a,b]</SUB> |f'(x)|>, shape=box]
+  initM  [label=<N = 1000; M = 0; i = 0>, shape=box]
+  loopM  [label=<i ≤ N?>, shape=diamond, fillcolor="#fff7d1"]
+  bodyM  [label=<x<SUB>i</SUB> = a + (b − a)·i / N<BR/>M = max(M, |f'(x<SUB>i</SUB>)|)<BR/>i = i + 1>, shape=box]
   chkM   [label=<M конечен?>, shape=diamond, fillcolor="#fff7d1"]
   errM   [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
 
@@ -14,7 +16,9 @@ digraph IterEq {
   lamNeg [label=<λ = −1 / M>, shape=box]
   lamPos [label=<λ = +1 / M>, shape=box]
 
-  qCalc  [label=<q = max<SUB>[a,b]</SUB> |1 + λ·f'(x)|>, shape=box]
+  initQ  [label=<q = 0; i = 0>, shape=box]
+  loopQ  [label=<i ≤ N?>, shape=diamond, fillcolor="#fff7d1"]
+  bodyQ  [label=<x<SUB>i</SUB> = a + (b − a)·i / N<BR/>q = max(q, |1 + λ·f'(x<SUB>i</SUB>)|)<BR/>i = i + 1>, shape=box]
   chkQ   [label=<q &lt; 1 и q конечен?>, shape=diamond, fillcolor="#fff7d1"]
   errQ   [label="Условие сходимости\nне выполнено", shape=parallelogram, fillcolor="#fde2e2"]
 
@@ -33,15 +37,21 @@ digraph IterEq {
   output [label=<Вывод: x* = x<SUB>n+1</SUB>, n>, shape=parallelogram, fillcolor="#f5f5f5"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> maxDf -> chkM
+  start -> input -> initM -> loopM
+  loopM -> bodyM [label="да"]
+  bodyM -> loopM
+  loopM -> chkM [label="нет"]
   chkM -> errM [label="нет"]
   errM -> stop
   chkM -> sign [label="да"]
   sign -> lamNeg [label="да"]
   sign -> lamPos [label="нет"]
-  lamNeg -> qCalc
-  lamPos -> qCalc
-  qCalc -> chkQ
+  lamNeg -> initQ
+  lamPos -> initQ
+  initQ -> loopQ
+  loopQ -> bodyQ [label="да"]
+  bodyQ -> loopQ
+  loopQ -> chkQ [label="нет"]
   chkQ -> errQ [label="нет"]
   errQ -> stop
   chkQ -> x0 [label="да"]

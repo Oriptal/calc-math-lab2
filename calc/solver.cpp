@@ -18,6 +18,7 @@ double Solver::d2f(MathFunc f, double x) {
 std::pair<int, double> DihotomiaSolver::solve(MathFunc f, double a, double b) {
   double fa = f(a);
   double fb = f(b);
+  int iter = 0;
   if (std::abs(fa) <= EPS) {
     return {0, a};
   }
@@ -28,7 +29,6 @@ std::pair<int, double> DihotomiaSolver::solve(MathFunc f, double a, double b) {
     return {0, std::numeric_limits<double>::quiet_NaN()};
   }
 
-  int iter = 0;
   while ((b - a) > EPS) {
     iter++;
     const double x_0 = (a + b) / 2.0;
