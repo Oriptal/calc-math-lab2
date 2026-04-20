@@ -1,0 +1,65 @@
+digraph ImproperIntegral {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label="Ввод: метод, f(x), a, b, ε,\nразрывы", shape=parallelogram, fillcolor="#f5f5f5"]
+  plan  [label=<prepareIntervals(a, b, разрывы)<BR/>→ сегменты с флагами<BR/>limit_at_from / limit_at_to>, shape=box]
+  loopSeg [label="Для каждого сегмента", shape=box, fillcolor="#e6eefc"]
+  isSing [label=<limit_at_from ∨ limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
+  plain [label=<I<SUB>seg</SUB> = rungeSolve(метод, f, сегмент, ε)>, shape=box]
+  chkPlain [label=<status = ok?>, shape=diamond, fillcolor="#fff7d1"]
+
+  shrink [label=<σ<SUB>k</SUB> = d·r<SUP>k</SUP><BR/>вычислить I(c ± σ<SUB>k</SUB>, ...)>, shape=box]
+  stable [label=<|I<SUB>k</SUB> − I<SUB>k−1</SUB>| &lt; ε\nдля 2 подряд?>, shape=diamond, fillcolor="#fff7d1"]
+  bigAbs [label=<|I<SUB>k</SUB>| &gt; 10<SUP>15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  kmax  [label=<k ≥ k<SUB>max</SUB>?>, shape=diamond, fillcolor="#fff7d1"]
+  segOk  [label="Сегмент сошёлся", shape=parallelogram, fillcolor="#dcfce7"]
+  segDiv [label="Сегмент расходится", shape=parallelogram, fillcolor="#fde2e2"]
+  segInd [label="Сегмент:\nindeterminate", shape=parallelogram, fillcolor="#fde2e2"]
+
+  accumOk [label=<I<SUB>total</SUB> += I<SUB>seg</SUB>>, shape=box]
+  more [label="Есть ещё сегмент?", shape=diamond, fillcolor="#fff7d1"]
+
+  tryPV [label=<Стандартная схема\nне сошлась ⇒ попробовать\nсимметричное зануление\n(главное значение Коши)>, shape=box, fillcolor="#fef3c7"]
+  adj   [label=<Сегменты с общим c,\nlimit_at_to = limit_at_from?>, shape=diamond, fillcolor="#fff7d1"]
+  symm  [label=<d = min(c − a<SUB>L</SUB>, b<SUB>R</SUB> − c)<BR/>проверка антисимметрии f\nна [c − d, c + d]>, shape=box]
+  pvOk  [label=<Статус:\nok_principal_value<BR/>занулить подотрезок\n[c − d, c + d],\nинтегрировать хвосты>, shape=parallelogram, fillcolor="#fef3c7"]
+  diverges [label="Статус: diverges", shape=parallelogram, fillcolor="#fde2e2"]
+
+  done [label=<Статус: ok или\nok_principal_value<BR/>Вывод: I, n, R>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> plan -> loopSeg
+  loopSeg -> isSing
+  isSing -> plain [label="нет"]
+  plain -> chkPlain
+  chkPlain -> accumOk [label="да"]
+  chkPlain -> tryPV [label="нет"]
+
+  isSing -> shrink [label="да"]
+  shrink -> bigAbs
+  bigAbs -> segDiv [label="да"]
+  segDiv -> tryPV
+  bigAbs -> stable [label="нет"]
+  stable -> segOk [label="да"]
+  segOk -> accumOk
+  stable -> kmax [label="нет"]
+  kmax -> segInd [label="да"]
+  segInd -> tryPV
+  kmax -> shrink [label="нет"]
+
+  accumOk -> more
+  more -> loopSeg [label="да"]
+  more -> done [label="нет"]
+
+  tryPV -> adj
+  adj -> symm [label="да"]
+  symm -> pvOk
+  pvOk -> done
+  adj -> diverges [label="нет"]
+  diverges -> stop
+
+  done -> stop
+}

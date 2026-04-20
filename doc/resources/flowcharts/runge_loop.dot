@@ -1,0 +1,39 @@
+digraph RungeLoop {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label="Ввод: метод, f(x), a, b, ε", shape=parallelogram, fillcolor="#f5f5f5"]
+  init  [label=<k = порядок метода<BR/>n = 4<BR/>I<SUB>h</SUB> = метод(f, a, b, n)>, shape=box]
+  chkInit [label=<I<SUB>h</SUB> конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errInit [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
+
+  loop  [label=<2n ≤ n<SUB>max</SUB>?>, shape=diamond, fillcolor="#fff7d1"]
+  maxIt [label="Статус: max_iter", shape=parallelogram, fillcolor="#fde2e2"]
+  step  [label=<n' = 2n<BR/>I<SUB>h/2</SUB> = метод(f, a, b, n')>, shape=box]
+  chkFin [label=<I<SUB>h/2</SUB> конечен?>, shape=diamond, fillcolor="#fff7d1"]
+  errDiv [label="Расходимость", shape=parallelogram, fillcolor="#fde2e2"]
+  runge [label=<R = |I<SUB>h/2</SUB> − I<SUB>h</SUB>| / (2<SUP>k</SUP> − 1)>, shape=box]
+  chkR  [label=<R ≤ ε?>, shape=diamond, fillcolor="#fff7d1"]
+  upd   [label=<I<SUB>h</SUB> = I<SUB>h/2</SUB>; n = n'>, shape=box]
+  ok    [label=<Статус: ok<BR/>I = I<SUB>h/2</SUB>>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop  [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chkInit
+  chkInit -> errInit [label="нет"]
+  errInit -> stop
+  chkInit -> loop [label="да"]
+  loop -> maxIt [label="нет"]
+  maxIt -> stop
+  loop -> step [label="да"]
+  step -> chkFin
+  chkFin -> errDiv [label="нет"]
+  errDiv -> stop
+  chkFin -> runge [label="да"]
+  runge -> chkR
+  chkR -> ok [label="да"]
+  ok -> stop
+  chkR -> upd [label="нет"]
+  upd -> loop
+}
