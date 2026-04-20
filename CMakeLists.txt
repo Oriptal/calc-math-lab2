@@ -30,6 +30,7 @@ qt_add_qml_module(appHelloWorldQuickProject
         components/Body.qml
         components/EquationCard.qml
         components/Header.qml
+        components/ModuleIntegration.qml
         components/ModuleRoot.qml
         components/ModuleSettings.qml
         components/ModuleSystem.qml
@@ -45,6 +46,11 @@ qt_add_qml_module(appHelloWorldQuickProject
         assets/system0.svg
         assets/system1.svg
         assets/system2.svg
+        assets/integrand0.svg
+        assets/integrand1.svg
+        assets/integrand2.svg
+        assets/integrand3.svg
+        assets/integrand4.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -111,6 +117,11 @@ qt_generate_deploy_qml_app_script(
 
 install(SCRIPT ${deploy_script})
 
-add_library(calc_core calc/Solvers.hpp calc/solver.cpp)
+add_library(calc_core
+    calc/Solvers.hpp
+    calc/solver.cpp
+    calc/Integrators.hpp
+    calc/integrators.cpp
+)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
