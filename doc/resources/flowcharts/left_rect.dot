@@ -1,0 +1,26 @@
+digraph LeftRect {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label="Ввод: f(x), a, b, n", shape=parallelogram, fillcolor="#f5f5f5"]
+  chkN  [label=<n &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]
+  err   [label="Ошибка: n ≤ 0", shape=parallelogram, fillcolor="#fde2e2"]
+  init  [label=<h = (b − a) / n; S = 0; i = 0>, shape=box]
+  loop  [label=<i &lt; n?>, shape=diamond, fillcolor="#fff7d1"]
+  body  [label=<x<SUB>i</SUB> = a + i·h<BR/>S = S + f(x<SUB>i</SUB>)<BR/>i = i + 1>, shape=box]
+  mul   [label=<I = S · h>, shape=box]
+  output [label=<Вывод: I>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> chkN
+  chkN -> err [label="нет"]
+  err -> stop
+  chkN -> init [label="да"]
+  init -> loop
+  loop -> body [label="да"]
+  body -> loop
+  loop -> mul [label="нет"]
+  mul -> output -> stop
+}
