@@ -4,12 +4,7 @@
 #include <cmath>
 #include <limits>
 
-namespace Integrators {
-
-double integrateLeftRect(const IntegrandFunc &f, double a, double b, int n) {
-  if (n <= 0) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
+double LeftRectIntegrator::apply(IntegrandFunc f, double a, double b, int n) {
   const double h = (b - a) / static_cast<double>(n);
   double sum = 0.0;
   for (int i = 0; i < n; ++i) {
@@ -19,10 +14,7 @@ double integrateLeftRect(const IntegrandFunc &f, double a, double b, int n) {
   return sum * h;
 }
 
-double integrateRightRect(const IntegrandFunc &f, double a, double b, int n) {
-  if (n <= 0) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
+double RightRectIntegrator::apply(IntegrandFunc f, double a, double b, int n) {
   const double h = (b - a) / static_cast<double>(n);
   double sum = 0.0;
   for (int i = 1; i <= n; ++i) {
@@ -32,10 +24,7 @@ double integrateRightRect(const IntegrandFunc &f, double a, double b, int n) {
   return sum * h;
 }
 
-double integrateMidRect(const IntegrandFunc &f, double a, double b, int n) {
-  if (n <= 0) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
+double MidRectIntegrator::apply(IntegrandFunc f, double a, double b, int n) {
   const double h = (b - a) / static_cast<double>(n);
   double sum = 0.0;
   for (int i = 0; i < n; ++i) {
@@ -45,10 +34,7 @@ double integrateMidRect(const IntegrandFunc &f, double a, double b, int n) {
   return sum * h;
 }
 
-double integrateTrapezoid(const IntegrandFunc &f, double a, double b, int n) {
-  if (n <= 0) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
+double TrapezoidIntegrator::apply(IntegrandFunc f, double a, double b, int n) {
   const double h = (b - a) / static_cast<double>(n);
   double sum = 0.5 * (f(a) + f(b));
   for (int i = 1; i < n; ++i) {
@@ -58,10 +44,7 @@ double integrateTrapezoid(const IntegrandFunc &f, double a, double b, int n) {
   return sum * h;
 }
 
-double integrateSimpson(const IntegrandFunc &f, double a, double b, int n) {
-  if (n <= 0 || n % 2 != 0) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
+double SimpsonIntegrator::apply(IntegrandFunc f, double a, double b, int n) {
   const double h = (b - a) / static_cast<double>(n);
   double sum = f(a) + f(b);
   for (int i = 1; i < n; ++i) {
@@ -71,35 +54,13 @@ double integrateSimpson(const IntegrandFunc &f, double a, double b, int n) {
   return sum * h / 3.0;
 }
 
-double applyMethod(IntegrationMethod method, const IntegrandFunc &f, double a,
-                   double b, int n) {
-  switch (method) {
-  case IntegrationMethod::LeftRect:
-    return integrateLeftRect(f, a, b, n);
-  case IntegrationMethod::RightRect:
-    return integrateRightRect(f, a, b, n);
-  case IntegrationMethod::MidRect:
-    return integrateMidRect(f, a, b, n);
-  case IntegrationMethod::Trapezoid:
-    return integrateTrapezoid(f, a, b, n);
-  case IntegrationMethod::Simpson:
-    return integrateSimpson(f, a, b, n);
-  }
-  return std::numeric_limits<double>::quiet_NaN();
-}
-
-int methodOrder(IntegrationMethod method) {
-  return method == IntegrationMethod::Simpson ? 4 : 2;
-}
-
-IntegrationResult rungeSolve(IntegrationMethod method, const IntegrandFunc &f,
-                             double a, double b, double eps) {
+IntegrationResult Integrator::rungeSolve(IntegrandFunc f, double a, double b) {
   IntegrationResult result;
-  const int k = methodOrder(method);
+  const int k = order();
   const double denom = std::pow(2.0, k) - 1.0;
 
   int n = kInitialN;
-  double prev = applyMethod(method, f, a, b, n);
+  double prev = apply(f, a, b, n);
   if (!std::isfinite(prev)) {
     result.status = "diverges";
     result.message = "Начальное значение интеграла не конечно.";
@@ -110,7 +71,7 @@ IntegrationResult rungeSolve(IntegrationMethod method, const IntegrandFunc &f,
 
   while (n * 2 <= kMaxN) {
     const int nNew = n * 2;
-    const double cur = applyMethod(method, f, a, b, nNew);
+    const double cur = apply(f, a, b, nNew);
     if (!std::isfinite(cur)) {
       result.status = "diverges";
       result.message = "Значение интеграла не конечно.";
@@ -119,7 +80,7 @@ IntegrationResult rungeSolve(IntegrationMethod method, const IntegrandFunc &f,
       return result;
     }
     const double runge = std::abs(cur - prev) / denom;
-    if (runge <= eps) {
+    if (runge <= EPS) {
       result.status = "ok";
       result.value = cur;
       result.n = nNew;
@@ -140,18 +101,28 @@ IntegrationResult rungeSolve(IntegrationMethod method, const IntegrandFunc &f,
 
 namespace {
 
+struct IntervalSegment {
+  double from = 0.0;
+  double to = 0.0;
+  bool limit_at_from = false;
+  bool limit_at_to = false;
+};
+
+struct IntervalPlan {
+  std::string status;
+  std::string message;
+  std::vector<IntervalSegment> segments;
+};
+
 struct LimitResult {
   double value = 0.0;
   int n = 0;
   double runge_error = 0.0;
-  std::string status;  // "ok" | "diverges" | "indeterminate"
+  std::string status;
 };
 
-// Iterative shrinking toward a discontinuity at `c`, integrating the piece
-// towards `other`. `side = +1` → right-sided limit (interval [c+σ, other]);
-// `side = -1` → left-sided limit (interval [other, c-σ]).
-LimitResult limitAtEndpoint(IntegrationMethod method, const IntegrandFunc &f,
-                            double c, double other, int side, double eps) {
+LimitResult limitAtEndpoint(Integrator &integ, IntegrandFunc f, double c,
+                            double other, int side, double eps) {
   LimitResult res;
   const double span = std::abs(other - c);
   const double d0 = span * 1e-2;
@@ -159,7 +130,7 @@ LimitResult limitAtEndpoint(IntegrationMethod method, const IntegrandFunc &f,
   constexpr int kMaxShrinks = 50;
   constexpr int kNeedStable = 2;
   constexpr double kBigThreshold = 1e15;
-  const double stableTol = std::max(eps, eps * 3.0);
+  const double stableTol = 3.0 * eps;
 
   double prevI = std::numeric_limits<double>::quiet_NaN();
   int stableCount = 0;
@@ -184,7 +155,7 @@ LimitResult limitAtEndpoint(IntegrationMethod method, const IntegrandFunc &f,
       return res;
     }
 
-    IntegrationResult inner = rungeSolve(method, f, lo, hi, eps);
+    IntegrationResult inner = integ.rungeSolve(f, lo, hi);
     if (inner.status == "diverges" || !std::isfinite(inner.value)) {
       res.status = "diverges";
       res.value = std::numeric_limits<double>::quiet_NaN();
@@ -201,9 +172,6 @@ LimitResult limitAtEndpoint(IntegrationMethod method, const IntegrandFunc &f,
     lastN = inner.n;
     lastRunge = inner.runge_error;
 
-    // Stability check only counts when the inner integration truly
-    // converged (not "max_iter"). If the method hits the subdivision
-    // ceiling, any apparent plateau is a numerical artefact.
     if (std::isfinite(prevI) && inner.status == "ok") {
       const double diff = std::abs(inner.value - prevI);
       if (diff < stableTol) {
@@ -232,8 +200,7 @@ LimitResult limitAtEndpoint(IntegrationMethod method, const IntegrandFunc &f,
   return res;
 }
 
-bool isAntisymmetric(const IntegrandFunc &f, double c, double d,
-                     double tol = 1e-6) {
+bool isAntisymmetric(IntegrandFunc f, double c, double d, double tol = 1e-6) {
   const int samples = 10;
   double worst = 0.0;
   for (int i = 0; i < samples; ++i) {
@@ -253,21 +220,19 @@ bool isAntisymmetric(const IntegrandFunc &f, double c, double d,
   return worst < tol;
 }
 
-// Compute one segment (plain or improper) via standard handling.
 struct SegmentResult {
   double value = 0.0;
   int n = 0;
   double runge_error = 0.0;
-  std::string status;  // "ok" | "diverges" | "indeterminate" | "max_iter"
+  std::string status;
   std::string message;
 };
 
-SegmentResult computeSegmentStandard(IntegrationMethod method,
-                                     const IntegrandFunc &f,
+SegmentResult computeSegmentStandard(Integrator &integ, IntegrandFunc f,
                                      const IntervalSegment &seg, double eps) {
   SegmentResult r;
   if (!seg.limit_at_from && !seg.limit_at_to) {
-    IntegrationResult inner = rungeSolve(method, f, seg.from, seg.to, eps);
+    IntegrationResult inner = integ.rungeSolve(f, seg.from, seg.to);
     r.value = inner.value;
     r.n = inner.n;
     r.runge_error = inner.runge_error;
@@ -278,12 +243,12 @@ SegmentResult computeSegmentStandard(IntegrationMethod method,
 
   if (seg.limit_at_from && seg.limit_at_to) {
     const double mid = (seg.from + seg.to) / 2.0;
-    LimitResult lr1 = limitAtEndpoint(method, f, seg.from, mid, +1, eps);
+    LimitResult lr1 = limitAtEndpoint(integ, f, seg.from, mid, +1, eps);
     if (lr1.status != "ok") {
       r.status = lr1.status;
       return r;
     }
-    LimitResult lr2 = limitAtEndpoint(method, f, seg.to, mid, -1, eps);
+    LimitResult lr2 = limitAtEndpoint(integ, f, seg.to, mid, -1, eps);
     if (lr2.status != "ok") {
       r.status = lr2.status;
       return r;
@@ -295,14 +260,14 @@ SegmentResult computeSegmentStandard(IntegrationMethod method,
     return r;
   }
   if (seg.limit_at_from) {
-    LimitResult lr = limitAtEndpoint(method, f, seg.from, seg.to, +1, eps);
+    LimitResult lr = limitAtEndpoint(integ, f, seg.from, seg.to, +1, eps);
     r.value = lr.value;
     r.n = lr.n;
     r.runge_error = lr.runge_error;
     r.status = lr.status;
     return r;
   }
-  LimitResult lr = limitAtEndpoint(method, f, seg.to, seg.from, -1, eps);
+  LimitResult lr = limitAtEndpoint(integ, f, seg.to, seg.from, -1, eps);
   r.value = lr.value;
   r.n = lr.n;
   r.runge_error = lr.runge_error;
@@ -310,13 +275,8 @@ SegmentResult computeSegmentStandard(IntegrationMethod method,
   return r;
 }
 
-}  // namespace
-
 IntervalPlan prepareIntervals(double a, double b,
-                              const std::vector<double> &discontinuities,
-                              const IntegrandFunc &f, double eps) {
-  (void)f;
-  (void)eps;
+                              const std::vector<double> &discontinuities) {
   IntervalPlan plan;
   plan.status = "ok";
 
@@ -369,11 +329,6 @@ IntervalPlan prepareIntervals(double a, double b,
   return plan;
 }
 
-namespace {
-
-// Try Cauchy principal value by pairing adjacent segments sharing an
-// internal singular point. Returns whether PV was applied successfully for
-// every singular internal point.
 struct PvOutcome {
   bool success = false;
   bool usedPV = false;
@@ -383,7 +338,7 @@ struct PvOutcome {
   std::string message;
 };
 
-PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
+PvOutcome tryPrincipalValue(Integrator &integ, IntegrandFunc f,
                             const IntervalPlan &plan, double eps) {
   PvOutcome out;
   double acc = 0.0;
@@ -396,7 +351,7 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
     const IntervalSegment &seg = plan.segments[i];
 
     if (!seg.limit_at_from && !seg.limit_at_to) {
-      IntegrationResult inner = rungeSolve(method, f, seg.from, seg.to, eps);
+      IntegrationResult inner = integ.rungeSolve(f, seg.from, seg.to);
       if (inner.status != "ok") {
         out.message = "Подотрезок не сошёлся.";
         return out;
@@ -408,7 +363,6 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
       continue;
     }
 
-    // Try pairing with next segment around shared internal discontinuity.
     bool handled = false;
     if (i + 1 < plan.segments.size()) {
       const IntervalSegment &nxt = plan.segments[i + 1];
@@ -426,7 +380,7 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
           if (leftLen > d + 1e-15) {
             if (seg.limit_at_from) {
               LimitResult lr =
-                  limitAtEndpoint(method, f, seg.from, c - d, +1, eps);
+                  limitAtEndpoint(integ, f, seg.from, c - d, +1, eps);
               if (lr.status != "ok") {
                 out.message = "Хвостовой подотрезок расходится.";
                 return out;
@@ -435,8 +389,7 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
               leftTailN = lr.n;
               leftTailRunge = lr.runge_error;
             } else {
-              IntegrationResult inner =
-                  rungeSolve(method, f, seg.from, c - d, eps);
+              IntegrationResult inner = integ.rungeSolve(f, seg.from, c - d);
               if (inner.status != "ok") {
                 out.message = "Хвостовой подотрезок не сошёлся.";
                 return out;
@@ -453,7 +406,7 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
           if (rightLen > d + 1e-15) {
             if (nxt.limit_at_to) {
               LimitResult lr =
-                  limitAtEndpoint(method, f, nxt.to, c + d, -1, eps);
+                  limitAtEndpoint(integ, f, nxt.to, c + d, -1, eps);
               if (lr.status != "ok") {
                 out.message = "Хвостовой подотрезок расходится.";
                 return out;
@@ -462,8 +415,7 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
               rightTailN = lr.n;
               rightTailRunge = lr.runge_error;
             } else {
-              IntegrationResult inner =
-                  rungeSolve(method, f, c + d, nxt.to, eps);
+              IntegrationResult inner = integ.rungeSolve(f, c + d, nxt.to);
               if (inner.status != "ok") {
                 out.message = "Хвостовой подотрезок не сошёлся.";
                 return out;
@@ -488,8 +440,7 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
       continue;
     }
 
-    // Singular segment that did not admit PV — fall back to standard limit.
-    SegmentResult sr = computeSegmentStandard(method, f, seg, eps);
+    SegmentResult sr = computeSegmentStandard(integ, f, seg, eps);
     if (sr.status != "ok") {
       out.message = "Несобственный подотрезок расходится.";
       return out;
@@ -508,11 +459,10 @@ PvOutcome tryPrincipalValue(IntegrationMethod method, const IntegrandFunc &f,
   return out;
 }
 
-}  // namespace
+}
 
-IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
-                            double a, double b, double eps,
-                            const std::vector<double> &discontinuities) {
+IntegrationResult Integrator::integrate(IntegrandFunc f, double a, double b,
+                                        const std::vector<double> &discontinuities) {
   IntegrationResult out;
   if (!(a < b)) {
     out.status = "error";
@@ -520,14 +470,14 @@ IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
     out.value = std::numeric_limits<double>::quiet_NaN();
     return out;
   }
-  if (!(eps > 0.0) || !std::isfinite(eps)) {
+  if (!(EPS > 0.0) || !std::isfinite(EPS)) {
     out.status = "error";
     out.message = "Некорректная точность ε.";
     out.value = std::numeric_limits<double>::quiet_NaN();
     return out;
   }
 
-  IntervalPlan plan = prepareIntervals(a, b, discontinuities, f, eps);
+  IntervalPlan plan = prepareIntervals(a, b, discontinuities);
   const bool improper = plan.segments.size() > 1 ||
                         plan.segments.front().limit_at_from ||
                         plan.segments.front().limit_at_to;
@@ -535,11 +485,10 @@ IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
   double total = 0.0;
   int totalN = 0;
   double totalRunge = 0.0;
-  bool standardFailed = false;
-  std::string failMsg;
+  std::string failedStatus;
 
   for (const IntervalSegment &seg : plan.segments) {
-    SegmentResult sr = computeSegmentStandard(method, f, seg, eps);
+    SegmentResult sr = computeSegmentStandard(*this, f, seg, EPS);
     if (sr.status == "max_iter") {
       out.status = "max_iter";
       out.message = "Не удалось достичь точности за отведённые разбиения.";
@@ -549,8 +498,10 @@ IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
       return out;
     }
     if (sr.status != "ok") {
-      standardFailed = true;
-      failMsg = sr.status;
+      failedStatus = sr.status;
+      total += std::isfinite(sr.value) ? sr.value : 0.0;
+      totalN += sr.n;
+      totalRunge += sr.runge_error;
       break;
     }
     total += sr.value;
@@ -558,7 +509,7 @@ IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
     totalRunge += sr.runge_error;
   }
 
-  if (!standardFailed) {
+  if (failedStatus.empty()) {
     out.status = "ok";
     out.value = total;
     out.n = totalN;
@@ -568,21 +519,29 @@ IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
     return out;
   }
 
-  // Try Cauchy principal value fallback.
-  PvOutcome pv = tryPrincipalValue(method, f, plan, eps);
-  if (!pv.success || !pv.usedPV) {
-    out.status = "diverges";
-    out.value = std::numeric_limits<double>::quiet_NaN();
-    out.message = "Интеграл расходится.";
+  PvOutcome pv = tryPrincipalValue(*this, f, plan, EPS);
+  if (pv.success && pv.usedPV) {
+    out.status = "ok_principal_value";
+    out.value = pv.value;
+    out.n = pv.n;
+    out.runge_error = pv.runge_error;
+    out.message = "Несобственный интеграл, главное значение Коши.";
     return out;
   }
 
-  out.status = "ok_principal_value";
-  out.value = pv.value;
-  out.n = pv.n;
-  out.runge_error = pv.runge_error;
-  out.message = "Несобственный интеграл, главное значение Коши.";
+  if (failedStatus == "indeterminate") {
+    out.status = "indeterminate";
+    out.value = total;
+    out.n = totalN;
+    out.runge_error = totalRunge;
+    out.message =
+        "Численно не удалось установить сходимость предела (метод плохо "
+        "приспособлен к особенности — попробуйте другой).";
+    return out;
+  }
+
+  out.status = "diverges";
+  out.value = std::numeric_limits<double>::quiet_NaN();
+  out.message = "Интеграл расходится.";
   return out;
 }
-
-}  // namespace Integrators

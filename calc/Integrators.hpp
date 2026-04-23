@@ -1,65 +1,69 @@
 #pragma once
 
-#include <cmath>
 #include <functional>
 #include <string>
 #include <vector>
 
 using IntegrandFunc = std::function<double(double)>;
 
-enum class IntegrationMethod {
-  LeftRect = 0,
-  RightRect = 1,
-  MidRect = 2,
-  Trapezoid = 3,
-  Simpson = 4,
-};
-
 struct IntegrationResult {
   double value = 0.0;
   int n = 0;
   double runge_error = 0.0;
-  std::string status;  // "ok" | "ok_principal_value" | "diverges" | "indeterminate" | "max_iter" | "error"
+  std::string status;
   std::string message;
 };
 
-struct IntervalSegment {
-  double from = 0.0;
-  double to = 0.0;
-  bool limit_at_from = false;
-  bool limit_at_to = false;
+class Integrator {
+protected:
+  double EPS;
+
+public:
+  static constexpr int kInitialN = 4;
+  static constexpr int kMaxN = 1 << 20;
+
+  Integrator(double EPS) : EPS(EPS) {};
+  virtual ~Integrator() = default;
+
+  virtual double apply(IntegrandFunc f, double a, double b, int n) = 0;
+  virtual int order() = 0;
+
+  IntegrationResult rungeSolve(IntegrandFunc f, double a, double b);
+  IntegrationResult integrate(IntegrandFunc f, double a, double b,
+                              const std::vector<double> &discontinuities);
 };
 
-struct IntervalPlan {
-  std::string status;  // "ok" | "ok_principal_value" | "diverges" | "indeterminate"
-  std::string message;
-  std::vector<IntervalSegment> segments;
+class LeftRectIntegrator : public Integrator {
+public:
+  LeftRectIntegrator(double EPS) : Integrator(EPS) {};
+  double apply(IntegrandFunc f, double a, double b, int n) override;
+  int order() override { return 2; }
 };
 
-namespace Integrators {
+class RightRectIntegrator : public Integrator {
+public:
+  RightRectIntegrator(double EPS) : Integrator(EPS) {};
+  double apply(IntegrandFunc f, double a, double b, int n) override;
+  int order() override { return 2; }
+};
 
-constexpr int kInitialN = 4;
-constexpr int kMaxN = 1 << 20;
+class MidRectIntegrator : public Integrator {
+public:
+  MidRectIntegrator(double EPS) : Integrator(EPS) {};
+  double apply(IntegrandFunc f, double a, double b, int n) override;
+  int order() override { return 2; }
+};
 
-double integrateLeftRect(const IntegrandFunc &f, double a, double b, int n);
-double integrateRightRect(const IntegrandFunc &f, double a, double b, int n);
-double integrateMidRect(const IntegrandFunc &f, double a, double b, int n);
-double integrateTrapezoid(const IntegrandFunc &f, double a, double b, int n);
-double integrateSimpson(const IntegrandFunc &f, double a, double b, int n);
+class TrapezoidIntegrator : public Integrator {
+public:
+  TrapezoidIntegrator(double EPS) : Integrator(EPS) {};
+  double apply(IntegrandFunc f, double a, double b, int n) override;
+  int order() override { return 2; }
+};
 
-double applyMethod(IntegrationMethod method, const IntegrandFunc &f, double a,
-                   double b, int n);
-int methodOrder(IntegrationMethod method);
-
-IntegrationResult rungeSolve(IntegrationMethod method, const IntegrandFunc &f,
-                             double a, double b, double eps);
-
-IntervalPlan prepareIntervals(double a, double b,
-                              const std::vector<double> &discontinuities,
-                              const IntegrandFunc &f, double eps);
-
-IntegrationResult integrate(IntegrationMethod method, const IntegrandFunc &f,
-                            double a, double b, double eps,
-                            const std::vector<double> &discontinuities);
-
-}  // namespace Integrators
+class SimpsonIntegrator : public Integrator {
+public:
+  SimpsonIntegrator(double EPS) : Integrator(EPS) {};
+  double apply(IntegrandFunc f, double a, double b, int n) override;
+  int order() override { return 4; }
+};
