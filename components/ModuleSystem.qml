@@ -172,7 +172,6 @@ RowLayout {
                     active: rect.currentEquation === index
                     onClicked: {
                         rect.currentEquation = index;
-                        // rect.updateGraph();
                     }
                 }
             }

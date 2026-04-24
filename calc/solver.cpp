@@ -1,5 +1,4 @@
 #include "Solvers.hpp"
-#include <iostream>
 
 #include <algorithm>
 #include <cmath>
@@ -151,8 +150,6 @@ SystemIterSolver::solve(SystemFunc phiX, SystemFunc phiY, double x0,
 
     x = nextX;
     y = nextY;
-
-    // std::cout << x << " " << y << "\n";
   }
 
   return {{0, std::numeric_limits<double>::quiet_NaN()},

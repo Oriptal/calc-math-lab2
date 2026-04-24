@@ -137,7 +137,6 @@ RowLayout {
                         rect.currentFunction = index;
                         const disc = backend.integrandDiscontinuities(index);
                         if (disc.length > 0) {
-                            // Подсказка: для функций с разрывом установим удобные пределы по умолчанию.
                             if (mainColumn.borderValues.left === "")
                                 mainColumn.borderValues.left = "0";
                             if (mainColumn.borderValues.right === "")

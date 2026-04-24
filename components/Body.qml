@@ -72,8 +72,6 @@ MyRect {
                 ModuleSystem {}
 
                 ModuleIntegration {}
-
-                //     ModuleSettings {}
             }
         }
     }
