@@ -1,0 +1,64 @@
+digraph LimitAtEndpoint {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало: limitAtEndpoint", shape=oval, fillcolor="#e6eefc"]
+  input [label=<Ввод: integ, f, c, other,<BR/>side ∈ {+1, −1}, eps>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init  [label=<d<SUB>0</SUB> = |other − c| · 0.01<BR/>r = 0.5<BR/>k<SUB>maxShrinks</SUB> = 50<BR/>k<SUB>needStable</SUB> = 2<BR/>kBig = 10<SUP>15</SUP><BR/>stableTol = 3 · eps<BR/>prevI = NaN; stableCount = 0<BR/>lastValue = 0; lastN = 0<BR/>lastRunge = 0; kStep = 0>, shape=box]
+
+  chkLoop  [label=<kStep &lt; k<SUB>maxShrinks</SUB>?>, shape=diamond, fillcolor="#fff7d1"]
+  retInd   [label=<status = indeterminate<BR/>value = lastValue<BR/>n = lastN<BR/>runge = lastRunge>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  comp     [label=<σ = d<SUB>0</SUB> · 0.5<SUP>kStep</SUP><BR/>side &gt; 0:&nbsp;lo = c + σ; hi = other<BR/>иначе:&nbsp;&nbsp;lo = other; hi = c − σ>, shape=box]
+  chkLoHi  [label=<lo &lt; hi?>, shape=diamond, fillcolor="#fff7d1"]
+  retIndLo [label=<status = indeterminate<BR/>value = lastValue<BR/>n = lastN>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  callRunge [label=<inner = integ.rungeSolve(f, lo, hi)<BR/>(см. блок-схему правила Рунге)>, shape=box, fillcolor="#e6eefc"]
+
+  chkDiv    [label=<inner.status = "diverges"<BR/>∨ ¬isFinite(inner.value)?>, shape=diamond, fillcolor="#fff7d1"]
+  retDiv    [label=<status = diverges<BR/>value = NaN<BR/>n = inner.n>, shape=parallelogram, fillcolor="#fde2e2"]
+  chkBig    [label=<|inner.value| &gt; kBig?>, shape=diamond, fillcolor="#fff7d1"]
+  retDivBig [label=<status = diverges<BR/>value = NaN<BR/>n = inner.n>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  upd       [label=<lastValue = inner.value<BR/>lastN = inner.n<BR/>lastRunge = inner.runge>, shape=box]
+
+  chkPrev   [label=<isFinite(prevI) ∧<BR/>inner.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  chkClose  [label=<|inner.value − prevI|<BR/>&lt; stableTol?>, shape=diamond, fillcolor="#fff7d1"]
+  incCnt    [label="stableCount = stableCount + 1", shape=box]
+  zeroCnt   [label="stableCount = 0", shape=box]
+
+  chkCnt    [label=<stableCount ≥ k<SUB>needStable</SUB>?>, shape=diamond, fillcolor="#fff7d1"]
+  retOk     [label=<status = ok<BR/>value = inner.value<BR/>n = inner.n<BR/>runge = lastRunge>, shape=parallelogram, fillcolor="#dcfce7"]
+
+  setPrev   [label=<prevI = (inner.status = "ok")<BR/>? inner.value : NaN<BR/>kStep = kStep + 1>, shape=box]
+
+  stop [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chkLoop
+  chkLoop -> retInd [label="нет"]
+  retInd -> stop
+  chkLoop -> comp [label="да"]
+  comp -> chkLoHi
+  chkLoHi -> retIndLo [label="нет"]
+  retIndLo -> stop
+  chkLoHi -> callRunge [label="да"]
+  callRunge -> chkDiv
+  chkDiv -> retDiv [label="да"]
+  retDiv -> stop
+  chkDiv -> chkBig [label="нет"]
+  chkBig -> retDivBig [label="да"]
+  retDivBig -> stop
+  chkBig -> upd [label="нет"]
+  upd -> chkPrev
+  chkPrev -> chkClose [label="да"]
+  chkPrev -> zeroCnt [label="нет"]
+  chkClose -> incCnt [label="да"]
+  chkClose -> zeroCnt [label="нет"]
+  incCnt -> chkCnt
+  chkCnt -> retOk [label="да"]
+  retOk -> stop
+  chkCnt -> setPrev [label="нет"]
+  zeroCnt -> setPrev
+  setPrev -> chkLoop
+}

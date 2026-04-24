@@ -1,0 +1,29 @@
+digraph IsAntisymmetric {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало: isAntisymmetric", shape=oval, fillcolor="#e6eefc"]
+  input [label=<Ввод: f, c, d,<BR/>tol = 10<SUP>−6</SUP> (по умолчанию)>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init  [label=<samples = 10<BR/>worst = 0<BR/>i = 0>, shape=box]
+
+  loop  [label=<i &lt; samples?>, shape=diamond, fillcolor="#fff7d1"]
+  ret   [label=<Вывод: worst &lt; tol>, shape=parallelogram, fillcolor="#dcfce7"]
+
+  body  [label=<t = i / (samples − 1)<BR/>δ = d · (10<SUP>−3</SUP>)<SUP>1−t</SUP> · (0.99)<SUP>t</SUP><BR/>fp = f(c + δ); fm = f(c − δ)>, shape=box]
+  chkFin [label=<isFinite(fp) ∧ isFinite(fm)?>, shape=diamond, fillcolor="#fff7d1"]
+  retFalse [label=<Вывод: false>, shape=parallelogram, fillcolor="#fde2e2"]
+  upd   [label=<denom = max(|fp|, |fm|, 10<SUP>−30</SUP>)<BR/>diff = |fp + fm| / denom<BR/>worst = max(worst, diff)<BR/>i = i + 1>, shape=box]
+
+  stop [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> loop
+  loop -> ret [label="нет"]
+  ret -> stop
+  loop -> body [label="да"]
+  body -> chkFin
+  chkFin -> retFalse [label="нет"]
+  retFalse -> stop
+  chkFin -> upd [label="да"]
+  upd -> loop
+}

@@ -1,0 +1,50 @@
+digraph ComputeSegment {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: computeSegmentStandard", shape=oval, fillcolor="#e6eefc"]
+  input  [label="Ввод: integ, f(x), seg, eps", shape=parallelogram, fillcolor="#f5f5f5"]
+
+  chkAny [label=<seg.limit_at_from ∨<BR/>seg.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
+  plain  [label=<inner = integ.rungeSolve(<BR/>f, seg.from, seg.to)<BR/>(см. блок-схему правила Рунге)>, shape=box, fillcolor="#e6eefc"]
+  retPlain [label=<r ← inner (целиком)>, shape=parallelogram, fillcolor="#dcfce7"]
+
+  chkBoth [label=<seg.limit_at_from ∧<BR/>seg.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
+  splitMid [label=<mid = (seg.from + seg.to) / 2<BR/>lr1 = limitAtEndpoint(<BR/>integ, f, seg.from, mid, +1, eps)>, shape=box, fillcolor="#e6eefc"]
+  chk1   [label=<lr1.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  ret1   [label=<status = lr1.status<BR/>(не ok)>, shape=parallelogram, fillcolor="#fde2e2"]
+  call2  [label=<lr2 = limitAtEndpoint(<BR/>integ, f, seg.to, mid, −1, eps)>, shape=box, fillcolor="#e6eefc"]
+  chk2   [label=<lr2.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  ret2   [label=<status = lr2.status<BR/>(не ok)>, shape=parallelogram, fillcolor="#fde2e2"]
+  retBoth [label=<value = lr1.value + lr2.value<BR/>n = lr1.n + lr2.n<BR/>runge = lr1.runge + lr2.runge<BR/>status = "ok">, shape=parallelogram, fillcolor="#dcfce7"]
+
+  chkLeft   [label=<seg.limit_at_from?>, shape=diamond, fillcolor="#fff7d1"]
+  callLeft  [label=<lr = limitAtEndpoint(<BR/>integ, f, seg.from, seg.to, +1, eps)>, shape=box, fillcolor="#e6eefc"]
+  callRight [label=<lr = limitAtEndpoint(<BR/>integ, f, seg.to, seg.from, −1, eps)>, shape=box, fillcolor="#e6eefc"]
+  retLR     [label=<r ← lr (целиком)>, shape=parallelogram, fillcolor="#dcfce7"]
+
+  stop [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> chkAny
+  chkAny -> plain [label="нет"]
+  plain -> retPlain
+  retPlain -> stop
+  chkAny -> chkBoth [label="да"]
+  chkBoth -> splitMid [label="да"]
+  splitMid -> chk1
+  chk1 -> ret1 [label="нет"]
+  ret1 -> stop
+  chk1 -> call2 [label="да"]
+  call2 -> chk2
+  chk2 -> ret2 [label="нет"]
+  ret2 -> stop
+  chk2 -> retBoth [label="да"]
+  retBoth -> stop
+  chkBoth -> chkLeft [label="нет"]
+  chkLeft -> callLeft [label="да"]
+  callLeft -> retLR
+  chkLeft -> callRight [label="нет"]
+  callRight -> retLR
+  retLR -> stop
+}
