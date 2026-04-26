@@ -1,5 +1,5 @@
 digraph TryPrincipalValue {
-  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.15, ranksep=0.15, splines=polyline]
   node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 

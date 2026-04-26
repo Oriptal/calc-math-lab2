@@ -291,15 +291,15 @@ $ integral_a^b f(x) d x = lim_(sigma arrow.r +0) integral_(a + sigma)^b f(x) d x
 
 *Главное значение Коши.* Для внутреннего разрыва $c$, если стандартное вычисление вернуло не-`ok`, проверяется численная антисимметричность $f$ в окрестности $c$ на подотрезке $[c - d, c + d]$, $d = min(c - a, b - c)$. Если максимум относительной разницы $|f(c + delta) + f(c - delta)| \/ max(|f(c + delta)|, |f(c - delta)|)$ по 10 пробным точкам $delta$ меньше $10^(-6)$, подотрезок $[c - d, c + d]$ зануляется (в смысле V.p.), а оставшиеся «хвосты» интегрируются как обычно. Результат помечается флагом `ok_principal_value`.
 
-#figure(image("resources/flowcharts/improper_integral.png", width: 95%), caption: [Верхнеуровневая схема `Integrator::integrate` (подпрограммы — отдельные блок-схемы)])
+#figure(image("resources/flowcharts/improper_integral.png", width: 65%), caption: [Верхнеуровневая схема `Integrator::integrate` (подпрограммы — отдельные блок-схемы)])
 
 #figure(image("resources/flowcharts/prepare_intervals.png", width: 85%), caption: [`prepareIntervals` — декомпозиция отрезка по точкам разрыва])
 
-#figure(image("resources/flowcharts/compute_segment.png", width: 90%), caption: [`computeSegmentStandard` — выбор пути для одного сегмента])
+#figure(image("resources/flowcharts/compute_segment.png", width: 80%), caption: [`computeSegmentStandard` — выбор пути для одного сегмента])
 
-#figure(image("resources/flowcharts/limit_at_endpoint.png", width: 90%), caption: [`limitAtEndpoint` — численный односторонний предел через сужение])
+#figure(image("resources/flowcharts/limit_at_endpoint.png", width: 50%), caption: [`limitAtEndpoint` — численный односторонний предел через сужение])
 
-#figure(image("resources/flowcharts/try_principal_value.png", width: 95%), caption: [`tryPrincipalValue` — fallback на главное значение Коши])
+#figure(image("resources/flowcharts/try_principal_value.png", width: 80%), caption: [`tryPrincipalValue` — fallback на главное значение Коши])
 
 #figure(image("resources/flowcharts/is_antisymmetric.png", width: 65%), caption: [`isAntisymmetric` — численная проверка нечётности $f$ вокруг точки $c$])
 
