@@ -10,7 +10,7 @@ MyRect {
     anchors.margins: 12
 
     MyText {
-        text: "Лабораторная работа №2"
+        text: "Численная математика — ЛР №2 + ЛР №3"
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
