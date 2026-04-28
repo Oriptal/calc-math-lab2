@@ -285,9 +285,6 @@ IntervalPlan prepareIntervals(double a, double b,
   bool endIsSingular = false;
 
   for (double c : discontinuities) {
-    if (!std::isfinite(c)) {
-      continue;
-    }
     if (std::abs(c - a) < 1e-15) {
       startIsSingular = true;
     } else if (std::abs(c - b) < 1e-15) {

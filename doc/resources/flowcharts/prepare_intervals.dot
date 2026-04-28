@@ -8,7 +8,6 @@ digraph PrepareIntervals {
   init  [label=<innerPoints = [ ]<BR/>startSing = false<BR/>endSing = false<BR/>i = 0>, shape=box]
 
   loopD    [label=<i &lt; |D|?>, shape=diamond, fillcolor="#fff7d1"]
-  fin      [label=<isFinite(D[i])?>, shape=diamond, fillcolor="#fff7d1"]
   isStart  [label=<|D[i] − a| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
   setStart [label="startSing = true", shape=box]
   isEnd    [label=<|D[i] − b| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
@@ -32,9 +31,7 @@ digraph PrepareIntervals {
 
   start -> input -> init -> loopD
   loopD -> sortInn [label="нет"]
-  loopD -> fin [label="да"]
-  fin -> incrI [label="нет"]
-  fin -> isStart [label="да"]
+  loopD -> isStart [label="да"]
   isStart -> setStart [label="да"]
   setStart -> incrI
   isStart -> isEnd [label="нет"]
