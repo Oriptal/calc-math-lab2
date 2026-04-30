@@ -20,7 +20,7 @@ digraph TryPrincipalValue {
 
   chkPair [label=<i + 1 &lt; |plan.segments| ∧<BR/>seg.limit_at_to ∧<BR/>plan[i+1].limit_at_from ∧<BR/>|seg.to − plan[i+1].from| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
   computeD [label=<c = seg.to<BR/>leftLen = c − seg.from<BR/>rightLen = plan[i+1].to − c<BR/>d = min(leftLen, rightLen)>, shape=box]
-  chkAnti [label=<d &gt; 0 ∧<BR/>isAntisymmetric(f, c, d)?<BR/>(см. отдельную блок-схему)>, shape=diamond, fillcolor="#fff7d1"]
+  chkAnti [label=<isAntisymmetric(f, c, d)?<BR/>(см. отдельную блок-схему)>, shape=diamond, fillcolor="#fff7d1"]
 
   leftTail [label=<Если leftLen &gt; d + 10<SUP>−15</SUP>:<BR/>интегрировать [seg.from, c − d]<BR/>(rungeSolve, либо limitAtEndpoint<BR/>при seg.limit_at_from)>, shape=box, fillcolor="#e6eefc"]
   chkLeftOk [label=<хвостовой<BR/>подотрезок ok?>, shape=diamond, fillcolor="#fff7d1"]
