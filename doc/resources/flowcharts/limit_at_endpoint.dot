@@ -11,8 +11,6 @@ digraph LimitAtEndpoint {
   retInd   [label=<status = indeterminate<BR/>value = lastValue<BR/>n = lastN<BR/>runge = lastRunge>, shape=parallelogram, fillcolor="#fde2e2"]
 
   comp     [label=<σ = d<SUB>0</SUB> · 0.5<SUP>kStep</SUP><BR/>side &gt; 0:&nbsp;lo = c + σ; hi = other<BR/>иначе:&nbsp;&nbsp;lo = other; hi = c − σ>, shape=box]
-  chkLoHi  [label=<lo &lt; hi?>, shape=diamond, fillcolor="#fff7d1"]
-  retIndLo [label=<status = indeterminate<BR/>value = lastValue<BR/>n = lastN>, shape=parallelogram, fillcolor="#fde2e2"]
 
   callRunge [label=<inner = integ.rungeSolve(f, lo, hi)<BR/>(см. блок-схему правила Рунге)>, shape=box, fillcolor="#e6eefc"]
 
@@ -39,10 +37,7 @@ digraph LimitAtEndpoint {
   chkLoop -> retInd [label="нет"]
   retInd -> stop
   chkLoop -> comp [label="да"]
-  comp -> chkLoHi
-  chkLoHi -> retIndLo [label="нет"]
-  retIndLo -> stop
-  chkLoHi -> callRunge [label="да"]
+  comp -> callRunge
   callRunge -> chkDiv
   chkDiv -> retDiv [label="да"]
   retDiv -> stop
