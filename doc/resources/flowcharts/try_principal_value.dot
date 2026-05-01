@@ -22,15 +22,25 @@ digraph TryPrincipalValue {
   computeD [label=<c = seg.to<BR/>leftLen = c − seg.from<BR/>rightLen = plan[i+1].to − c<BR/>d = min(leftLen, rightLen)>, shape=box]
   chkAnti [label=<isAntisymmetric(f, c, d)?<BR/>(см. отдельную блок-схему)>, shape=diamond, fillcolor="#fff7d1"]
 
-  leftTail [label=<Если leftLen &gt; d + 10<SUP>−15</SUP>:<BR/>интегрировать [seg.from, c − d]<BR/>(rungeSolve, либо limitAtEndpoint<BR/>при seg.limit_at_from)>, shape=box, fillcolor="#e6eefc"]
-  chkLeftOk [label=<хвостовой<BR/>подотрезок ok?>, shape=diamond, fillcolor="#fff7d1"]
-  retFailLT [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  initTails [label=<leftTailVal = 0; leftTailN = 0; leftTailRunge = 0<BR/>rightTailVal = 0; rightTailN = 0; rightTailRunge = 0>, shape=box]
 
-  rightTail [label=<Если rightLen &gt; d + 10<SUP>−15</SUP>:<BR/>интегрировать [c + d, plan[i+1].to]<BR/>(rungeSolve, либо limitAtEndpoint<BR/>при plan[i+1].limit_at_to)>, shape=box, fillcolor="#e6eefc"]
-  chkRightOk [label=<хвостовой<BR/>подотрезок ok?>, shape=diamond, fillcolor="#fff7d1"]
-  retFailRT [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  chkLeftLen   [label=<leftLen &gt; d + 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  chkLeftSing  [label=<seg.limit_at_from?>, shape=diamond, fillcolor="#fff7d1"]
+  callLeftLim  [label=<res = limitAtEndpoint(<BR/>integ, f, seg.from, c − d, +1, eps)>, shape=box, fillcolor="#e6eefc"]
+  callLeftRng  [label=<res = integ.rungeSolve(<BR/>f, seg.from, c − d)>, shape=box, fillcolor="#e6eefc"]
+  chkLeftOk    [label=<res.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  retFailLT    [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  assignLeft   [label=<leftTailVal = res.value<BR/>leftTailN = res.n<BR/>leftTailRunge = res.runge>, shape=box]
 
-  accPV [label=<acc += leftTail + rightTail<BR/>(подотрезок [c − d, c + d] зануляется<BR/>в смысле V.p.)<BR/>usedPV = true<BR/>i = i + 2>, shape=box, fillcolor="#fef3c7"]
+  chkRightLen  [label=<rightLen &gt; d + 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  chkRightSing [label=<plan[i+1].limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
+  callRightLim [label=<res = limitAtEndpoint(<BR/>integ, f, plan[i+1].to, c + d, −1, eps)>, shape=box, fillcolor="#e6eefc"]
+  callRightRng [label=<res = integ.rungeSolve(<BR/>f, c + d, plan[i+1].to)>, shape=box, fillcolor="#e6eefc"]
+  chkRightOk   [label=<res.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  retFailRT    [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  assignRight  [label=<rightTailVal = res.value<BR/>rightTailN = res.n<BR/>rightTailRunge = res.runge>, shape=box]
+
+  accPV [label=<acc += leftTailVal + rightTailVal<BR/>nAcc += leftTailN + rightTailN<BR/>rg += leftTailRunge + rightTailRunge<BR/>(подотрезок [c − d, c + d] зануляется в смысле V.p.)<BR/>usedPV = true<BR/>i = i + 2>, shape=box, fillcolor="#fef3c7"]
 
   fallback [label=<sr = computeSegmentStandard(<BR/>integ, f, seg, eps)<BR/>(см. отдельную блок-схему)>, shape=box, fillcolor="#e6eefc"]
   chkFb [label=<sr.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
@@ -54,15 +64,31 @@ digraph TryPrincipalValue {
   chkOrd -> chkPair [label="нет"]
   chkPair -> computeD [label="да"]
   computeD -> chkAnti
-  chkAnti -> leftTail [label="да"]
-  leftTail -> chkLeftOk
+  chkAnti -> initTails [label="да"]
+  initTails -> chkLeftLen
+
+  chkLeftLen -> chkLeftSing [label="да"]
+  chkLeftLen -> chkRightLen [label="нет"]
+  chkLeftSing -> callLeftLim [label="да"]
+  chkLeftSing -> callLeftRng [label="нет"]
+  callLeftLim -> chkLeftOk
+  callLeftRng -> chkLeftOk
   chkLeftOk -> retFailLT [label="нет"]
   retFailLT -> stop
-  chkLeftOk -> rightTail [label="да"]
-  rightTail -> chkRightOk
+  chkLeftOk -> assignLeft [label="да"]
+  assignLeft -> chkRightLen
+
+  chkRightLen -> chkRightSing [label="да"]
+  chkRightLen -> accPV [label="нет"]
+  chkRightSing -> callRightLim [label="да"]
+  chkRightSing -> callRightRng [label="нет"]
+  callRightLim -> chkRightOk
+  callRightRng -> chkRightOk
   chkRightOk -> retFailRT [label="нет"]
   retFailRT -> stop
-  chkRightOk -> accPV [label="да"]
+  chkRightOk -> assignRight [label="да"]
+  assignRight -> accPV
+
   accPV -> chkI
 
   chkAnti -> fallback [label="нет"]
