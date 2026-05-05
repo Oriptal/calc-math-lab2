@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-runner
+    runs-on: ubuntu-latest
     steps:
       - name: Install system dependencies
         env:
