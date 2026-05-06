@@ -39,6 +39,7 @@ qt_add_qml_module(appHelloWorldQuickProject
         components/Body.qml
         components/EquationCard.qml
         components/Header.qml
+        components/ModuleGauss.qml
         components/ModuleIntegration.qml
         components/ModuleRoot.qml
         components/ModuleSettings.qml

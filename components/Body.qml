@@ -40,21 +40,27 @@ MyRect {
                     spacing: 8
 
                     NavButton {
-                        text: "Поиск корня"
+                        text: "Метод Гаусса"
                         active: content.currentModule === 0
                         onClicked: content.currentModule = 0
                     }
 
                     NavButton {
-                        text: "Решение системы"
+                        text: "Поиск корня"
                         active: content.currentModule === 1
                         onClicked: content.currentModule = 1
                     }
 
                     NavButton {
-                        text: "Интегрирование"
+                        text: "Решение системы"
                         active: content.currentModule === 2
                         onClicked: content.currentModule = 2
+                    }
+
+                    NavButton {
+                        text: "Интегрирование"
+                        active: content.currentModule === 3
+                        onClicked: content.currentModule = 3
                     }
                 }
             }
@@ -66,6 +72,8 @@ MyRect {
             StackLayout {
                 anchors.fill: parent
                 currentIndex: content.currentModule
+
+                ModuleGauss {}
 
                 ModuleRoot {}
 
