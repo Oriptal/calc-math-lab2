@@ -15,14 +15,14 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appHelloWorldQuickProject
     main.cpp
-    Backend.hpp
-    BackendUtil.hpp
-    RootModule.hpp
-    RootModule.cpp
-    SystemModule.hpp
-    SystemModule.cpp
-    IntegrationModule.hpp
-    IntegrationModule.cpp
+    backend/Backend.hpp
+    backend/BackendUtil.hpp
+    backend/RootModule.hpp
+    backend/RootModule.cpp
+    backend/SystemModule.hpp
+    backend/SystemModule.cpp
+    backend/IntegrationModule.hpp
+    backend/IntegrationModule.cpp
 )
 
 set_source_files_properties(Theme.qml PROPERTIES
