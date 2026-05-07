@@ -26,9 +26,6 @@ public:
   virtual std::pair<int, double> solve(MathFunc f, double a, double b) = 0;
 
   static Status validate(MathFunc f, double a, double b, double EPS) {
-    // if (!(a < b) || a < -5.0 || b > 5.0) {
-    //   return INCORRECT_BORDERS;
-    // }
     if (!(EPS > 0.0) || !std::isfinite(EPS)) {
       return INCORRECT_EPS;
     }
