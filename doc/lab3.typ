@@ -307,7 +307,7 @@ $ integral_a^b f(x) d x = lim_(sigma arrow.r +0) integral_(a + sigma)^b f(x) d x
 
 #figure(image("resources/flowcharts/limit_at_endpoint.png", width: 50%), caption: [`limitAtEndpoint` — численный односторонний предел через сужение])
 
-#figure(image("resources/flowcharts/try_principal_value.png", width: 80%), caption: [`tryPrincipalValue` — fallback на главное значение Коши])
+#figure(image("resources/flowcharts/try_principal_value.png", width: 55%), caption: [`tryPrincipalValue` — fallback на главное значение Коши])
 
 #figure(image("resources/flowcharts/is_antisymmetric.png", width: 65%), caption: [`isAntisymmetric` — численная проверка нечётности $f$ вокруг точки $c$])
 
