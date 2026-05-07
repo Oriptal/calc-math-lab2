@@ -1,0 +1,48 @@
+digraph Gauss {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input [label="Ввод: A (n×n), b (n)", shape=parallelogram, fillcolor="#f5f5f5"]
+  init  [label=<сохранить A, b\nкак A<SUB>0</SUB>, b<SUB>0</SUB>;\ndet = 1; sgn = +1>, shape=box]
+
+  iLoop [label=<для i = 0, … , n−1>, shape=diamond, fillcolor="#fff7d1"]
+  pivot [label=<найти строку k с max |a<SUB>k,i</SUB>|\nсреди i ≤ k &lt; n>, shape=box]
+  chkPivot [label=<|a<SUB>k,i</SUB>| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  setDetZero [label=<det = 0; пропустить шаг i>, shape=box]
+  chkSwap [label=<k ≠ i ?>, shape=diamond, fillcolor="#fff7d1"]
+  swap [label=<swap(A[i], A[k]);\nswap(b[i], b[k]);\nsgn = −sgn>, shape=box]
+  elim [label=<для j = i+1, … , n−1\nc = −a<SUB>j,i</SUB> / a<SUB>i,i</SUB>\nA[j] += c · A[i];\nb[j] += c · b[i]>, shape=box]
+
+  detComp [label=<det = sgn · ∏ a<SUB>i,i</SUB>>, shape=box]
+  chkDet [label=<|det| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  classify [label=<есть строка [0 … 0 | b<SUB>i</SUB> ≠ 0] ?>, shape=diamond, fillcolor="#fff7d1"]
+  noSol [label="Нет решений", shape=parallelogram, fillcolor="#fde2e2"]
+  infSol [label="Бесконечно много решений", shape=parallelogram, fillcolor="#fde2e2"]
+
+  back [label=<обратный ход:\nx[i] = (b[i] − Σ a<SUB>i,j</SUB> x[j]) / a<SUB>i,i</SUB>>, shape=box]
+  resid [label=<r = A<SUB>0</SUB> · x − b<SUB>0</SUB>>, shape=box]
+  output [label=<Вывод: x, det, r>, shape=parallelogram, fillcolor="#f5f5f5"]
+  stop  [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> iLoop
+  iLoop -> pivot [label="да"]
+  pivot -> chkPivot
+  chkPivot -> setDetZero [label="да"]
+  setDetZero -> iLoop
+  chkPivot -> chkSwap [label="нет"]
+  chkSwap -> swap [label="да"]
+  chkSwap -> elim [label="нет"]
+  swap -> elim
+  elim -> iLoop
+  iLoop -> detComp [label="нет"]
+  detComp -> chkDet
+  chkDet -> classify [label="да"]
+  classify -> noSol [label="да"]
+  classify -> infSol [label="нет"]
+  noSol -> stop
+  infSol -> stop
+  chkDet -> back [label="нет"]
+  back -> resid -> output -> stop
+}
