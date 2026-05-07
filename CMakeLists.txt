@@ -58,6 +58,7 @@ qt_add_qml_module(appHelloWorldQuickProject
         assets/integrand2.svg
         assets/integrand3.svg
         assets/integrand4.svg
+        assets/icon-256.png
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
