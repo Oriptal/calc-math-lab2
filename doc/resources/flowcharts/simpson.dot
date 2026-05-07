@@ -3,30 +3,24 @@ digraph Simpson {
   node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
-  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
-  input [label="Ввод: f(x), a, b, n", shape=parallelogram, fillcolor="#f5f5f5"]
-  chkEven [label=<n &gt; 0 и n чётно?>, shape=diamond, fillcolor="#fff7d1"]
-  err   [label="Ошибка: n нечётно\nили n ≤ 0", shape=parallelogram, fillcolor="#fde2e2"]
-  init  [label=<h = (b − a) / n<BR/>S = f(a) + f(b)<BR/>i = 1>, shape=box]
-  loop  [label=<i &lt; n?>, shape=diamond, fillcolor="#fff7d1"]
-  coef  [label=<i нечётно?>, shape=diamond, fillcolor="#fff7d1"]
-  four  [label=<S = S + 4·f(a + i·h)>, shape=box]
-  two   [label=<S = S + 2·f(a + i·h)>, shape=box]
-  incr  [label=<i = i + 1>, shape=box]
-  mul   [label=<I = S · h / 3>, shape=box]
-  output [label=<Вывод: I>, shape=parallelogram, fillcolor="#f5f5f5"]
-  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+  start   [label="Начало: SimpsonIntegrator::apply", shape=oval, fillcolor="#e6eefc"]
+  input   [label="Ввод: f(x), a, b, n (чётное)", shape=parallelogram, fillcolor="#f5f5f5"]
+  init    [label=<h = (b − a) / n<BR/>S = f(a) + f(b)<BR/>i = 1>, shape=box]
+  loop    [label=<i &lt; n?>, shape=diamond, fillcolor="#fff7d1"]
+  parity  [label=<i mod 2 == 0?>, shape=diamond, fillcolor="#fff7d1"]
+  even    [label=<S = S + 2 · f(a + i · h)>, shape=box]
+  odd     [label=<S = S + 4 · f(a + i · h)>, shape=box]
+  incr    [label=<i = i + 1>, shape=box]
+  mul     [label=<I = S · h / 3>, shape=box]
+  output  [label=<Вывод: I>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop    [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> chkEven
-  chkEven -> err [label="нет"]
-  err -> stop
-  chkEven -> init [label="да"]
-  init -> loop
-  loop -> coef [label="да"]
-  coef -> four [label="да"]
-  coef -> two [label="нет"]
-  four -> incr
-  two -> incr
+  start -> input -> init -> loop
+  loop -> parity [label="да"]
+  parity -> even [label="да"]
+  parity -> odd  [label="нет"]
+  even -> incr
+  odd  -> incr
   incr -> loop
   loop -> mul [label="нет"]
   mul -> output -> stop

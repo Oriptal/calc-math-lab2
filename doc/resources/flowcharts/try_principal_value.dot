@@ -1,0 +1,75 @@
+digraph TryPrincipalValue {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start [label="Начало: tryPrincipalValue", shape=oval, fillcolor="#e6eefc"]
+  input [label=<Ввод: integ, f, plan, eps>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init  [label=<acc = 0; nAcc = 0; rg = 0<BR/>usedPV = false<BR/>i = 0>, shape=box]
+
+  chkI [label=<i &lt; |plan.segments|?>, shape=diamond, fillcolor="#fff7d1"]
+  retSucc [label=<success = true<BR/>usedPV (как накоплено)<BR/>value = acc<BR/>n = nAcc<BR/>runge = rg>, shape=parallelogram, fillcolor="#fef3c7"]
+
+  segI [label="seg = plan.segments[i]", shape=box]
+  chkOrd [label=<¬seg.limit_at_from ∧<BR/>¬seg.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
+
+  callOrd [label=<inner = integ.rungeSolve(<BR/>f, seg.from, seg.to)>, shape=box, fillcolor="#e6eefc"]
+  chkOrdOk [label=<inner.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  retFailOrd [label=<success = false<BR/>(подотрезок не сошёлся)>, shape=parallelogram, fillcolor="#fde2e2"]
+  accOrd [label=<acc += inner.value<BR/>nAcc += inner.n<BR/>rg += inner.runge<BR/>i = i + 1>, shape=box]
+
+  chkPair [label=<i + 1 &lt; |plan.segments| ∧<BR/>seg.limit_at_to ∧<BR/>plan[i+1].limit_at_from ∧<BR/>|seg.to − plan[i+1].from| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  computeD [label=<c = seg.to<BR/>leftLen = c − seg.from<BR/>rightLen = plan[i+1].to − c<BR/>d = min(leftLen, rightLen)>, shape=box]
+  chkAnti [label=<d &gt; 0 ∧<BR/>isAntisymmetric(f, c, d)?<BR/>(см. отдельную блок-схему)>, shape=diamond, fillcolor="#fff7d1"]
+
+  leftTail [label=<Если leftLen &gt; d + 10<SUP>−15</SUP>:<BR/>интегрировать [seg.from, c − d]<BR/>(rungeSolve, либо limitAtEndpoint<BR/>при seg.limit_at_from)>, shape=box, fillcolor="#e6eefc"]
+  chkLeftOk [label=<хвостовой<BR/>подотрезок ok?>, shape=diamond, fillcolor="#fff7d1"]
+  retFailLT [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  rightTail [label=<Если rightLen &gt; d + 10<SUP>−15</SUP>:<BR/>интегрировать [c + d, plan[i+1].to]<BR/>(rungeSolve, либо limitAtEndpoint<BR/>при plan[i+1].limit_at_to)>, shape=box, fillcolor="#e6eefc"]
+  chkRightOk [label=<хвостовой<BR/>подотрезок ok?>, shape=diamond, fillcolor="#fff7d1"]
+  retFailRT [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  accPV [label=<acc += leftTail + rightTail<BR/>(подотрезок [c − d, c + d] зануляется<BR/>в смысле V.p.)<BR/>usedPV = true<BR/>i = i + 2>, shape=box, fillcolor="#fef3c7"]
+
+  fallback [label=<sr = computeSegmentStandard(<BR/>integ, f, seg, eps)<BR/>(см. отдельную блок-схему)>, shape=box, fillcolor="#e6eefc"]
+  chkFb [label=<sr.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
+  retFailFb [label=<success = false<BR/>(несобственный<BR/>подотрезок расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  accFb [label=<acc += sr.value<BR/>nAcc += sr.n<BR/>rg += sr.runge<BR/>i = i + 1>, shape=box]
+
+  stop [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chkI
+  chkI -> retSucc [label="нет"]
+  retSucc -> stop
+  chkI -> segI [label="да"]
+  segI -> chkOrd
+  chkOrd -> callOrd [label="да"]
+  callOrd -> chkOrdOk
+  chkOrdOk -> retFailOrd [label="нет"]
+  retFailOrd -> stop
+  chkOrdOk -> accOrd [label="да"]
+  accOrd -> chkI
+
+  chkOrd -> chkPair [label="нет"]
+  chkPair -> computeD [label="да"]
+  computeD -> chkAnti
+  chkAnti -> leftTail [label="да"]
+  leftTail -> chkLeftOk
+  chkLeftOk -> retFailLT [label="нет"]
+  retFailLT -> stop
+  chkLeftOk -> rightTail [label="да"]
+  rightTail -> chkRightOk
+  chkRightOk -> retFailRT [label="нет"]
+  retFailRT -> stop
+  chkRightOk -> accPV [label="да"]
+  accPV -> chkI
+
+  chkAnti -> fallback [label="нет"]
+  chkPair -> fallback [label="нет"]
+  fallback -> chkFb
+  chkFb -> retFailFb [label="нет"]
+  retFailFb -> stop
+  chkFb -> accFb [label="да"]
+  accFb -> chkI
+}
