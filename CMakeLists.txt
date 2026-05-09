@@ -47,6 +47,7 @@ qt_add_qml_module(appHelloWorldQuickProject
         components/MyButton.qml
         components/MyRect.qml
         components/MyText.qml
+        components/MyTextField.qml
         components/NavButton.qml
     RESOURCES
         assets/equation0.svg

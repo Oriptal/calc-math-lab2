@@ -223,18 +223,14 @@ RowLayout {
                             Repeater {
                                 model: rect.currentSize
 
-                                delegate: TextField {
-                                    id: matrixCell
+                                delegate: MyTextField {
                                     required property int index
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 32
                                     text: rect.matrixValues[matrixRow.index] && rect.matrixValues[matrixRow.index][index] !== undefined ? rect.matrixValues[matrixRow.index][index] : ""
                                     placeholderText: "0"
-                                    color: Theme.textMain
                                     font.pixelSize: 13
-                                    font.family: "JetbrainsMono Nerd Font"
                                     horizontalAlignment: TextInput.AlignHCenter
-                                    selectByMouse: true
 
                                     validator: RegularExpressionValidator {
                                         regularExpression: /-?\d*([.,]\d*)?/
@@ -246,19 +242,6 @@ RowLayout {
                                         m[matrixRow.index][index] = text;
                                         rect.matrixValues = m;
                                     }
-
-                                    background: Rectangle {
-                                        radius: 3
-                                        color: Theme.bg
-                                        border.width: 1
-                                        border.color: matrixCell.activeFocus ? Theme.accent : Theme.border
-
-                                        Behavior on border.color {
-                                            ColorAnimation {
-                                                duration: 200
-                                            }
-                                        }
-                                    }
                                 }
                             }
 
@@ -269,17 +252,13 @@ RowLayout {
                                 Layout.alignment: Qt.AlignVCenter
                             }
 
-                            TextField {
-                                id: augCell
+                            MyTextField {
                                 Layout.preferredWidth: 60
                                 Layout.preferredHeight: 32
                                 text: rect.augmentationValues[matrixRow.index] !== undefined ? rect.augmentationValues[matrixRow.index] : ""
                                 placeholderText: "b"
-                                color: Theme.textMain
                                 font.pixelSize: 13
-                                font.family: "JetbrainsMono Nerd Font"
                                 horizontalAlignment: TextInput.AlignHCenter
-                                selectByMouse: true
 
                                 validator: RegularExpressionValidator {
                                     regularExpression: /-?\d*([.,]\d*)?/
@@ -289,19 +268,6 @@ RowLayout {
                                     const a = rect.augmentationValues.slice();
                                     a[matrixRow.index] = text;
                                     rect.augmentationValues = a;
-                                }
-
-                                background: Rectangle {
-                                    radius: 3
-                                    color: Theme.bg
-                                    border.width: 1
-                                    border.color: augCell.activeFocus ? Theme.accent : Theme.border
-
-                                    Behavior on border.color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
                                 }
                             }
                         }
