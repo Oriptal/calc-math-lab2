@@ -34,7 +34,6 @@ Item {
         hoverColor: Qt.lighter(Theme.bg, 1.5)
         textNormalColor: parent.active ? Theme.surface : Theme.textMain
         anchors.fill: parent
-        anchors.verticalCenter: parent.verticalCenter
         onClicked: root.clicked()
     }
 }
