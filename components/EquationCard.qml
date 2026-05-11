@@ -10,8 +10,6 @@ NavButton {
         anchors.left: parent.left
         anchors.leftMargin: 20
         anchors.verticalCenter: parent.verticalCenter
-        sourceSize.width: 200
-        sourceSize.height: 60
         visible: false
     }
 
