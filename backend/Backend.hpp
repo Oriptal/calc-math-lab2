@@ -1,6 +1,7 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
+#include "ApproximationModule.hpp"
 #include "GaussModule.hpp"
 #include "IntegrationModule.hpp"
 #include "RootModule.hpp"
@@ -69,6 +70,18 @@ public:
 
   Q_INVOKABLE QVariantMap generateLinearSystem(qint32 size) const {
     return GaussModule::generate(size);
+  }
+
+  Q_INVOKABLE QVariantMap approximate(const QVariantMap &payload) const {
+    return ApproximationModule::approximate(payload);
+  }
+
+  Q_INVOKABLE QVariantList sampleApproximation(const QString &kind,
+                                               const QVariantList &coeffs,
+                                               qreal xMin, qreal xMax,
+                                               qint32 points) const {
+    return ApproximationModule::sampleApproximation(kind, coeffs, xMin, xMax,
+                                                    points);
   }
 };
 
