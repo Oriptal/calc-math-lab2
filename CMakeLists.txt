@@ -136,6 +136,8 @@ add_library(calc_core
     calc/integrators.cpp
     calc/Gauss.hpp
     calc/gauss.cpp
+    calc/Approximation.hpp
+    calc/approximation.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
