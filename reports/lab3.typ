@@ -323,6 +323,10 @@ $ integral_a^b f(x) d x = lim_(sigma arrow.r +0) integral_(a + sigma)^b f(x) d x
 
 #raw(read("../calc/integrators.cpp"), lang: "cpp", block: true)
 
+== Интерфейс приложения
+
+#figure(image("resources/lab3_app.png", width: 100%), caption: [Внешний вид вкладки «Интегрирование» в приложении])
+
 Полный исходный код проекта (Qt6/QML/C++ десктоп-приложение) доступен в репозитории:
 
 #align(center)[#link("https://git.oriptal.dev/cadmin/calc-math-lab2")[`git.oriptal.dev/cadmin/calc-math-lab2`]]
