@@ -440,8 +440,13 @@ RowLayout {
                         spacing: 6
 
                         Text {
-                            width: 20
-                            text: ""
+                            width: 60
+                            text: "График"
+                            color: Theme.textMain
+                            font.bold: true
+                            font.family: "JetbrainsMono Nerd Font"
+                            font.pixelSize: 13
+                            horizontalAlignment: Text.AlignHCenter
                         }
                         Text {
                             width: 110
@@ -452,7 +457,7 @@ RowLayout {
                             font.pixelSize: 13
                         }
                         Text {
-                            width: 240
+                            width: 200
                             text: "Формула"
                             color: Theme.textMain
                             font.bold: true
@@ -506,31 +511,51 @@ RowLayout {
                     }
 
                     delegate: Row {
+                        id: methodRow
                         required property var modelData
                         required property int index
                         width: methodsList.width
                         spacing: 6
                         readonly property bool isOk: modelData.status === "ok"
                         readonly property bool isBest: index === rect.bestIndex
+                        readonly property bool curveVisible: rect.isKindVisible(modelData.kind)
+                        readonly property color curveColor: rect.methodColor(modelData.kind)
 
                         Item {
-                            width: 20
-                            height: 20
+                            width: 60
+                            height: 26
 
                             Rectangle {
+                                id: toggleBtn
                                 anchors.centerIn: parent
-                                width: 14
-                                height: 14
-                                radius: 3
-                                color: parent.parent.isOk && rect.isKindVisible(parent.parent.modelData.kind) ? rect.methodColor(parent.parent.modelData.kind) : "transparent"
-                                border.width: 1
-                                border.color: parent.parent.isOk ? rect.methodColor(parent.parent.modelData.kind) : Theme.textDimmed
+                                width: 54
+                                height: 24
+                                radius: 5
+                                color: methodRow.curveVisible ? methodRow.curveColor : "transparent"
+                                border.color: methodRow.isOk ? methodRow.curveColor : Theme.textDimmed
+                                border.width: 1.5
+                                opacity: methodRow.isOk ? (toggleArea.containsMouse ? 0.82 : 1.0) : 0.4
+                                scale: toggleArea.containsMouse ? 1.06 : 1.0
+                                Behavior on scale { NumberAnimation { duration: 120 } }
+                                Behavior on color { ColorAnimation { duration: 120 } }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: methodRow.isOk ? (methodRow.curveVisible ? "вкл" : "выкл") : "—"
+                                    color: methodRow.curveVisible ? "#ffffff" : (methodRow.isOk ? methodRow.curveColor : Theme.textDimmed)
+                                    font.family: "JetbrainsMono Nerd Font"
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                }
+
                                 MouseArea {
+                                    id: toggleArea
                                     anchors.fill: parent
-                                    enabled: parent.parent.parent.isOk
+                                    hoverEnabled: true
+                                    enabled: methodRow.isOk
+                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                                     onClicked: {
-                                        const k = parent.parent.parent.modelData.kind;
-                                        rect.setKindVisible(k, !rect.isKindVisible(k));
+                                        rect.setKindVisible(methodRow.modelData.kind, !methodRow.curveVisible);
                                         graphView.refresh();
                                     }
                                 }
@@ -539,60 +564,67 @@ RowLayout {
 
                         Text {
                             width: 110
-                            text: parent.modelData.shortTitle + (parent.isBest ? " ★" : "")
-                            color: parent.isBest ? "#16A34A" : (parent.isOk ? Theme.textMain : Theme.textDimmed)
+                            text: methodRow.modelData.shortTitle + (methodRow.isBest ? " ★" : "")
+                            color: methodRow.isBest ? "#16A34A" : (methodRow.isOk ? Theme.textMain : Theme.textDimmed)
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 13
-                            font.bold: parent.isBest
+                            font.bold: methodRow.isBest
                             elide: Text.ElideRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 240
-                            text: parent.isOk ? parent.modelData.formula : parent.modelData.statusMessage
-                            color: parent.isOk ? Theme.accent : "#D97706"
+                            width: 200
+                            text: methodRow.isOk ? methodRow.modelData.formula : methodRow.modelData.statusMessage
+                            color: methodRow.isOk ? Theme.accent : "#D97706"
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             elide: Text.ElideRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             width: 80
-                            text: parent.isOk ? Number(parent.modelData.S).toExponential(2) : "—"
+                            text: methodRow.isOk ? Number(methodRow.modelData.S).toExponential(2) : "—"
                             color: Theme.textMain
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             width: 80
-                            text: parent.isOk ? Number(parent.modelData.delta).toFixed(4) : "—"
+                            text: methodRow.isOk ? Number(methodRow.modelData.delta).toFixed(4) : "—"
                             color: Theme.textMain
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             width: 70
-                            text: parent.isOk ? Number(parent.modelData.r2).toFixed(4) : "—"
+                            text: methodRow.isOk ? Number(methodRow.modelData.r2).toFixed(4) : "—"
                             color: Theme.textMain
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             width: 70
-                            text: parent.modelData.pearson !== null && parent.modelData.pearson !== undefined ? Number(parent.modelData.pearson).toFixed(4) : "—"
+                            text: methodRow.modelData.pearson !== null && methodRow.modelData.pearson !== undefined ? Number(methodRow.modelData.pearson).toFixed(4) : "—"
                             color: Theme.textDimmed
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             width: 160
-                            text: parent.isOk ? parent.modelData.r2Verdict : "—"
-                            color: parent.isOk ? Theme.textMain : Theme.textDimmed
+                            text: methodRow.isOk ? methodRow.modelData.r2Verdict : "—"
+                            color: methodRow.isOk ? Theme.textMain : Theme.textDimmed
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             elide: Text.ElideRight
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
                 }
