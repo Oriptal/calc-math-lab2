@@ -1,0 +1,36 @@
+digraph LSPoly {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: fitPoly(m)", shape=oval, fillcolor="#e6eefc"]
+  input  [label="Ввод: x[1..n], y[1..n], n, m", shape=parallelogram, fillcolor="#f5f5f5"]
+  zero1  [label=<sumPow[0..2m] = 0<BR/>sumXky[0..m] = 0<BR/>i = 1>, shape=box]
+  loop1  [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
+  init2  [label=<xp = 1<BR/>k = 0>, shape=box]
+  loop2  [label=<k ≤ 2 · m?>, shape=diamond, fillcolor="#fff7d1"]
+  acc    [label=<sumPow[k] = sumPow[k] + xp<BR/>если k ≤ m: sumXky[k] = sumXky[k] + xp · y<SUB>i</SUB><BR/>xp = xp · x<SUB>i</SUB><BR/>k = k + 1>, shape=box]
+  next1  [label=<i = i + 1>, shape=box]
+  build  [label=<A<SUB>j,k</SUB> = sumPow[j + k]<BR/>b<SUB>j</SUB> = sumXky[j]<BR/>для j, k = 0..m>, shape=box]
+  gauss  [label="Вызов GaussSolver::solve(A, b)", shape=box, fillcolor="#eef2ff"]
+  check  [label=<статус = Единственное решение?>, shape=diamond, fillcolor="#fff7d1"]
+  degen  [label="Вырождена", shape=parallelogram, fillcolor="#fde2e2"]
+  setc   [label=<a<SUB>0</SUB>, a<SUB>1</SUB>, …, a<SUB>m</SUB> = решение>, shape=box]
+  stats  [label="Вызов fillResidualsAndStats(a)", shape=box, fillcolor="#eef2ff"]
+  output [label=<Вывод: a<SUB>0</SUB>, …, a<SUB>m</SUB>, S, δ, R²>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> zero1 -> loop1
+  loop1 -> init2 [label="да"]
+  init2 -> loop2
+  loop2 -> acc [label="да"]
+  acc -> loop2
+  loop2 -> next1 [label="нет"]
+  next1 -> loop1
+  loop1 -> build [label="нет"]
+  build -> gauss -> check
+  check -> degen [label="нет"]
+  degen -> stop
+  check -> setc [label="да"]
+  setc -> stats -> output -> stop
+}

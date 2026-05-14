@@ -1,0 +1,35 @@
+digraph LSStats {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: fillResidualsAndStats", shape=oval, fillcolor="#e6eefc"]
+  input  [label="Ввод: коэффициенты, x[1..n], y[1..n], n", shape=parallelogram, fillcolor="#f5f5f5"]
+  z1     [label=<S = 0<BR/>SY = 0<BR/>i = 1>, shape=box]
+  loop1  [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
+  body1  [label=<φ<SUB>i</SUB> = phiAt(x<SUB>i</SUB>)<BR/>ε<SUB>i</SUB> = φ<SUB>i</SUB> − y<SUB>i</SUB><BR/>S = S + ε<SUB>i</SUB> · ε<SUB>i</SUB><BR/>SY = SY + y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
+  meany  [label=<ȳ = SY / n<BR/>SST = 0<BR/>i = 1>, shape=box]
+  loop2  [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
+  body2  [label=<d = y<SUB>i</SUB> − ȳ<BR/>SST = SST + d · d<BR/>i = i + 1>, shape=box]
+  rms    [label=<δ = √(S / n)>, shape=box]
+  chk    [label=<SST &lt; ε?>, shape=diamond, fillcolor="#fff7d1"]
+  r2a    [label=<R² = (S &lt; ε ? 1 : 0)>, shape=box]
+  r2b    [label=<R² = 1 − S / SST>, shape=box]
+  output [label=<Вывод: φ[1..n], ε[1..n], S, δ, R²>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> z1 -> loop1
+  loop1 -> body1 [label="да"]
+  body1 -> loop1
+  loop1 -> meany [label="нет"]
+  meany -> loop2
+  loop2 -> body2 [label="да"]
+  body2 -> loop2
+  loop2 -> rms [label="нет"]
+  rms -> chk
+  chk -> r2a [label="да"]
+  chk -> r2b [label="нет"]
+  r2a -> output
+  r2b -> output
+  output -> stop
+}
