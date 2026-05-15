@@ -668,6 +668,8 @@ RowLayout {
                     expSeries.clear();
                     logSeries.clear();
                     powerSeries.clear();
+                    axisXLine.clear();
+                    axisYLine.clear();
 
                     if (!rect.hasResult || rect.statusKey !== "ok") {
                         return;
@@ -731,6 +733,16 @@ RowLayout {
                     const yPad = (maxY - minY) * 0.1;
                     graphView.plotMinY = minY - yPad;
                     graphView.plotMaxY = maxY + yPad;
+
+                    // Оси Ox и Oy: проводим только если 0 попадает в видимый диапазон.
+                    if (graphView.plotMinY <= 0 && graphView.plotMaxY >= 0) {
+                        axisXLine.append(xLo, 0);
+                        axisXLine.append(xHi, 0);
+                    }
+                    if (graphView.plotMinX <= 0 && graphView.plotMaxX >= 0) {
+                        axisYLine.append(0, graphView.plotMinY);
+                        axisYLine.append(0, graphView.plotMaxY);
+                    }
                 }
 
                 ValueAxis {
@@ -752,6 +764,22 @@ RowLayout {
                     color: Theme.border
                     tickCount: 9
                     titleText: "y"
+                }
+                LineSeries {
+                    id: axisXLine
+                    axisX: axisX
+                    axisY: axisY
+                    color: Theme.textDimmed
+                    width: 1.2
+                    style: Qt.DashLine
+                }
+                LineSeries {
+                    id: axisYLine
+                    axisX: axisX
+                    axisY: axisY
+                    color: Theme.textDimmed
+                    width: 1.2
+                    style: Qt.DashLine
                 }
                 ScatterSeries {
                     id: pointSeries
