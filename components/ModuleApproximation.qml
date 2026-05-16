@@ -48,21 +48,87 @@ RowLayout {
             rect.hasResult = false;
         }
 
-        // Случайные точки около заданной функции варианта №5:
-        // y = 6x / (x⁴ + 5) на [0, 2], с шумом ±5%.
+        // Случайные точки на [0, 2]: каждый вызов выбирает один из семи
+        // архетипов функции со случайными параметрами и добавляет шум
+        // амплитудой ±15% от диапазона значений базовой функции.
         function generateRandom() {
             const n = rect.currentSize;
+            const xLo = 0;
+            const xHi = 2;
+            const h = (xHi - xLo) / (n - 1);
+
+            const archetypes = [
+                // Семейство варианта №5: пик в [0, 2], спад справа
+                () => {
+                    const aa = 4 + Math.random() * 5;
+                    const cc = 3 + Math.random() * 4;
+                    return (x) => aa * x / (x * x * x * x + cc);
+                },
+                // Линейная: рост или спад
+                () => {
+                    const aa = (Math.random() - 0.3) * 3;
+                    const bb = Math.random() * 1.5;
+                    return (x) => aa * x + bb;
+                },
+                // Парабола (вершина в случайной точке, вверх или вниз)
+                () => {
+                    const pp = -0.5 + Math.random() * 3;
+                    const qq = Math.random() * 1.5;
+                    const aa = (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 1.2);
+                    return (x) => aa * (x - pp) * (x - pp) + qq;
+                },
+                // Экспонента (рост или затухание)
+                () => {
+                    const aa = 0.3 + Math.random();
+                    const bb = (Math.random() - 0.4) * 2.5;
+                    return (x) => aa * Math.exp(bb * x);
+                },
+                // Логарифмо-подобная (с положительным смещением, чтобы x=0 был валиден)
+                () => {
+                    const aa = 0.5 + Math.random() * 1.5;
+                    const bb = Math.random();
+                    const shift = 0.2 + Math.random() * 0.5;
+                    return (x) => aa * Math.log(x + shift) + bb;
+                },
+                // Степенная (со сдвигом x на 0.1 для устойчивости в нуле)
+                () => {
+                    const aa = 0.3 + Math.random() * 1.5;
+                    const bb = 0.3 + Math.random() * 2;
+                    return (x) => aa * Math.pow(x + 0.1, bb);
+                },
+                // Синусо-подобная (1–2 периода на интервале)
+                () => {
+                    const aa = 0.4 + Math.random() * 0.8;
+                    const bb = 1 + Math.random() * 3;
+                    const cc = Math.random() * Math.PI * 2;
+                    const dd = (Math.random() - 0.3) * 1.5;
+                    return (x) => aa * Math.sin(bb * x + cc) + dd;
+                }
+            ];
+
+            const fn = archetypes[Math.floor(Math.random() * archetypes.length)]();
+
+            const baseY = [];
+            let minY = Number.POSITIVE_INFINITY;
+            let maxY = Number.NEGATIVE_INFINITY;
+            for (let i = 0; i < n; ++i) {
+                const x = xLo + i * h;
+                const y = fn(x);
+                baseY.push(y);
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+
+            const range = Math.max(maxY - minY, 0.5);
+            const noiseAmp = range * 0.15;
+
             const nx = [];
             const ny = [];
-            const a = 0;
-            const b = 2;
-            const h = (b - a) / (n - 1);
             for (let i = 0; i < n; ++i) {
-                const x = a + i * h;
-                const baseY = 6 * x / (x * x * x * x + 5);
-                const noise = (Math.random() - 0.5) * 0.1 * Math.max(baseY, 0.05);
+                const x = xLo + i * h;
+                const noise = (Math.random() - 0.5) * 2 * noiseAmp;
                 nx.push(x.toFixed(3));
-                ny.push((baseY + noise).toFixed(4));
+                ny.push((baseY[i] + noise).toFixed(4));
             }
             rect.xValues = nx;
             rect.yValues = ny;
