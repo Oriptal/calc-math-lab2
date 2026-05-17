@@ -48,9 +48,6 @@ RowLayout {
             rect.hasResult = false;
         }
 
-        // Случайные точки на [0, 2]: каждый вызов выбирает один из семи
-        // архетипов функции со случайными параметрами и добавляет шум
-        // амплитудой ±15% от диапазона значений базовой функции.
         function generateRandom() {
             const n = rect.currentSize;
             const xLo = 0;
@@ -58,45 +55,38 @@ RowLayout {
             const h = (xHi - xLo) / (n - 1);
 
             const archetypes = [
-                // Семейство варианта №5: пик в [0, 2], спад справа
                 () => {
                     const aa = 4 + Math.random() * 5;
                     const cc = 3 + Math.random() * 4;
                     return (x) => aa * x / (x * x * x * x + cc);
                 },
-                // Линейная: рост или спад
                 () => {
                     const aa = (Math.random() - 0.3) * 3;
                     const bb = Math.random() * 1.5;
                     return (x) => aa * x + bb;
                 },
-                // Парабола (вершина в случайной точке, вверх или вниз)
                 () => {
                     const pp = -0.5 + Math.random() * 3;
                     const qq = Math.random() * 1.5;
                     const aa = (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 1.2);
                     return (x) => aa * (x - pp) * (x - pp) + qq;
                 },
-                // Экспонента (рост или затухание)
                 () => {
                     const aa = 0.3 + Math.random();
                     const bb = (Math.random() - 0.4) * 2.5;
                     return (x) => aa * Math.exp(bb * x);
                 },
-                // Логарифмо-подобная (с положительным смещением, чтобы x=0 был валиден)
                 () => {
                     const aa = 0.5 + Math.random() * 1.5;
                     const bb = Math.random();
                     const shift = 0.2 + Math.random() * 0.5;
                     return (x) => aa * Math.log(x + shift) + bb;
                 },
-                // Степенная (со сдвигом x на 0.1 для устойчивости в нуле)
                 () => {
                     const aa = 0.3 + Math.random() * 1.5;
                     const bb = 0.3 + Math.random() * 2;
                     return (x) => aa * Math.pow(x + 0.1, bb);
                 },
-                // Синусо-подобная (1–2 периода на интервале)
                 () => {
                     const aa = 0.4 + Math.random() * 0.8;
                     const bb = 1 + Math.random() * 3;
@@ -387,7 +377,6 @@ RowLayout {
                     rect.xMax = response.xMax;
                     rect.bestIndex = response.best;
                     rect.bestMessage = response.bestMessage;
-                    // По умолчанию показываем лучшую модель + первые две полиномиальные.
                     const v = {};
                     for (let i = 0; i < rect.methods.length; ++i) {
                         const m = rect.methods[i];
@@ -800,7 +789,6 @@ RowLayout {
                     graphView.plotMinY = minY - yPad;
                     graphView.plotMaxY = maxY + yPad;
 
-                    // Оси Ox и Oy: проводим только если 0 попадает в видимый диапазон.
                     if (graphView.plotMinY <= 0 && graphView.plotMaxY >= 0) {
                         axisXLine.append(xLo, 0);
                         axisXLine.append(xHi, 0);

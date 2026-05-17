@@ -110,9 +110,6 @@ struct LinearFit {
   double intercept = 0.0;
 };
 
-// Линейная регрессия по правилу Крамера в координатах (xs, ys):
-// решает aSXX + bSX = SXY, aSX + bn = SY относительно (a — наклон, b —
-// свободный член), возвращая ok=false при вырожденной системе.
 LinearFit linearCramer(const std::vector<double> &xs,
                        const std::vector<double> &ys) {
   LinearFit out;
@@ -175,7 +172,6 @@ Result fitPolyKind(Kind kind, int degree, const std::vector<Point> &data) {
   res.kind = kind;
 
   const int m = degree + 1;
-  // Степенные суммы x^k нужны до 2*degree включительно.
   std::vector<double> sumPow(2 * degree + 1, 0.0);
   std::vector<double> sumXky(m, 0.0);
 
