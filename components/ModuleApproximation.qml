@@ -110,7 +110,7 @@ RowLayout {
             }
 
             const range = Math.max(maxY - minY, 0.5);
-            const noiseAmp = range * 0.15;
+            const noiseAmp = range * noiseSlider.value;
 
             const noisy = [];
             let noisyMin = Number.POSITIVE_INFINITY;
@@ -334,6 +334,74 @@ RowLayout {
                             }
                         }
                     }
+                }
+            }
+
+            MyRect {
+                height: 50
+                width: parent.width
+                border.color: "transparent"
+                MyText {
+                    text: "Уровень шума"
+                }
+            }
+
+            Item {
+                width: parent.width - 40
+                height: 28
+                x: 20
+
+                Slider {
+                    id: noiseSlider
+                    anchors.left: parent.left
+                    anchors.right: noiseLabel.left
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: 0
+                    to: 0.40
+                    value: 0.15
+                    stepSize: 0.01
+
+                    background: Rectangle {
+                        x: noiseSlider.leftPadding
+                        y: noiseSlider.topPadding + noiseSlider.availableHeight / 2 - height / 2
+                        implicitWidth: 200
+                        implicitHeight: 4
+                        width: noiseSlider.availableWidth
+                        height: implicitHeight
+                        radius: 2
+                        color: Theme.border
+
+                        Rectangle {
+                            width: noiseSlider.visualPosition * parent.width
+                            height: parent.height
+                            color: Theme.accent
+                            radius: 2
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: noiseSlider.leftPadding + noiseSlider.visualPosition * (noiseSlider.availableWidth - width)
+                        y: noiseSlider.topPadding + noiseSlider.availableHeight / 2 - height / 2
+                        implicitWidth: 16
+                        implicitHeight: 16
+                        radius: 8
+                        color: noiseSlider.pressed ? Theme.textMain : Theme.accent
+                        border.color: "#ffffff"
+                        border.width: 1
+                    }
+                }
+
+                Text {
+                    id: noiseLabel
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Math.round(noiseSlider.value * 100) + "%"
+                    color: Theme.textMain
+                    font.family: "JetbrainsMono Nerd Font"
+                    font.pixelSize: 14
+                    width: 48
+                    horizontalAlignment: Text.AlignRight
                 }
             }
         }
