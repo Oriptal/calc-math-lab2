@@ -1,6 +1,6 @@
 #pragma once
 
-#include "calc/Integrators.hpp"
+#include "../calc/Integrators.hpp"
 
 #include <QString>
 #include <QVariantList>

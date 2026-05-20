@@ -1,6 +1,6 @@
 #pragma once
 
-#include "calc/Solvers.hpp"
+#include "../calc/Solvers.hpp"
 
 #include <QString>
 #include <QVariantList>
