@@ -490,9 +490,12 @@ RowLayout {
             }
 
             RowLayout {
+                id: resultsRow
                 visible: rect.hasResult && rect.solution.length > 0
                 Layout.fillWidth: true
                 spacing: 12
+
+                readonly property real blockHeight: Math.max(solutionColumn.implicitHeight, residualsColumn.implicitHeight) + 20
 
                 ColumnLayout {
                     Layout.fillWidth: true
@@ -510,7 +513,7 @@ RowLayout {
 
                     MyRect {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: solutionColumn.implicitHeight + 20
+                        Layout.preferredHeight: resultsRow.blockHeight
                         color: Theme.bg
 
                         Column {
@@ -527,7 +530,7 @@ RowLayout {
                                     required property int index
                                     text: "x[" + (index + 1) + "] = " + rect.formattedNumber(Number(modelData))
                                     color: Theme.accent
-                                    font.pixelSize: 15
+                                    font.pixelSize: 14
                                     font.bold: true
                                     font.family: "JetbrainsMono Nerd Font"
                                 }
@@ -552,7 +555,7 @@ RowLayout {
 
                     MyRect {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: residualsColumn.implicitHeight + 20
+                        Layout.preferredHeight: resultsRow.blockHeight
                         color: Theme.bg
 
                         Column {
