@@ -246,8 +246,7 @@ RowLayout {
                         font.family: "JetbrainsMono Nerd Font"
                     }
 
-                    TextField {
-                        id: textField
+                    MyTextField {
                         text: mainColumn.borderValues[parent.modelData.key]
                         Layout.preferredHeight: 40
                         Layout.fillWidth: true
@@ -258,24 +257,7 @@ RowLayout {
                             regularExpression: /-?\d*([.,]\d*)?/
                         }
 
-                        function numericValue() {
-                            return Number(text.replace(",", "."));
-                        }
-
                         onTextEdited: mainColumn.borderValues[parent.modelData.key] = text
-
-                        background: Rectangle {
-                            radius: 3
-                            color: Theme.bg
-                            border.width: 1
-                            border.color: textField.activeFocus ? Theme.accent : Theme.border
-
-                            Behavior on border.color {
-                                ColorAnimation {
-                                    duration: 200
-                                }
-                            }
-                        }
                     }
                 }
             }
