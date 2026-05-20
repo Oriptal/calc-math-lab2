@@ -23,6 +23,8 @@ qt_add_executable(appHelloWorldQuickProject
     backend/SystemModule.cpp
     backend/IntegrationModule.hpp
     backend/IntegrationModule.cpp
+    backend/GaussModule.hpp
+    backend/GaussModule.cpp
 )
 
 set_source_files_properties(Theme.qml PROPERTIES
@@ -130,6 +132,8 @@ add_library(calc_core
     calc/solver.cpp
     calc/Integrators.hpp
     calc/integrators.cpp
+    calc/Gauss.hpp
+    calc/gauss.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

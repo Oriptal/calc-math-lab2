@@ -1,6 +1,7 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
+#include "GaussModule.hpp"
 #include "IntegrationModule.hpp"
 #include "RootModule.hpp"
 #include "SystemModule.hpp"
@@ -60,6 +61,14 @@ public:
 
   Q_INVOKABLE QVariantList integrandDiscontinuities(qint32 functionId) const {
     return IntegrationModule::integrandDiscontinuities(functionId);
+  }
+
+  Q_INVOKABLE QVariantMap solveLinearSystem(const QVariantMap &payload) const {
+    return GaussModule::solve(payload);
+  }
+
+  Q_INVOKABLE QVariantMap generateLinearSystem(qint32 size) const {
+    return GaussModule::generate(size);
   }
 };
 
