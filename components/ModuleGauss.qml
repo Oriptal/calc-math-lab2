@@ -11,7 +11,8 @@ RowLayout {
     MyRect {
         id: rect
         Layout.fillHeight: true
-        Layout.preferredWidth: 360
+        Layout.preferredWidth: 350
+
         property int currentSize: 3
         property int resultStatus: -1
         property bool hasResult: false
@@ -38,11 +39,9 @@ RowLayout {
         }
 
         function makeEmptyAugmentation(n) {
-            const out = [];
-            for (let i = 0; i < n; ++i) {
-                out.push("");
-            }
-            return out;
+            return Array.from({
+                length: n
+            }, () => "");
         }
 
         function statusText(status) {
@@ -138,201 +137,201 @@ RowLayout {
             id: backend
         }
 
-        ScrollView {
-            anchors.fill: parent
-            clip: true
+        Column {
+            id: mainColumn
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 5
+            spacing: 10
+
+            MyRect {
+                height: 50
+                width: parent.width
+                border.color: "transparent"
+
+                MyText {
+                    text: "Размерность"
+                }
+            }
+
+            Item {
+                width: parent.width - 40
+                height: 40
+                x: 20
+
+                MyButton {
+                    text: "−"
+                    width: 40
+                    height: 40
+                    anchors.left: parent.left
+                    leftAligned: false
+                    bold: true
+                    textNormalColor: Theme.textMain
+                    textHoverColor: Theme.textDimmed
+                    onClicked: rect.resizeTo(rect.currentSize - 1)
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "n = " + rect.currentSize
+                    color: Theme.textMain
+                    font.pixelSize: 20
+                    font.family: "JetbrainsMono Nerd Font"
+                }
+
+                MyButton {
+                    text: "+"
+                    width: 40
+                    height: 40
+                    anchors.right: parent.right
+                    leftAligned: false
+                    bold: true
+                    textNormalColor: Theme.textMain
+                    textHoverColor: Theme.textDimmed
+                    onClicked: rect.resizeTo(rect.currentSize + 1)
+                }
+            }
+
+            MyRect {
+                height: 50
+                width: parent.width
+                border.color: "transparent"
+
+                MyText {
+                    text: "Матрица [A | b]"
+                }
+            }
 
             Column {
-                id: mainColumn
-                width: rect.width - 4
-                spacing: 10
-                padding: 5
+                id: matrixBlock
+                width: parent.width - 40
+                x: 20
+                spacing: 4
 
-                MyRect {
-                    height: 50
-                    width: parent.width - 10
-                    border.color: "transparent"
+                Repeater {
+                    model: rect.currentSize
 
-                    MyText {
-                        text: "Размерность"
-                    }
-                }
+                    delegate: RowLayout {
+                        id: matrixRow
+                        required property int index
+                        width: matrixBlock.width
+                        spacing: 3
 
-                RowLayout {
-                    width: parent.width - 30
-                    x: 15
-                    spacing: 8
+                        Repeater {
+                            model: rect.currentSize
 
-                    MyButton {
-                        text: "−"
-                        Layout.preferredWidth: 40
-                        Layout.preferredHeight: 40
-                        leftAligned: false
-                        bold: true
-                        textNormalColor: Theme.textMain
-                        textHoverColor: Theme.textDimmed
-                        onClicked: rect.resizeTo(rect.currentSize - 1)
-                    }
-
-                    Text {
-                        text: "n = " + rect.currentSize
-                        color: Theme.textMain
-                        font.pixelSize: 20
-                        font.family: "JetbrainsMono Nerd Font"
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                        Layout.fillWidth: true
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-
-                    MyButton {
-                        text: "+"
-                        Layout.preferredWidth: 40
-                        Layout.preferredHeight: 40
-                        leftAligned: false
-                        bold: true
-                        textNormalColor: Theme.textMain
-                        textHoverColor: Theme.textDimmed
-                        onClicked: rect.resizeTo(rect.currentSize + 1)
-                    }
-                }
-
-                MyRect {
-                    height: 50
-                    width: parent.width - 10
-                    border.color: "transparent"
-
-                    MyText {
-                        text: "Матрица [A | b]"
-                    }
-                }
-
-                Column {
-                    width: parent.width - 30
-                    x: 15
-                    spacing: 4
-
-                    Repeater {
-                        model: rect.currentSize
-
-                        delegate: RowLayout {
-                            id: matrixRow
-                            required property int index
-                            width: parent.width
-                            spacing: 3
-
-                            Repeater {
-                                model: rect.currentSize
-
-                                delegate: MyTextField {
-                                    required property int index
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 32
-                                    text: rect.matrixValues[matrixRow.index] && rect.matrixValues[matrixRow.index][index] !== undefined ? rect.matrixValues[matrixRow.index][index] : ""
-                                    placeholderText: "0"
-                                    font.pixelSize: 13
-                                    horizontalAlignment: TextInput.AlignHCenter
-
-                                    validator: RegularExpressionValidator {
-                                        regularExpression: /-?\d*([.,]\d*)?/
-                                    }
-
-                                    onTextEdited: {
-                                        const m = rect.matrixValues.slice();
-                                        m[matrixRow.index] = m[matrixRow.index].slice();
-                                        m[matrixRow.index][index] = text;
-                                        rect.matrixValues = m;
-                                    }
-                                }
-                            }
-
-                            Text {
-                                text: "│"
-                                color: Theme.textDimmed
-                                font.pixelSize: 18
-                                Layout.alignment: Qt.AlignVCenter
-                            }
-
-                            MyTextField {
-                                Layout.preferredWidth: 60
-                                Layout.preferredHeight: 32
-                                text: rect.augmentationValues[matrixRow.index] !== undefined ? rect.augmentationValues[matrixRow.index] : ""
-                                placeholderText: "b"
-                                font.pixelSize: 13
+                            delegate: MyTextField {
+                                required property int index
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 30
+                                Layout.minimumWidth: 28
                                 horizontalAlignment: TextInput.AlignHCenter
+                                font.pixelSize: 12
+                                placeholderText: "0"
+                                text: rect.matrixValues[matrixRow.index] && rect.matrixValues[matrixRow.index][index] !== undefined ? rect.matrixValues[matrixRow.index][index] : ""
 
                                 validator: RegularExpressionValidator {
                                     regularExpression: /-?\d*([.,]\d*)?/
                                 }
 
                                 onTextEdited: {
-                                    const a = rect.augmentationValues.slice();
-                                    a[matrixRow.index] = text;
-                                    rect.augmentationValues = a;
+                                    const m = rect.matrixValues.slice();
+                                    m[matrixRow.index] = m[matrixRow.index].slice();
+                                    m[matrixRow.index][index] = text;
+                                    rect.matrixValues = m;
                                 }
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: 1
+                            Layout.preferredHeight: 22
+                            Layout.alignment: Qt.AlignVCenter
+                            color: Theme.border
+                        }
+
+                        MyTextField {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 30
+                            Layout.minimumWidth: 28
+                            horizontalAlignment: TextInput.AlignHCenter
+                            font.pixelSize: 12
+                            placeholderText: "b"
+                            text: rect.augmentationValues[matrixRow.index] !== undefined ? rect.augmentationValues[matrixRow.index] : ""
+
+                            validator: RegularExpressionValidator {
+                                regularExpression: /-?\d*([.,]\d*)?/
+                            }
+
+                            onTextEdited: {
+                                const a = rect.augmentationValues.slice();
+                                a[matrixRow.index] = text;
+                                rect.augmentationValues = a;
                             }
                         }
                     }
                 }
+            }
+        }
 
-                MyRect {
-                    height: 50
-                    width: parent.width - 10
-                    border.color: "transparent"
+        MyButton {
+            id: randomButton
+            text: "Случайные коэффициенты"
+            anchors.top: mainColumn.bottom
+            anchors.topMargin: 28
+            width: parent.width - 50
+            height: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            textNormalColor: Theme.textMain
+            textHoverColor: Theme.textDimmed
+            leftAligned: false
+            bold: true
+
+            onClicked: {
+                const response = backend.generateLinearSystem(rect.currentSize);
+                if (response.status === 0) {
+                    rect.applyFromGenerated(response.matrix, response.augmentation);
                 }
+            }
+        }
 
-                MyButton {
-                    text: "Случайные коэффициенты"
-                    width: parent.width - 30
-                    x: 15
-                    height: 45
-                    textNormalColor: Theme.textMain
-                    textHoverColor: Theme.textDimmed
-                    leftAligned: false
-                    bold: true
+        MyButton {
+            id: calculateButton
+            text: "Вычислить"
+            anchors.top: randomButton.bottom
+            anchors.topMargin: 10
+            width: parent.width - 50
+            height: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            textNormalColor: Theme.textMain
+            textHoverColor: Theme.textDimmed
+            leftAligned: false
+            bold: true
 
-                    onClicked: {
-                        const response = backend.generateLinearSystem(rect.currentSize);
-                        if (response.status === 0) {
-                            rect.applyFromGenerated(response.matrix, response.augmentation);
-                        }
-                    }
+            onClicked: {
+                const payload = {
+                    "size": rect.currentSize,
+                    "matrix": rect.matrixValues,
+                    "augmentation": rect.augmentationValues
+                };
+                const response = backend.solveLinearSystem(payload);
+                rect.resultStatus = response.status;
+                rect.errorMessage = response.message !== undefined ? response.message : "";
+                if (response.status === 0) {
+                    rect.determinant = response.determinant;
+                    rect.solution = response.solution;
+                    rect.residuals = response.residuals;
+                    rect.triangular = response.triangular;
+                    rect.reducedAugmentation = response.reducedAugmentation;
+                } else {
+                    rect.determinant = response.determinant !== undefined ? response.determinant : Number.NaN;
+                    rect.solution = [];
+                    rect.residuals = [];
+                    rect.triangular = response.triangular !== undefined ? response.triangular : [];
+                    rect.reducedAugmentation = response.reducedAugmentation !== undefined ? response.reducedAugmentation : [];
                 }
-
-                MyButton {
-                    text: "Вычислить"
-                    width: parent.width - 30
-                    x: 15
-                    height: 50
-                    textNormalColor: Theme.textMain
-                    textHoverColor: Theme.textDimmed
-                    leftAligned: false
-                    bold: true
-
-                    onClicked: {
-                        const payload = {
-                            "size": rect.currentSize,
-                            "matrix": rect.matrixValues,
-                            "augmentation": rect.augmentationValues
-                        };
-                        const response = backend.solveLinearSystem(payload);
-                        rect.resultStatus = response.status;
-                        rect.errorMessage = response.message !== undefined ? response.message : "";
-                        if (response.status === 0) {
-                            rect.determinant = response.determinant;
-                            rect.solution = response.solution;
-                            rect.residuals = response.residuals;
-                            rect.triangular = response.triangular;
-                            rect.reducedAugmentation = response.reducedAugmentation;
-                        } else {
-                            rect.determinant = response.determinant !== undefined ? response.determinant : Number.NaN;
-                            rect.solution = [];
-                            rect.residuals = [];
-                            rect.triangular = response.triangular !== undefined ? response.triangular : [];
-                            rect.reducedAugmentation = response.reducedAugmentation !== undefined ? response.reducedAugmentation : [];
-                        }
-                        rect.hasResult = true;
-                    }
-                }
+                rect.hasResult = true;
             }
         }
     }
@@ -341,209 +340,247 @@ RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        ScrollView {
+        ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12
-            clip: true
+            spacing: 12
 
-            Column {
-                width: parent.width
-                spacing: 14
+            Text {
+                Layout.fillWidth: true
+                text: "Решение СЛАУ методом Гаусса"
+                color: Theme.textMain
+                font.pixelSize: 22
+                font.family: "JetbrainsMono Nerd Font"
+                font.bold: true
+                Layout.leftMargin: 6
+            }
 
-                Text {
-                    text: "Решение СЛАУ методом Гаусса"
-                    color: Theme.textMain
-                    font.pixelSize: 22
-                    font.family: "JetbrainsMono Nerd Font"
-                    font.bold: true
-                }
+            MyRect {
+                visible: rect.hasResult
+                Layout.fillWidth: true
+                Layout.preferredHeight: statusColumn.implicitHeight + 24
+                color: Theme.bg
 
-                MyRect {
-                    visible: rect.hasResult
-                    width: parent.width - 4
-                    height: statusColumn.implicitHeight + 24
-                    color: Theme.bg
+                Column {
+                    id: statusColumn
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 6
 
-                    Column {
-                        id: statusColumn
-                        anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 6
+                    Row {
+                        spacing: 8
 
-                        Row {
-                            spacing: 8
-
-                            Rectangle {
-                                width: 10
-                                height: 10
-                                radius: 5
-                                anchors.verticalCenter: parent.verticalCenter
-                                color: rect.statusColor(rect.resultStatus)
-                            }
-
-                            Text {
-                                text: rect.statusText(rect.resultStatus)
-                                color: Theme.textMain
-                                font.pixelSize: 18
-                                font.bold: true
-                                font.family: "JetbrainsMono Nerd Font"
-                            }
+                        Rectangle {
+                            width: 10
+                            height: 10
+                            radius: 5
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: rect.statusColor(rect.resultStatus)
                         }
 
                         Text {
-                            text: rect.statusHint(rect.resultStatus)
-                            color: Theme.textDimmed
-                            wrapMode: Text.WordWrap
-                            width: statusColumn.width
-                            font.pixelSize: 14
-                            font.family: "JetbrainsMono Nerd Font"
-                        }
-
-                        Text {
-                            visible: Number.isFinite(rect.determinant)
-                            text: "det(A) = " + rect.formattedNumber(rect.determinant)
-                            color: Theme.accent
-                            font.pixelSize: 17
+                            text: rect.statusText(rect.resultStatus)
+                            color: Theme.textMain
+                            font.pixelSize: 18
                             font.bold: true
                             font.family: "JetbrainsMono Nerd Font"
                         }
                     }
+
+                    Text {
+                        text: rect.statusHint(rect.resultStatus)
+                        color: Theme.textDimmed
+                        wrapMode: Text.WordWrap
+                        width: statusColumn.width
+                        font.pixelSize: 14
+                        font.family: "JetbrainsMono Nerd Font"
+                    }
+
+                    Text {
+                        visible: Number.isFinite(rect.determinant)
+                        text: "det(A) = " + rect.formattedNumber(rect.determinant)
+                        color: Theme.accent
+                        font.pixelSize: 17
+                        font.bold: true
+                        font.family: "JetbrainsMono Nerd Font"
+                    }
                 }
+            }
+
+            ColumnLayout {
+                visible: rect.hasResult && rect.triangular.length > 0
+                Layout.fillWidth: true
+                spacing: 6
 
                 Text {
-                    visible: rect.hasResult && rect.triangular.length > 0
+                    Layout.leftMargin: 4
                     text: "Треугольная матрица (после прямого хода)"
                     color: Theme.textMain
-                    font.pixelSize: 17
+                    font.pixelSize: 16
                     font.family: "JetbrainsMono Nerd Font"
                     font.bold: true
                 }
 
                 MyRect {
-                    visible: rect.hasResult && rect.triangular.length > 0
-                    width: parent.width - 4
-                    height: triangColumn.implicitHeight + 20
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: triangGrid.implicitHeight + 20
                     color: Theme.bg
 
-                    Column {
-                        id: triangColumn
+                    GridLayout {
+                        id: triangGrid
                         anchors.fill: parent
                         anchors.margins: 10
-                        spacing: 3
+                        columns: rect.triangular.length > 0 ? rect.triangular[0].length + 2 : 1
+                        columnSpacing: 12
+                        rowSpacing: 4
 
                         Repeater {
-                            model: rect.triangular
-
-                            delegate: Row {
-                                required property var modelData
-                                required property int index
-                                spacing: 8
-
-                                Repeater {
-                                    model: modelData
-
-                                    delegate: Text {
-                                        required property var modelData
-                                        text: rect.formattedNumber(Number(modelData))
-                                        color: Theme.textMain
-                                        font.pixelSize: 13
-                                        font.family: "JetbrainsMono Nerd Font"
-                                        width: 90
-                                        horizontalAlignment: Text.AlignRight
+                            model: {
+                                const cells = [];
+                                for (let i = 0; i < rect.triangular.length; ++i) {
+                                    const row = rect.triangular[i];
+                                    for (let j = 0; j < row.length; ++j) {
+                                        cells.push({
+                                            value: row[j],
+                                            isAug: false,
+                                            isSep: false
+                                        });
                                     }
+                                    cells.push({
+                                        value: null,
+                                        isAug: false,
+                                        isSep: true
+                                    });
+                                    cells.push({
+                                        value: rect.reducedAugmentation[i],
+                                        isAug: true,
+                                        isSep: false
+                                    });
+                                }
+                                return cells;
+                            }
+
+                            delegate: Item {
+                                required property var modelData
+                                Layout.fillWidth: !modelData.isSep
+                                Layout.preferredWidth: modelData.isSep ? 12 : -1
+                                Layout.preferredHeight: 20
+
+                                Rectangle {
+                                    visible: modelData.isSep
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: 1
+                                    height: parent.height
+                                    color: Theme.border
                                 }
 
                                 Text {
-                                    text: "│"
-                                    color: Theme.textDimmed
-                                    font.pixelSize: 14
-                                }
-
-                                Text {
-                                    text: rect.reducedAugmentation[parent.index] !== undefined ? rect.formattedNumber(Number(rect.reducedAugmentation[parent.index])) : ""
-                                    color: Theme.accent
+                                    visible: !modelData.isSep
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: rect.formattedNumber(Number(modelData.value))
+                                    color: modelData.isAug ? Theme.accent : Theme.textMain
                                     font.pixelSize: 13
                                     font.family: "JetbrainsMono Nerd Font"
-                                    width: 90
-                                    horizontalAlignment: Text.AlignRight
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: rect.hasResult && rect.solution.length > 0
+                Layout.fillWidth: true
+                spacing: 12
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop
+                    spacing: 6
+
+                    Text {
+                        Layout.leftMargin: 4
+                        text: "Неизвестные"
+                        color: Theme.textMain
+                        font.pixelSize: 16
+                        font.family: "JetbrainsMono Nerd Font"
+                        font.bold: true
+                    }
+
+                    MyRect {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: solutionColumn.implicitHeight + 20
+                        color: Theme.bg
+
+                        Column {
+                            id: solutionColumn
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 4
+
+                            Repeater {
+                                model: rect.solution
+
+                                delegate: Text {
+                                    required property var modelData
+                                    required property int index
+                                    text: "x[" + (index + 1) + "] = " + rect.formattedNumber(Number(modelData))
+                                    color: Theme.accent
+                                    font.pixelSize: 15
+                                    font.bold: true
+                                    font.family: "JetbrainsMono Nerd Font"
                                 }
                             }
                         }
                     }
                 }
 
-                Text {
-                    visible: rect.hasResult && rect.solution.length > 0
-                    text: "Неизвестные"
-                    color: Theme.textMain
-                    font.pixelSize: 17
-                    font.family: "JetbrainsMono Nerd Font"
-                    font.bold: true
-                }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop
+                    spacing: 6
 
-                MyRect {
-                    visible: rect.hasResult && rect.solution.length > 0
-                    width: parent.width - 4
-                    height: solutionColumn.implicitHeight + 20
-                    color: Theme.bg
+                    Text {
+                        Layout.leftMargin: 4
+                        text: "Невязки"
+                        color: Theme.textMain
+                        font.pixelSize: 16
+                        font.family: "JetbrainsMono Nerd Font"
+                        font.bold: true
+                    }
 
-                    Column {
-                        id: solutionColumn
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 3
+                    MyRect {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: residualsColumn.implicitHeight + 20
+                        color: Theme.bg
 
-                        Repeater {
-                            model: rect.solution
+                        Column {
+                            id: residualsColumn
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 4
 
-                            delegate: Text {
-                                required property var modelData
-                                required property int index
-                                text: "x[" + (index + 1) + "] = " + rect.formattedNumber(Number(modelData))
-                                color: Theme.accent
-                                font.pixelSize: 15
-                                font.bold: true
-                                font.family: "JetbrainsMono Nerd Font"
+                            Repeater {
+                                model: rect.residuals
+
+                                delegate: Text {
+                                    required property var modelData
+                                    required property int index
+                                    text: "r[" + (index + 1) + "] = " + rect.formattedNumber(Number(modelData))
+                                    color: Theme.textMain
+                                    font.pixelSize: 14
+                                    font.family: "JetbrainsMono Nerd Font"
+                                }
                             }
                         }
                     }
                 }
+            }
 
-                Text {
-                    visible: rect.hasResult && rect.residuals.length > 0
-                    text: "Невязки"
-                    color: Theme.textMain
-                    font.pixelSize: 17
-                    font.family: "JetbrainsMono Nerd Font"
-                    font.bold: true
-                }
-
-                MyRect {
-                    visible: rect.hasResult && rect.residuals.length > 0
-                    width: parent.width - 4
-                    height: residualsColumn.implicitHeight + 20
-                    color: Theme.bg
-
-                    Column {
-                        id: residualsColumn
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 3
-
-                        Repeater {
-                            model: rect.residuals
-
-                            delegate: Text {
-                                required property var modelData
-                                required property int index
-                                text: "r[" + (index + 1) + "] = " + rect.formattedNumber(Number(modelData))
-                                color: Theme.textMain
-                                font.pixelSize: 14
-                                font.family: "JetbrainsMono Nerd Font"
-                            }
-                        }
-                    }
-                }
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
         }
     }
