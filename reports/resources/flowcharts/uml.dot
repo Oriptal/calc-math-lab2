@@ -1,0 +1,78 @@
+digraph UML {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.5, ranksep=0.65, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=12, shape=plaintext]
+  edge  [fontname="CMU Serif", fontsize=11, color="#000000", arrowhead=empty]
+
+  GaussSolver [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff">
+      <TR><TD ALIGN="CENTER"><B>GaussSolver</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ kEps : double = 1e−12</TD></TR>
+      <TR><TD ALIGN="LEFT">+ kMaxSize : int = 20</TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ solve(A, b) : GaussResult</TD></TR>
+      <TR><TD ALIGN="LEFT">+ generateMatrix(n, seed) : vec&lt;vec&lt;double&gt;&gt;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ generateAugmentation(n, seed) : vec&lt;double&gt;</TD></TR>
+    </TABLE>
+  >]
+
+  GaussResult [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff">
+      <TR><TD ALIGN="CENTER"><B>GaussResult</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ status : GaussStatus</TD></TR>
+      <TR><TD ALIGN="LEFT">+ triangular : matrix</TD></TR>
+      <TR><TD ALIGN="LEFT">+ reducedAugmentation : vec&lt;double&gt;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ solution : vec&lt;double&gt;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ residuals : vec&lt;double&gt;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ determinant : double</TD></TR>
+    </TABLE>
+  >]
+
+  GaussStatus [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#fff7d1">
+      <TR><TD ALIGN="CENTER"><B>&laquo;enum&raquo; GaussStatus</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">SINGLE_SOLUTION</TD></TR>
+      <TR><TD ALIGN="LEFT">NO_SOLUTIONS</TD></TR>
+      <TR><TD ALIGN="LEFT">INFINITE_SOLUTIONS</TD></TR>
+      <TR><TD ALIGN="LEFT">INVALID_SIZE</TD></TR>
+    </TABLE>
+  >]
+
+  GaussModule [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#e6eefc">
+      <TR><TD ALIGN="CENTER"><B>GaussModule</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ solve(payload : QVariantMap) : QVariantMap</TD></TR>
+      <TR><TD ALIGN="LEFT">+ generate(size : qint32) : QVariantMap</TD></TR>
+    </TABLE>
+  >]
+
+  Backend [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#e6eefc">
+      <TR><TD ALIGN="CENTER"><B>Backend : QObject</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ solveLinearSystem(payload) : QVariantMap</TD></TR>
+      <TR><TD ALIGN="LEFT">+ generateLinearSystem(size) : QVariantMap</TD></TR>
+      <TR><TD ALIGN="LEFT">… (методы ЛР №2 и №3)</TD></TR>
+    </TABLE>
+  >]
+
+  ModuleGaussQml [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#f5f5f5">
+      <TR><TD ALIGN="CENTER"><B>ModuleGauss.qml</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">QML-компонент (RowLayout)</TD></TR>
+      <TR><TD ALIGN="LEFT">— ввод матрицы [A | b]</TD></TR>
+      <TR><TD ALIGN="LEFT">— кнопки «Случайные» и «Вычислить»</TD></TR>
+      <TR><TD ALIGN="LEFT">— вывод треуг. матрицы, x, det, невязок</TD></TR>
+    </TABLE>
+  >]
+
+  Backend -> GaussModule [arrowhead=open, label="вызывает"]
+  GaussModule -> GaussSolver [arrowhead=open, label="использует"]
+  GaussSolver -> GaussResult [arrowhead=open, label="возвращает"]
+  GaussResult -> GaussStatus [arrowhead=open, label="хранит"]
+  ModuleGaussQml -> Backend [arrowhead=open, label="Q_INVOKABLE"]
+}
