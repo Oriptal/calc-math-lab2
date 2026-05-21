@@ -568,12 +568,12 @@ RowLayout {
                     model: rect.methods
                     spacing: 2
 
-                    header: Row {
+                    header: RowLayout {
                         width: methodsList.width
-                        spacing: 6
+                        spacing: 10
 
                         Text {
-                            width: 60
+                            Layout.preferredWidth: 60
                             text: "График"
                             color: Theme.textMain
                             font.bold: true
@@ -582,7 +582,7 @@ RowLayout {
                             horizontalAlignment: Text.AlignHCenter
                         }
                         Text {
-                            width: 110
+                            Layout.preferredWidth: 110
                             text: "Метод"
                             color: Theme.textMain
                             font.bold: true
@@ -590,7 +590,8 @@ RowLayout {
                             font.pixelSize: 13
                         }
                         Text {
-                            width: 200
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 200
                             text: "Формула"
                             color: Theme.textMain
                             font.bold: true
@@ -598,7 +599,7 @@ RowLayout {
                             font.pixelSize: 13
                         }
                         Text {
-                            width: 80
+                            Layout.preferredWidth: 90
                             text: "S"
                             color: Theme.textMain
                             font.bold: true
@@ -607,7 +608,7 @@ RowLayout {
                             horizontalAlignment: Text.AlignRight
                         }
                         Text {
-                            width: 80
+                            Layout.preferredWidth: 90
                             text: "δ"
                             color: Theme.textMain
                             font.bold: true
@@ -616,7 +617,7 @@ RowLayout {
                             horizontalAlignment: Text.AlignRight
                         }
                         Text {
-                            width: 70
+                            Layout.preferredWidth: 80
                             text: "R²"
                             color: Theme.textMain
                             font.bold: true
@@ -625,7 +626,7 @@ RowLayout {
                             horizontalAlignment: Text.AlignRight
                         }
                         Text {
-                            width: 70
+                            Layout.preferredWidth: 80
                             text: "r"
                             color: Theme.textMain
                             font.bold: true
@@ -634,7 +635,7 @@ RowLayout {
                             horizontalAlignment: Text.AlignRight
                         }
                         Text {
-                            width: 160
+                            Layout.preferredWidth: 200
                             text: "Качество (по R²)"
                             color: Theme.textMain
                             font.bold: true
@@ -643,20 +644,20 @@ RowLayout {
                         }
                     }
 
-                    delegate: Row {
+                    delegate: RowLayout {
                         id: methodRow
                         required property var modelData
                         required property int index
                         width: methodsList.width
-                        spacing: 6
+                        spacing: 10
                         readonly property bool isOk: modelData.status === "ok"
                         readonly property bool isBest: index === rect.bestIndex
                         readonly property bool curveVisible: rect.isKindVisible(modelData.kind)
                         readonly property color curveColor: rect.methodColor(modelData.kind)
 
                         Item {
-                            width: 60
-                            height: 26
+                            Layout.preferredWidth: 60
+                            Layout.preferredHeight: 26
 
                             Rectangle {
                                 id: toggleBtn
@@ -696,68 +697,62 @@ RowLayout {
                         }
 
                         Text {
-                            width: 110
+                            Layout.preferredWidth: 110
                             text: methodRow.modelData.shortTitle + (methodRow.isBest ? " ★" : "")
                             color: methodRow.isBest ? "#16A34A" : (methodRow.isOk ? Theme.textMain : Theme.textDimmed)
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 13
                             font.bold: methodRow.isBest
                             elide: Text.ElideRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 200
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 200
                             text: methodRow.isOk ? methodRow.modelData.formula : methodRow.modelData.statusMessage
                             color: methodRow.isOk ? Theme.accent : "#D97706"
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             elide: Text.ElideRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 80
+                            Layout.preferredWidth: 90
                             text: methodRow.isOk ? Number(methodRow.modelData.S).toExponential(2) : "—"
                             color: Theme.textMain
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 80
+                            Layout.preferredWidth: 90
                             text: methodRow.isOk ? Number(methodRow.modelData.delta).toFixed(4) : "—"
                             color: Theme.textMain
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 70
+                            Layout.preferredWidth: 80
                             text: methodRow.isOk ? Number(methodRow.modelData.r2).toFixed(4) : "—"
                             color: Theme.textMain
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 70
+                            Layout.preferredWidth: 80
                             text: methodRow.modelData.pearson !== null && methodRow.modelData.pearson !== undefined ? Number(methodRow.modelData.pearson).toFixed(4) : "—"
                             color: Theme.textDimmed
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            width: 160
+                            Layout.preferredWidth: 200
                             text: methodRow.isOk ? methodRow.modelData.r2Verdict : "—"
                             color: methodRow.isOk ? Theme.textMain : Theme.textDimmed
                             font.family: "JetbrainsMono Nerd Font"
                             font.pixelSize: 12
                             elide: Text.ElideRight
-                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
                 }
