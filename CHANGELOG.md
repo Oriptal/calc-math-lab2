@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.2.3 - 2026-05-21
+#### Bug Fixes
+- (**reports**) use true subscripts in lab4 flowcharts - (0fdcde3) - Prokhor
+
+- - -
+
 ## v1.2.2 - 2026-05-21
 #### Continuous Integration
 - (**release**) clone and publish via public Forgejo URL - (82d2696) - Prokhor
