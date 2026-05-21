@@ -4,7 +4,7 @@ digraph LSStats {
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
   start  [label="Начало: fillResidualsAndStats", shape=oval, fillcolor="#e6eefc"]
-  input  [label="Ввод: коэффициенты, x[1..n], y[1..n], n", shape=parallelogram, fillcolor="#f5f5f5"]
+  input  [label=<Ввод: коэффициенты, n точек (x<SUB>i</SUB>, y<SUB>i</SUB>)>, shape=parallelogram, fillcolor="#f5f5f5"]
   z1     [label=<S = 0<BR/>SY = 0<BR/>i = 1>, shape=box]
   loop1  [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
   body1  [label=<φ<SUB>i</SUB> = phiAt(x<SUB>i</SUB>)<BR/>ε<SUB>i</SUB> = φ<SUB>i</SUB> − y<SUB>i</SUB><BR/>S = S + ε<SUB>i</SUB> · ε<SUB>i</SUB><BR/>SY = SY + y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
@@ -15,7 +15,7 @@ digraph LSStats {
   chk    [label=<SST &lt; ε?>, shape=diamond, fillcolor="#fff7d1"]
   r2a    [label=<R² = (S &lt; ε ? 1 : 0)>, shape=box]
   r2b    [label=<R² = 1 − S / SST>, shape=box]
-  output [label=<Вывод: φ[1..n], ε[1..n], S, δ, R²>, shape=parallelogram, fillcolor="#dcfce7"]
+  output [label=<Вывод: φ<SUB>i</SUB>, ε<SUB>i</SUB> для i = 1..n, S, δ, R²>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
   start -> input -> z1 -> loop1

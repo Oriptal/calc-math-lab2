@@ -4,7 +4,7 @@ digraph LSLog {
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
   start  [label="Начало: fitLogarithmic", shape=oval, fillcolor="#e6eefc"]
-  input  [label="Ввод: x[1..n], y[1..n], n", shape=parallelogram, fillcolor="#f5f5f5"]
+  input  [label=<Ввод: n точек (x<SUB>i</SUB>, y<SUB>i</SUB>)>, shape=parallelogram, fillcolor="#f5f5f5"]
   init   [label=<i = 1>, shape=box]
   chk1   [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
   chk2   [label=<x<SUB>i</SUB> &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]

@@ -18,8 +18,12 @@
 <!-- input -->
 <g id="node2" class="node">
 <title>input</title>
-<polygon fill="#f5f5f5" stroke="#000000" points="713.84,-695.39 443.78,-695.39 374.31,-640.39 644.37,-640.39 713.84,-695.39"/>
-<text xml:space="preserve" text-anchor="middle" x="544.07" y="-664.34" font-family="CMU Serif" font-size="14.00">Ввод: x[1..n], y[1..n], n</text>
+<polygon fill="#f5f5f5" stroke="#000000" points="698.29,-695.39 452.97,-695.39 389.86,-640.39 635.18,-640.39 698.29,-695.39"/>
+<text xml:space="preserve" text-anchor="start" x="477.7" y="-665.34" font-family="CMU Serif" font-size="14.00">Ввод: n точек (x</text>
+<text xml:space="preserve" text-anchor="start" x="584.95" y="-665.34" font-family="CMU Serif" baseline-shift="sub" font-size="14.00">i</text>
+<text xml:space="preserve" text-anchor="start" x="587.95" y="-665.34" font-family="CMU Serif" font-size="14.00">, y</text>
+<text xml:space="preserve" text-anchor="start" x="602.95" y="-665.34" font-family="CMU Serif" baseline-shift="sub" font-size="14.00">i</text>
+<text xml:space="preserve" text-anchor="start" x="605.95" y="-665.34" font-family="CMU Serif" font-size="14.00">)</text>
 </g>
 <!-- start&#45;&gt;input -->
 <g id="edge1" class="edge">
