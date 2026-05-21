@@ -25,6 +25,8 @@ qt_add_executable(appHelloWorldQuickProject
     backend/IntegrationModule.cpp
     backend/GaussModule.hpp
     backend/GaussModule.cpp
+    backend/ApproximationModule.hpp
+    backend/ApproximationModule.cpp
 )
 
 set_source_files_properties(Theme.qml PROPERTIES
