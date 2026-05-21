@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.2.4 - 2026-05-21
+#### Refactoring
+- rename project and binary from HelloWorldQuickProject to comp-math - (8b06e8b) - Prokhor
+
+- - -
+
 ## v1.2.3 - 2026-05-21
 #### Bug Fixes
 - (**reports**) use true subscripts in lab4 flowcharts - (0fdcde3) - Prokhor
