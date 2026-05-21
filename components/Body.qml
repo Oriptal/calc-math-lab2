@@ -62,6 +62,12 @@ MyRect {
                         active: content.currentModule === 3
                         onClicked: content.currentModule = 3
                     }
+
+                    NavButton {
+                        text: "Аппроксимация"
+                        active: content.currentModule === 4
+                        onClicked: content.currentModule = 4
+                    }
                 }
             }
         }
@@ -80,6 +86,8 @@ MyRect {
                 ModuleSystem {}
 
                 ModuleIntegration {}
+
+                ModuleApproximation {}
             }
         }
     }
