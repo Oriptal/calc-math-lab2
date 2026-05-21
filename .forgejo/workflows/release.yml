@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORGEJO_PUBLIC_URL: https://git.oriptal.dev
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -30,8 +33,12 @@ jobs:
             libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 \
             jq curl ca-certificates
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout via public URL
+        run: |
+          git init
+          git remote add origin "https://oauth2:${{ secrets.GITHUB_TOKEN }}@${FORGEJO_PUBLIC_URL#https://}/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
 
       - name: Install Qt 6.8 via aqt
         run: |
@@ -82,7 +89,7 @@ jobs:
           RESP=$(curl -fsSL -X POST \
             -H "Authorization: token ${FORGEJO_TOKEN}" \
             -H "Content-Type: application/json" \
-            "${GITHUB_SERVER_URL}/api/v1/repos/${GITHUB_REPOSITORY}/releases" \
+            "${FORGEJO_PUBLIC_URL}/api/v1/repos/${GITHUB_REPOSITORY}/releases" \
             -d "$(jq -n --arg tag "$TAG" --arg name "$TAG" --arg body "$NOTES" \
                 '{tag_name: $tag, name: $name, body: $body, draft: false, prerelease: false}')")
 
@@ -92,4 +99,4 @@ jobs:
           curl -fsSL -X POST \
             -H "Authorization: token ${FORGEJO_TOKEN}" \
             -F "attachment=@dist/${ASSET}" \
-            "${GITHUB_SERVER_URL}/api/v1/repos/${GITHUB_REPOSITORY}/releases/${REL_ID}/assets?name=${ASSET}"
+            "${FORGEJO_PUBLIC_URL}/api/v1/repos/${GITHUB_REPOSITORY}/releases/${REL_ID}/assets?name=${ASSET}"
