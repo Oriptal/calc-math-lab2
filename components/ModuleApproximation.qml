@@ -61,37 +61,39 @@ RowLayout {
                     return (x) => aa * x / (x * x * x * x + cc);
                 },
                 () => {
-                    const aa = (Math.random() - 0.3) * 3;
-                    const bb = Math.random() * 1.5;
-                    return (x) => aa * x + bb;
+                    const y0 = 0.3 + Math.random() * 1.5;
+                    const y1 = 0.3 + Math.random() * 1.5;
+                    const slope = (y1 - y0) / (xHi - xLo);
+                    const intercept = y0 - slope * xLo;
+                    return (x) => slope * x + intercept;
                 },
                 () => {
                     const pp = -0.5 + Math.random() * 3;
-                    const qq = Math.random() * 1.5;
-                    const aa = (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 1.2);
+                    const qq = 0.3 + Math.random() * 1.2;
+                    const aa = 0.3 + Math.random() * 1.5;
                     return (x) => aa * (x - pp) * (x - pp) + qq;
                 },
                 () => {
-                    const aa = 0.3 + Math.random();
-                    const bb = (Math.random() - 0.4) * 2.5;
+                    const aa = 0.5 + Math.random() * 0.8;
+                    const bb = -0.6 + Math.random() * 1.6;
                     return (x) => aa * Math.exp(bb * x);
                 },
                 () => {
-                    const aa = 0.5 + Math.random() * 1.5;
-                    const bb = Math.random();
-                    const shift = 0.2 + Math.random() * 0.5;
-                    return (x) => aa * Math.log(x + shift) + bb;
+                    const aa = (Math.random() < 0.5 ? -1 : 1) * (0.4 + Math.random() * 0.8);
+                    const yEdge = aa > 0 ? aa * Math.log(xLo) : aa * Math.log(xHi);
+                    const bb = -yEdge + 0.3 + Math.random() * 1.0;
+                    return (x) => aa * Math.log(x) + bb;
                 },
                 () => {
-                    const aa = 0.3 + Math.random() * 1.5;
-                    const bb = 0.3 + Math.random() * 2;
-                    return (x) => aa * Math.pow(x + 0.1, bb);
+                    const aa = 0.6 + Math.random() * 1.0;
+                    const bb = -0.8 + Math.random() * 1.8;
+                    return (x) => aa * Math.pow(x, bb);
                 },
                 () => {
-                    const aa = 0.4 + Math.random() * 0.8;
-                    const bb = 1 + Math.random() * 3;
+                    const aa = 0.3 + Math.random() * 0.6;
+                    const bb = 1 + Math.random() * 2.5;
                     const cc = Math.random() * Math.PI * 2;
-                    const dd = (Math.random() - 0.3) * 1.5;
+                    const dd = aa + 0.3 + Math.random() * 1.0;
                     return (x) => aa * Math.sin(bb * x + cc) + dd;
                 }
             ];
