@@ -50,7 +50,7 @@ RowLayout {
 
         function generateRandom() {
             const n = rect.currentSize;
-            const xLo = 0;
+            const xLo = 0.2;
             const xHi = 2;
             const h = (xHi - xLo) / (n - 1);
 
@@ -112,13 +112,21 @@ RowLayout {
             const range = Math.max(maxY - minY, 0.5);
             const noiseAmp = range * 0.15;
 
+            const noisy = [];
+            let noisyMin = Number.POSITIVE_INFINITY;
+            for (let i = 0; i < n; ++i) {
+                const y = baseY[i] + (Math.random() - 0.5) * 2 * noiseAmp;
+                noisy.push(y);
+                if (y < noisyMin) noisyMin = y;
+            }
+
+            const lift = noisyMin <= 0.05 ? (0.05 - noisyMin + Math.random() * 0.3) : 0;
+
             const nx = [];
             const ny = [];
             for (let i = 0; i < n; ++i) {
-                const x = xLo + i * h;
-                const noise = (Math.random() - 0.5) * 2 * noiseAmp;
-                nx.push(x.toFixed(3));
-                ny.push((baseY[i] + noise).toFixed(4));
+                nx.push((xLo + i * h).toFixed(3));
+                ny.push((noisy[i] + lift).toFixed(4));
             }
             rect.xValues = nx;
             rect.yValues = ny;
