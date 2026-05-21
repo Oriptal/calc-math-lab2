@@ -1,0 +1,29 @@
+digraph LSLinear {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: fitLinear", shape=oval, fillcolor="#e6eefc"]
+  input  [label="Ввод: x[1..n], y[1..n], n", shape=parallelogram, fillcolor="#f5f5f5"]
+  zero   [label=<SX = 0<BR/>SXX = 0<BR/>SY = 0<BR/>SXY = 0<BR/>i = 1>, shape=box]
+  loop   [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
+  body   [label=<SX = SX + x<SUB>i</SUB><BR/>SXX = SXX + x<SUB>i</SUB> · x<SUB>i</SUB><BR/>SY = SY + y<SUB>i</SUB><BR/>SXY = SXY + x<SUB>i</SUB> · y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
+  det    [label=<Δ = SXX · n − SX · SX>, shape=box]
+  check  [label=<|Δ| &lt; ε?>, shape=diamond, fillcolor="#fff7d1"]
+  degen  [label="Вырождена", shape=parallelogram, fillcolor="#fde2e2"]
+  cramer [label=<Δ<SUB>1</SUB> = SXY · n − SX · SY<BR/>Δ<SUB>2</SUB> = SXX · SY − SX · SXY<BR/>a = Δ<SUB>1</SUB> / Δ<BR/>b = Δ<SUB>2</SUB> / Δ>, shape=box]
+  stats  [label="Вызов fillResidualsAndStats(a, b)", shape=box, fillcolor="#eef2ff"]
+  pear   [label=<r = Pearson(x, y)>, shape=box]
+  output [label=<Вывод: a, b, S, δ, R², r>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> zero -> loop
+  loop -> body [label="да"]
+  body -> loop
+  loop -> det [label="нет"]
+  det -> check
+  check -> degen [label="да"]
+  degen -> stop
+  check -> cramer [label="нет"]
+  cramer -> stats -> pear -> output -> stop
+}

@@ -1,0 +1,28 @@
+digraph LSExp {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: fitExponential", shape=oval, fillcolor="#e6eefc"]
+  input  [label="Ввод: x[1..n], y[1..n], n", shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<i = 1>, shape=box]
+  chk1   [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
+  chk2   [label=<y<SUB>i</SUB> &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]
+  rej    [label=<Статус «Требуется y<SUB>i</SUB> &gt; 0»>, shape=parallelogram, fillcolor="#fde2e2"]
+  next   [label=<i = i + 1>, shape=box]
+  prep   [label=<X<SUB>i</SUB> = x<SUB>i</SUB><BR/>Y<SUB>i</SUB> = ln y<SUB>i</SUB>>, shape=box]
+  reg    [label=<Линейная регрессия по (X, Y):<BR/>получить A, B>, shape=box, fillcolor="#eef2ff"]
+  back   [label=<a = exp(A)<BR/>b = B>, shape=box]
+  stats  [label="Вызов fillResidualsAndStats(a, b)", shape=box, fillcolor="#eef2ff"]
+  output [label=<Вывод: a, b, S, δ, R² (φ = a · exp(b · x))>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chk1
+  chk1 -> chk2 [label="да"]
+  chk2 -> next [label="да"]
+  chk2 -> rej [label="нет"]
+  rej -> stop
+  next -> chk1
+  chk1 -> prep [label="нет"]
+  prep -> reg -> back -> stats -> output -> stop
+}
