@@ -1,0 +1,39 @@
+digraph ComputePearson {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: computePearson", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: x<SUB>i</SUB>, y<SUB>i</SUB>, i = 1..n>, shape=parallelogram, fillcolor="#f5f5f5"]
+
+  init1  [label=<mx = 0<BR/>my = 0<BR/>i = 1>, shape=box]
+  chk1   [label=<i ≤ n ?>, shape=diamond, fillcolor="#fff7d1"]
+  acc1   [label=<mx = mx + x<SUB>i</SUB><BR/>my = my + y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
+
+  mean   [label=<mx = mx / n<BR/>my = my / n<BR/>num = 0<BR/>denomX = 0<BR/>denomY = 0<BR/>i = 1>, shape=box]
+  chk2   [label=<i ≤ n ?>, shape=diamond, fillcolor="#fff7d1"]
+  acc2   [label=<dx = x<SUB>i</SUB> − mx<BR/>dy = y<SUB>i</SUB> − my<BR/>num = num + dx · dy<BR/>denomX = denomX + dx · dx<BR/>denomY = denomY + dy · dy<BR/>i = i + 1>, shape=box]
+
+  denom  [label=<denom = √(denomX · denomY)>, shape=box]
+  chkD   [label=<denom &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  rZero  [label=<r = 0>, shape=box]
+  rGen   [label=<r = num / denom>, shape=box]
+
+  output [label=<Вывод: r>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init1 -> chk1
+  chk1 -> acc1 [label="да"]
+  acc1 -> chk1
+  chk1 -> mean [label="нет"]
+  mean -> chk2
+  chk2 -> acc2 [label="да"]
+  acc2 -> chk2
+  chk2 -> denom [label="нет"]
+  denom -> chkD
+  chkD -> rZero [label="да"]
+  chkD -> rGen [label="нет"]
+  rZero -> output
+  rGen -> output
+  output -> stop
+}

@@ -7,16 +7,16 @@ digraph ComputeSegment {
   input  [label="Ввод: integ, f(x), seg, eps", shape=parallelogram, fillcolor="#f5f5f5"]
 
   chkAny [label=<seg.limit_at_from ∨<BR/>seg.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
-  plain  [label=<inner = integ.rungeSolve(<BR/>f, seg.from, seg.to)<BR/>(см. блок-схему правила Рунге)>, shape=box, fillcolor="#e6eefc"]
+  plain  [label=<inner = integ.rungeSolve(<BR/>f, seg.from, seg.to)>, shape=box, fillcolor="#e6eefc"]
   retPlain [label=<r ← inner (целиком)>, shape=parallelogram, fillcolor="#dcfce7"]
 
   chkBoth [label=<seg.limit_at_from ∧<BR/>seg.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
   splitMid [label=<mid = (seg.from + seg.to) / 2<BR/>lr1 = limitAtEndpoint(<BR/>integ, f, seg.from, mid, +1, eps)>, shape=box, fillcolor="#e6eefc"]
   chk1   [label=<lr1.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
-  ret1   [label=<status = lr1.status<BR/>(не ok)>, shape=parallelogram, fillcolor="#fde2e2"]
+  ret1   [label=<status = lr1.status>, shape=parallelogram, fillcolor="#fde2e2"]
   call2  [label=<lr2 = limitAtEndpoint(<BR/>integ, f, seg.to, mid, −1, eps)>, shape=box, fillcolor="#e6eefc"]
   chk2   [label=<lr2.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
-  ret2   [label=<status = lr2.status<BR/>(не ok)>, shape=parallelogram, fillcolor="#fde2e2"]
+  ret2   [label=<status = lr2.status>, shape=parallelogram, fillcolor="#fde2e2"]
   retBoth [label=<value = lr1.value + lr2.value<BR/>n = lr1.n + lr2.n<BR/>runge = lr1.runge + lr2.runge<BR/>status = "ok">, shape=parallelogram, fillcolor="#dcfce7"]
 
   chkLeft   [label=<seg.limit_at_from?>, shape=diamond, fillcolor="#fff7d1"]

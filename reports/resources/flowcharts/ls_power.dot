@@ -9,13 +9,15 @@ digraph LSPower {
   chk1   [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
   chkx   [label=<x<SUB>i</SUB> &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]
   chky   [label=<y<SUB>i</SUB> &gt; 0?>, shape=diamond, fillcolor="#fff7d1"]
-  rejx   [label=<Статус «Требуется x<SUB>i</SUB> &gt; 0»>, shape=parallelogram, fillcolor="#fde2e2"]
-  rejy   [label=<Статус «Требуется y<SUB>i</SUB> &gt; 0»>, shape=parallelogram, fillcolor="#fde2e2"]
+  rejx   [label=<res.status = Status::NonPositiveX>, shape=parallelogram, fillcolor="#fde2e2"]
+  rejy   [label=<res.status = Status::NonPositiveY>, shape=parallelogram, fillcolor="#fde2e2"]
   next   [label=<i = i + 1>, shape=box]
   prep   [label=<X<SUB>i</SUB> = ln x<SUB>i</SUB><BR/>Y<SUB>i</SUB> = ln y<SUB>i</SUB>>, shape=box]
-  reg    [label=<Линейная регрессия по (X, Y):<BR/>получить A, B>, shape=box, fillcolor="#eef2ff"]
-  back   [label=<a = exp(A)<BR/>b = B>, shape=box]
-  stats  [label="Вызов fillResidualsAndStats(a, b)", shape=box, fillcolor="#eef2ff"]
+  reg    [label=<fit = linearCramer(X, Y)>, shape=box, fillcolor="#eef2ff"]
+  chkOk  [label=<fit.ok ?>, shape=diamond, fillcolor="#fff7d1"]
+  degen  [label=<res.status = Status::Degenerate>, shape=parallelogram, fillcolor="#fde2e2"]
+  back   [label=<a = exp(fit.intercept)<BR/>b = fit.slope>, shape=box]
+  stats  [label=<res.coeffs = { a, b }<BR/>fillResidualsAndStats(res, data, res.coeffs)>, shape=box, fillcolor="#eef2ff"]
   output [label=<Вывод: a, b, S, δ, R² (φ = a · x<SUP>b</SUP>)>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
@@ -29,5 +31,9 @@ digraph LSPower {
   rejy -> stop
   next -> chk1
   chk1 -> prep [label="нет"]
-  prep -> reg -> back -> stats -> output -> stop
+  prep -> reg -> chkOk
+  chkOk -> degen [label="нет"]
+  degen -> stop
+  chkOk -> back [label="да"]
+  back -> stats -> output -> stop
 }

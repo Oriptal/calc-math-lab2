@@ -7,7 +7,7 @@ digraph LSBest {
   input  [label=<Ввод: M результатов R<SUB>1</SUB>, …, R<SUB>M</SUB>>, shape=parallelogram, fillcolor="#f5f5f5"]
   init   [label=<bestIdx = −1<BR/>bestδ = +∞<BR/>i = 1>, shape=box]
   loop   [label=<i ≤ M?>, shape=diamond, fillcolor="#fff7d1"]
-  chko   [label=<R<SUB>i</SUB>.статус = Готово?>, shape=diamond, fillcolor="#fff7d1"]
+  chko   [label=<R<SUB>i</SUB>.status = Status::Ok ?>, shape=diamond, fillcolor="#fff7d1"]
   chkd   [label=<R<SUB>i</SUB>.δ &lt; bestδ?>, shape=diamond, fillcolor="#fff7d1"]
   upd    [label=<bestδ = R<SUB>i</SUB>.δ<BR/>bestIdx = i>, shape=box]
   next   [label=<i = i + 1>, shape=box]

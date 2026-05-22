@@ -8,19 +8,19 @@ digraph TryPrincipalValue {
   init  [label=<acc = 0; nAcc = 0; rg = 0<BR/>usedPV = false<BR/>i = 0>, shape=box]
 
   chkI [label=<i &lt; |plan.segments|?>, shape=diamond, fillcolor="#fff7d1"]
-  retSucc [label=<success = true<BR/>usedPV (как накоплено)<BR/>value = acc<BR/>n = nAcc<BR/>runge = rg>, shape=parallelogram, fillcolor="#fef3c7"]
+  retSucc [label=<success = true<BR/>value = acc<BR/>n = nAcc<BR/>runge = rg>, shape=parallelogram, fillcolor="#fef3c7"]
 
-  segI [label="seg = plan.segments[i]", shape=box]
+  segI [label=<seg = plan.segments<SUB>i</SUB>>, shape=box]
   chkOrd [label=<¬seg.limit_at_from ∧<BR/>¬seg.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
 
   callOrd [label=<inner = integ.rungeSolve(<BR/>f, seg.from, seg.to)>, shape=box, fillcolor="#e6eefc"]
   chkOrdOk [label=<inner.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
-  retFailOrd [label=<success = false<BR/>(подотрезок не сошёлся)>, shape=parallelogram, fillcolor="#fde2e2"]
+  retFailOrd [label=<success = false>, shape=parallelogram, fillcolor="#fde2e2"]
   accOrd [label=<acc += inner.value<BR/>nAcc += inner.n<BR/>rg += inner.runge<BR/>i = i + 1>, shape=box]
 
-  chkPair [label=<i + 1 &lt; |plan.segments| ∧<BR/>seg.limit_at_to ∧<BR/>plan[i+1].limit_at_from ∧<BR/>|seg.to − plan[i+1].from| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
-  computeD [label=<c = seg.to<BR/>leftLen = c − seg.from<BR/>rightLen = plan[i+1].to − c<BR/>d = min(leftLen, rightLen)>, shape=box]
-  chkAnti [label=<isAntisymmetric(f, c, d)?<BR/>(см. отдельную блок-схему)>, shape=diamond, fillcolor="#fff7d1"]
+  chkPair [label=<i + 1 &lt; |plan.segments| ∧<BR/>seg.limit_at_to ∧<BR/>plan.segments<SUB>i+1</SUB>.limit_at_from ∧<BR/>|seg.to − plan.segments<SUB>i+1</SUB>.from| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  computeD [label=<c = seg.to<BR/>leftLen = c − seg.from<BR/>rightLen = plan.segments<SUB>i+1</SUB>.to − c<BR/>d = min(leftLen, rightLen)>, shape=box]
+  chkAnti [label=<isAntisymmetric(f, c, d)?>, shape=diamond, fillcolor="#fff7d1"]
 
   initTails [label=<leftTailVal = 0; leftTailN = 0; leftTailRunge = 0<BR/>rightTailVal = 0; rightTailN = 0; rightTailRunge = 0>, shape=box]
 
@@ -29,22 +29,22 @@ digraph TryPrincipalValue {
   callLeftLim  [label=<res = limitAtEndpoint(<BR/>integ, f, seg.from, c − d, +1, eps)>, shape=box, fillcolor="#e6eefc"]
   callLeftRng  [label=<res = integ.rungeSolve(<BR/>f, seg.from, c − d)>, shape=box, fillcolor="#e6eefc"]
   chkLeftOk    [label=<res.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
-  retFailLT    [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  retFailLT    [label=<success = false>, shape=parallelogram, fillcolor="#fde2e2"]
   assignLeft   [label=<leftTailVal = res.value<BR/>leftTailN = res.n<BR/>leftTailRunge = res.runge>, shape=box]
 
   chkRightLen  [label=<rightLen &gt; d + 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
-  chkRightSing [label=<plan[i+1].limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
-  callRightLim [label=<res = limitAtEndpoint(<BR/>integ, f, plan[i+1].to, c + d, −1, eps)>, shape=box, fillcolor="#e6eefc"]
-  callRightRng [label=<res = integ.rungeSolve(<BR/>f, c + d, plan[i+1].to)>, shape=box, fillcolor="#e6eefc"]
+  chkRightSing [label=<plan.segments<SUB>i+1</SUB>.limit_at_to?>, shape=diamond, fillcolor="#fff7d1"]
+  callRightLim [label=<res = limitAtEndpoint(<BR/>integ, f, plan.segments<SUB>i+1</SUB>.to, c + d, −1, eps)>, shape=box, fillcolor="#e6eefc"]
+  callRightRng [label=<res = integ.rungeSolve(<BR/>f, c + d, plan.segments<SUB>i+1</SUB>.to)>, shape=box, fillcolor="#e6eefc"]
   chkRightOk   [label=<res.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
-  retFailRT    [label=<success = false<BR/>(хвостовой расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  retFailRT    [label=<success = false>, shape=parallelogram, fillcolor="#fde2e2"]
   assignRight  [label=<rightTailVal = res.value<BR/>rightTailN = res.n<BR/>rightTailRunge = res.runge>, shape=box]
 
-  accPV [label=<acc += leftTailVal + rightTailVal<BR/>nAcc += leftTailN + rightTailN<BR/>rg += leftTailRunge + rightTailRunge<BR/>(подотрезок [c − d, c + d] зануляется в смысле V.p.)<BR/>usedPV = true<BR/>i = i + 2>, shape=box, fillcolor="#fef3c7"]
+  accPV [label=<acc += leftTailVal + rightTailVal<BR/>nAcc += leftTailN + rightTailN<BR/>rg += leftTailRunge + rightTailRunge<BR/>usedPV = true<BR/>i = i + 2>, shape=box, fillcolor="#fef3c7"]
 
-  fallback [label=<sr = computeSegmentStandard(<BR/>integ, f, seg, eps)<BR/>(см. отдельную блок-схему)>, shape=box, fillcolor="#e6eefc"]
+  fallback [label=<sr = computeSegmentStandard(<BR/>integ, f, seg, eps)>, shape=box, fillcolor="#e6eefc"]
   chkFb [label=<sr.status = "ok"?>, shape=diamond, fillcolor="#fff7d1"]
-  retFailFb [label=<success = false<BR/>(несобственный<BR/>подотрезок расходится)>, shape=parallelogram, fillcolor="#fde2e2"]
+  retFailFb [label=<success = false>, shape=parallelogram, fillcolor="#fde2e2"]
   accFb [label=<acc += sr.value<BR/>nAcc += sr.n<BR/>rg += sr.runge<BR/>i = i + 1>, shape=box]
 
   stop [label="Конец", shape=oval, fillcolor="#e6eefc"]

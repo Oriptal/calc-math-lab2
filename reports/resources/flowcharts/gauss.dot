@@ -1,48 +1,154 @@
 digraph Gauss {
-  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
-  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
-  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.28, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=13, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=11, color="#000000"]
 
-  start [label="Начало", shape=oval, fillcolor="#e6eefc"]
-  input [label="Ввод: A (n×n), b (n)", shape=parallelogram, fillcolor="#f5f5f5"]
-  init  [label=<сохранить A, b\nкак A<SUB>0</SUB>, b<SUB>0</SUB>;\ndet = 1; sgn = +1>, shape=box]
+  // ---------- ВХОД И ИНИЦИАЛИЗАЦИЯ ----------
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: A (n × n), b (n)>, shape=parallelogram, fillcolor="#f5f5f5"]
+  copy   [label=<скопировать A → A<SUB>0</SUB>, b → b<SUB>0</SUB><BR/>sgn = 1, det = 1, i = 0>, shape=box]
 
-  iLoop [label=<для i = 0, … , n−1>, shape=diamond, fillcolor="#fff7d1"]
-  pivot [label=<найти строку k с max |a<SUB>k,i</SUB>|\nсреди i ≤ k &lt; n>, shape=box]
-  chkPivot [label=<|a<SUB>k,i</SUB>| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
-  setDetZero [label=<det = 0; пропустить шаг i>, shape=box]
-  chkSwap [label=<k ≠ i ?>, shape=diamond, fillcolor="#fff7d1"]
-  swap [label=<swap(A[i], A[k]);\nswap(b[i], b[k]);\nsgn = −sgn>, shape=box]
-  elim [label=<для j = i+1, … , n−1\nc = −a<SUB>j,i</SUB> / a<SUB>i,i</SUB>\nA[j] += c · A[i];\nb[j] += c · b[i]>, shape=box]
+  // ---------- ВНЕШНИЙ ЦИКЛ ПРЯМОГО ХОДА ----------
+  outChk [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  initMx [label=<maxVal = a<SUB>i,i</SUB><BR/>maxIdx = i<BR/>j = i + 1>, shape=box]
 
-  detComp [label=<det = sgn · ∏ a<SUB>i,i</SUB>>, shape=box]
-  chkDet [label=<|det| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
-  classify [label=<есть строка [0 … 0 | b<SUB>i</SUB> ≠ 0] ?>, shape=diamond, fillcolor="#fff7d1"]
-  noSol [label="Нет решений", shape=parallelogram, fillcolor="#fde2e2"]
-  infSol [label="Бесконечно много решений", shape=parallelogram, fillcolor="#fde2e2"]
+  // ---------- ВНУТРЕННИЙ ЦИКЛ ПОИСКА МАКСИМУМА ----------
+  mxChk  [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  mxCmp  [label=<|maxVal| &lt; |a<SUB>j,i</SUB>| ?>, shape=diamond, fillcolor="#fff7d1"]
+  mxUpd  [label=<maxVal = a<SUB>j,i</SUB><BR/>maxIdx = j>, shape=box]
+  mxInc  [label=<j = j + 1>, shape=box]
 
-  back [label=<обратный ход:\nx[i] = (b[i] − Σ a<SUB>i,j</SUB> x[j]) / a<SUB>i,i</SUB>>, shape=box]
-  resid [label=<r = A<SUB>0</SUB> · x − b<SUB>0</SUB>>, shape=box]
-  output [label=<Вывод: x, det, r>, shape=parallelogram, fillcolor="#f5f5f5"]
-  stop  [label="Конец", shape=oval, fillcolor="#e6eefc"]
+  // ---------- ПРОВЕРКА ВЕДУЩЕГО ----------
+  pivChk [label=<|maxVal| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  setD0  [label=<det = 0<BR/>i = i + 1>, shape=box]
 
-  start -> input -> init -> iLoop
-  iLoop -> pivot [label="да"]
-  pivot -> chkPivot
-  chkPivot -> setDetZero [label="да"]
-  setDetZero -> iLoop
-  chkPivot -> chkSwap [label="нет"]
-  chkSwap -> swap [label="да"]
-  chkSwap -> elim [label="нет"]
-  swap -> elim
-  elim -> iLoop
-  iLoop -> detComp [label="нет"]
-  detComp -> chkDet
-  chkDet -> classify [label="да"]
-  classify -> noSol [label="да"]
-  classify -> infSol [label="нет"]
-  noSol -> stop
-  infSol -> stop
-  chkDet -> back [label="нет"]
-  back -> resid -> output -> stop
+  // ---------- ПЕРЕСТАНОВКА (РАЗВЁРНУТАЯ, БЕЗ swap()) ----------
+  swChk  [label=<maxIdx ≠ i ?>, shape=diamond, fillcolor="#fff7d1"]
+  swInit [label=<k = 0>, shape=box]
+  swLoop [label=<k &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  swBody [label=<tmp = a<SUB>i,k</SUB><BR/>a<SUB>i,k</SUB> = a<SUB>maxIdx,k</SUB><BR/>a<SUB>maxIdx,k</SUB> = tmp<BR/>k = k + 1>, shape=box]
+  swBvec [label=<tmp = b<SUB>i</SUB><BR/>b<SUB>i</SUB> = b<SUB>maxIdx</SUB><BR/>b<SUB>maxIdx</SUB> = tmp<BR/>sgn = − sgn>, shape=box]
+
+  // ---------- ИСКЛЮЧЕНИЕ ПОДЛЕЖАЩИХ СТРОК ----------
+  elInit [label=<j = i + 1>, shape=box]
+  elJChk [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  elC    [label=<c = − a<SUB>j,i</SUB> / a<SUB>i,i</SUB><BR/>k = i>, shape=box]
+  elKChk [label=<k &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  elKBdy [label=<a<SUB>j,k</SUB> = a<SUB>j,k</SUB> + c · a<SUB>i,k</SUB><BR/>k = k + 1>, shape=box]
+  elBvec [label=<b<SUB>j</SUB> = b<SUB>j</SUB> + c · b<SUB>i</SUB><BR/>j = j + 1>, shape=box]
+  outInc [label=<i = i + 1>, shape=box]
+
+  // ---------- ВЫЧИСЛЕНИЕ ОПРЕДЕЛИТЕЛЯ (РАЗВЁРНУТЫЙ ∏) ----------
+  detInit [label=<i = 0>, shape=box]
+  detChk  [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  detBdy  [label=<det = det · a<SUB>i,i</SUB><BR/>i = i + 1>, shape=box]
+  detSgn  [label=<det = det · sgn>, shape=box]
+
+  // ---------- КЛАССИФИКАЦИЯ ----------
+  clsChk  [label=<|det| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  clsIn   [label=<i = 0>, shape=box]
+  clsIChk [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  clsAll  [label=<allZeros = да<BR/>j = 0>, shape=box]
+  clsJChk [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  clsJBdy [label=<|a<SUB>i,j</SUB>| &gt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  clsJNo  [label=<allZeros = нет>, shape=box]
+  clsJInc [label=<j = j + 1>, shape=box]
+  clsRow  [label=<allZeros ∧ |b<SUB>i</SUB>| &gt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  clsIInc [label=<i = i + 1>, shape=box]
+  noSol   [label="Нет решений", shape=parallelogram, fillcolor="#fde2e2"]
+  infSol  [label="Бесконечно много решений", shape=parallelogram, fillcolor="#fde2e2"]
+
+  // ---------- ОБРАТНЫЙ ХОД ----------
+  bkInit [label=<i = n − 1>, shape=box]
+  bkChk  [label=<i ≥ 0 ?>, shape=diamond, fillcolor="#fff7d1"]
+  bkSum  [label=<sum = 0<BR/>j = i + 1>, shape=box]
+  bkJChk [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  bkJBdy [label=<sum = sum + a<SUB>i,j</SUB> · x<SUB>j</SUB><BR/>j = j + 1>, shape=box]
+  bkSet  [label=<x<SUB>i</SUB> = (b<SUB>i</SUB> − sum) / a<SUB>i,i</SUB><BR/>i = i − 1>, shape=box]
+
+  // ---------- НЕВЯЗКА ----------
+  rsInit [label=<i = 0>, shape=box]
+  rsIChk [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  rsSum  [label=<sum = 0<BR/>j = 0>, shape=box]
+  rsJChk [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  rsJBdy [label=<sum = sum + x<SUB>j</SUB> · (A<SUB>0</SUB>)<SUB>i,j</SUB><BR/>j = j + 1>, shape=box]
+  rsSet  [label=<r<SUB>i</SUB> = sum − (b<SUB>0</SUB>)<SUB>i</SUB><BR/>i = i + 1>, shape=box]
+
+  // ---------- ВЫХОД ----------
+  output [label=<Вывод: x, det, r>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  // ---------- РЁБРА ----------
+  start -> input -> copy -> outChk
+  outChk -> initMx [label="да"]
+  initMx -> mxChk
+  mxChk  -> mxCmp [label="да"]
+  mxCmp  -> mxUpd [label="да"]
+  mxCmp  -> mxInc [label="нет"]
+  mxUpd  -> mxInc
+  mxInc  -> mxChk
+  mxChk  -> pivChk [label="нет"]
+  pivChk -> setD0 [label="да"]
+  setD0  -> outChk
+  pivChk -> swChk [label="нет"]
+  swChk  -> swInit [label="да"]
+  swInit -> swLoop
+  swLoop -> swBody [label="да"]
+  swBody -> swLoop
+  swLoop -> swBvec [label="нет"]
+  swBvec -> elInit
+  swChk  -> elInit [label="нет"]
+  elInit -> elJChk
+  elJChk -> elC [label="да"]
+  elC    -> elKChk
+  elKChk -> elKBdy [label="да"]
+  elKBdy -> elKChk
+  elKChk -> elBvec [label="нет"]
+  elBvec -> elJChk
+  elJChk -> outInc [label="нет"]
+  outInc -> outChk
+  outChk -> detInit [label="нет"]
+
+  detInit -> detChk
+  detChk  -> detBdy [label="да"]
+  detBdy  -> detChk
+  detChk  -> detSgn [label="нет"]
+  detSgn  -> clsChk
+
+  clsChk  -> clsIn [label="да"]
+  clsChk  -> bkInit [label="нет"]
+  clsIn   -> clsIChk
+  clsIChk -> clsAll [label="да"]
+  clsAll  -> clsJChk
+  clsJChk -> clsJBdy [label="да"]
+  clsJBdy -> clsJNo [label="да"]
+  clsJBdy -> clsJInc [label="нет"]
+  clsJNo  -> clsJInc
+  clsJInc -> clsJChk
+  clsJChk -> clsRow [label="нет"]
+  clsRow  -> noSol [label="да"]
+  clsRow  -> clsIInc [label="нет"]
+  clsIInc -> clsIChk
+  clsIChk -> infSol [label="нет"]
+  noSol   -> stop
+  infSol  -> stop
+
+  bkInit -> bkChk
+  bkChk  -> bkSum [label="да"]
+  bkSum  -> bkJChk
+  bkJChk -> bkJBdy [label="да"]
+  bkJBdy -> bkJChk
+  bkJChk -> bkSet [label="нет"]
+  bkSet  -> bkChk
+  bkChk  -> rsInit [label="нет"]
+
+  rsInit -> rsIChk
+  rsIChk -> rsSum [label="да"]
+  rsSum  -> rsJChk
+  rsJChk -> rsJBdy [label="да"]
+  rsJBdy -> rsJChk
+  rsJChk -> rsSet [label="нет"]
+  rsSet  -> rsIChk
+  rsIChk -> output [label="нет"]
+  output -> stop
 }

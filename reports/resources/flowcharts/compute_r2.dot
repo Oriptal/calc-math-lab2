@@ -1,0 +1,42 @@
+digraph ComputeR2 {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: computeR2", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: y<SUB>i</SUB>, φ<SUB>i</SUB>, i = 1..n>, shape=parallelogram, fillcolor="#f5f5f5"]
+
+  init1  [label=<SY = 0<BR/>i = 1>, shape=box]
+  chk1   [label=<i ≤ n ?>, shape=diamond, fillcolor="#fff7d1"]
+  acc1   [label=<SY = SY + y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
+
+  meany  [label=<ȳ = SY / n<BR/>ssRes = 0<BR/>ssTot = 0<BR/>i = 1>, shape=box]
+  chk2   [label=<i ≤ n ?>, shape=diamond, fillcolor="#fff7d1"]
+  acc2   [label=<d<SUB>r</SUB> = y<SUB>i</SUB> − φ<SUB>i</SUB><BR/>d<SUB>t</SUB> = y<SUB>i</SUB> − ȳ<BR/>ssRes = ssRes + d<SUB>r</SUB> · d<SUB>r</SUB><BR/>ssTot = ssTot + d<SUB>t</SUB> · d<SUB>t</SUB><BR/>i = i + 1>, shape=box]
+
+  chkTot [label=<ssTot &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  chkRes [label=<ssRes &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  r2one  [label=<R<SUP>2</SUP> = 1>, shape=box]
+  r2zero [label=<R<SUP>2</SUP> = 0>, shape=box]
+  r2gen  [label=<R<SUP>2</SUP> = 1 − ssRes / ssTot>, shape=box]
+
+  output [label=<Вывод: R<SUP>2</SUP>>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init1 -> chk1
+  chk1 -> acc1 [label="да"]
+  acc1 -> chk1
+  chk1 -> meany [label="нет"]
+  meany -> chk2
+  chk2 -> acc2 [label="да"]
+  acc2 -> chk2
+  chk2 -> chkTot [label="нет"]
+  chkTot -> chkRes [label="да"]
+  chkRes -> r2one [label="да"]
+  chkRes -> r2zero [label="нет"]
+  chkTot -> r2gen [label="нет"]
+  r2one -> output
+  r2zero -> output
+  r2gen -> output
+  output -> stop
+}
