@@ -304,7 +304,7 @@ RowLayout {
 
             MyRect {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 250
+                Layout.preferredHeight: resultsList.contentHeight + 16
                 color: Theme.bg
 
                 ListView {

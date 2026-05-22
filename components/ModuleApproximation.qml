@@ -556,7 +556,7 @@ RowLayout {
 
             MyRect {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 250
+                Layout.preferredHeight: methodsList.contentHeight + 16
                 color: Theme.bg
                 visible: rect.hasResult && rect.statusKey === "ok"
 
