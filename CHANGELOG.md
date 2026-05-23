@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.2.1 - 2026-05-21
+#### Bug Fixes
+- (**ui**) collapse results table height to match content - (e9f3ead) - Prokhor
+- (**ui**) make approximation table formula column elastic - (9406540) - Prokhor
+
+- - -
+
 ## v1.2.0 - 2026-05-21
 #### Features
 - (**backend**) add approximation module - (e04a3c3) - Prokhor
