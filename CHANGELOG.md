@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.2.2 - 2026-05-21
+#### Continuous Integration
+- (**release**) clone and publish via public Forgejo URL - (82d2696) - Prokhor
+
+- - -
+
 ## v1.2.1 - 2026-05-21
 #### Bug Fixes
 - (**ui**) collapse results table height to match content - (e9f3ead) - Prokhor
