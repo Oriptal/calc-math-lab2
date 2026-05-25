@@ -4,7 +4,7 @@ digraph LSLinear {
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
   start  [label="Начало: fitLinear", shape=oval, fillcolor="#e6eefc"]
-  input  [label="Ввод: x[1..n], y[1..n], n", shape=parallelogram, fillcolor="#f5f5f5"]
+  input  [label=<Ввод: n точек (x<SUB>i</SUB>, y<SUB>i</SUB>)>, shape=parallelogram, fillcolor="#f5f5f5"]
   zero   [label=<SX = 0<BR/>SXX = 0<BR/>SY = 0<BR/>SXY = 0<BR/>i = 1>, shape=box]
   loop   [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
   body   [label=<SX = SX + x<SUB>i</SUB><BR/>SXX = SXX + x<SUB>i</SUB> · x<SUB>i</SUB><BR/>SY = SY + y<SUB>i</SUB><BR/>SXY = SXY + x<SUB>i</SUB> · y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
