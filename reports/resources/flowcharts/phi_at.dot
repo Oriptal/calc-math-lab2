@@ -1,0 +1,47 @@
+digraph PhiAt {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: phiAt", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: kind, коэффициенты a, x>, shape=parallelogram, fillcolor="#f5f5f5"]
+
+  d1   [label=<kind = Linear ?>, shape=diamond, fillcolor="#fff7d1"]
+  r1   [label=<φ = a<SUB>0</SUB> · x + a<SUB>1</SUB>>, shape=box]
+
+  d2   [label=<kind = Poly2 ?>, shape=diamond, fillcolor="#fff7d1"]
+  r2   [label=<φ = a<SUB>0</SUB> + a<SUB>1</SUB> · x + a<SUB>2</SUB> · x<SUP>2</SUP>>, shape=box]
+
+  d3   [label=<kind = Poly3 ?>, shape=diamond, fillcolor="#fff7d1"]
+  r3   [label=<φ = a<SUB>0</SUB> + a<SUB>1</SUB> · x + a<SUB>2</SUB> · x<SUP>2</SUP><BR/>+ a<SUB>3</SUB> · x<SUP>3</SUP>>, shape=box]
+
+  d4   [label=<kind = Exponential ?>, shape=diamond, fillcolor="#fff7d1"]
+  r4   [label=<φ = a<SUB>0</SUB> · exp(a<SUB>1</SUB> · x)>, shape=box]
+
+  d5   [label=<kind = Logarithmic ?>, shape=diamond, fillcolor="#fff7d1"]
+  r5   [label=<φ = a<SUB>0</SUB> · ln(x) + a<SUB>1</SUB>>, shape=box]
+
+  r6   [label=<φ = a<SUB>0</SUB> · x<SUP>a<SUB>1</SUB></SUP>>, shape=box]
+
+  output [label=<Вывод: φ>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> d1
+  d1 -> r1 [label="да"]
+  d1 -> d2 [label="нет"]
+  d2 -> r2 [label="да"]
+  d2 -> d3 [label="нет"]
+  d3 -> r3 [label="да"]
+  d3 -> d4 [label="нет"]
+  d4 -> r4 [label="да"]
+  d4 -> d5 [label="нет"]
+  d5 -> r5 [label="да"]
+  d5 -> r6 [label="нет"]
+  r1 -> output
+  r2 -> output
+  r3 -> output
+  r4 -> output
+  r5 -> output
+  r6 -> output
+  output -> stop
+}

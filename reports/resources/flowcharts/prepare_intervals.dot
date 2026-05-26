@@ -8,12 +8,12 @@ digraph PrepareIntervals {
   init  [label=<innerPoints = [ ]<BR/>startSing = false<BR/>endSing = false<BR/>i = 0>, shape=box]
 
   loopD    [label=<i &lt; |D|?>, shape=diamond, fillcolor="#fff7d1"]
-  isStart  [label=<|D[i] − a| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  isStart  [label=<|D<SUB>i</SUB> − a| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
   setStart [label="startSing = true", shape=box]
-  isEnd    [label=<|D[i] − b| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
+  isEnd    [label=<|D<SUB>i</SUB> − b| &lt; 10<SUP>−15</SUP>?>, shape=diamond, fillcolor="#fff7d1"]
   setEnd   [label="endSing = true", shape=box]
-  isInner  [label=<a &lt; D[i] &lt; b?>, shape=diamond, fillcolor="#fff7d1"]
-  pushInn  [label="innerPoints.push(D[i])", shape=box]
+  isInner  [label=<a &lt; D<SUB>i</SUB> &lt; b?>, shape=diamond, fillcolor="#fff7d1"]
+  pushInn  [label=<innerPoints += { D<SUB>i</SUB> }>, shape=box]
   incrI    [label="i = i + 1", shape=box]
 
   sortInn  [label="sort(innerPoints)", shape=box]
@@ -23,8 +23,8 @@ digraph PrepareIntervals {
 
   initSplit [label=<prev = a<BR/>prevSing = startSing<BR/>j = 0>, shape=box]
   loopInner [label=<j &lt; |innerPoints|?>, shape=diamond, fillcolor="#fff7d1"]
-  pushSeg   [label=<plan.segments.push({<BR/>prev, innerPoints[j],<BR/>prevSing, true})<BR/>prev = innerPoints[j]<BR/>prevSing = true<BR/>j = j + 1>, shape=box]
-  pushTail  [label=<plan.segments.push({<BR/>prev, b, prevSing, endSing})>, shape=box]
+  pushSeg   [label=<plan.segments += {<BR/>(prev, innerPoints<SUB>j</SUB>,<BR/>prevSing, true) }<BR/>prev = innerPoints<SUB>j</SUB><BR/>prevSing = true<BR/>j = j + 1>, shape=box]
+  pushTail  [label=<plan.segments += {<BR/>(prev, b, prevSing, endSing) }>, shape=box]
 
   ret  [label=<Вывод: plan>, shape=parallelogram, fillcolor="#dcfce7"]
   stop [label="Конец", shape=oval, fillcolor="#e6eefc"]

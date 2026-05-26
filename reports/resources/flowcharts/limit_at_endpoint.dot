@@ -12,7 +12,7 @@ digraph LimitAtEndpoint {
 
   comp     [label=<σ = d<SUB>0</SUB> · 0.5<SUP>kStep</SUP><BR/>side &gt; 0:&nbsp;lo = c + σ; hi = other<BR/>иначе:&nbsp;&nbsp;lo = other; hi = c − σ>, shape=box]
 
-  callRunge [label=<inner = integ.rungeSolve(f, lo, hi)<BR/>(см. блок-схему правила Рунге)>, shape=box, fillcolor="#e6eefc"]
+  callRunge [label=<inner = integ.rungeSolve(f, lo, hi)>, shape=box, fillcolor="#e6eefc"]
 
   chkDiv    [label=<inner.status = "diverges"<BR/>∨ ¬isFinite(inner.value)?>, shape=diamond, fillcolor="#fff7d1"]
   retDiv    [label=<status = diverges<BR/>value = NaN<BR/>n = inner.n>, shape=parallelogram, fillcolor="#fde2e2"]

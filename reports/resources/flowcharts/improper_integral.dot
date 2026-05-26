@@ -11,13 +11,13 @@ digraph ImproperIntegral {
   chkEps [label=<EPS &gt; 0 ∧ isFinite(EPS)?>, shape=diamond, fillcolor="#fff7d1"]
   errEps [label=<status = error<BR/>value = NaN<BR/>«Некорректная точность ε»>, shape=parallelogram, fillcolor="#fde2e2"]
 
-  prep   [label=<plan = prepareIntervals(<BR/>a, b, разрывы)<BR/>(см. отдельную блок-схему)>, shape=box, fillcolor="#e6eefc"]
-  improperFlag [label=<improper = (|plan.segments| &gt; 1)<BR/>∨ plan.segments[0].limit_at_from<BR/>∨ plan.segments[0].limit_at_to>, shape=box]
+  prep   [label=<plan = prepareIntervals(<BR/>a, b, разрывы)>, shape=box, fillcolor="#e6eefc"]
+  improperFlag [label=<improper = (|plan.segments| &gt; 1)<BR/>∨ plan.segments<SUB>0</SUB>.limit_at_from<BR/>∨ plan.segments<SUB>0</SUB>.limit_at_to>, shape=box]
   initLoop [label=<total = 0; totalN = 0<BR/>totalRunge = 0<BR/>failedStatus = ""<BR/>k = 0>, shape=box]
 
   chkSeg [label=<k &lt; |plan.segments|?>, shape=diamond, fillcolor="#fff7d1"]
 
-  callSeg [label=<sr = computeSegmentStandard(<BR/>*this, f, plan.segments[k], EPS)<BR/>(см. отдельную блок-схему)>, shape=box, fillcolor="#e6eefc"]
+  callSeg [label=<sr = computeSegmentStandard(<BR/>*this, f, plan.segments<SUB>k</SUB>, EPS)>, shape=box, fillcolor="#e6eefc"]
   chkMax  [label=<sr.status = "max_iter"?>, shape=diamond, fillcolor="#fff7d1"]
   retMax  [label=<status = max_iter<BR/>value = sr.value<BR/>n = sr.n; runge = sr.runge>, shape=parallelogram, fillcolor="#fde2e2"]
 
@@ -26,14 +26,14 @@ digraph ImproperIntegral {
   acc     [label=<total += sr.value<BR/>totalN += sr.n<BR/>totalRunge += sr.runge<BR/>k = k + 1>, shape=box]
 
   chkAllOk [label=<failedStatus == ""?>, shape=diamond, fillcolor="#fff7d1"]
-  retOk    [label=<status = ok<BR/>value = total<BR/>n = totalN<BR/>runge = totalRunge<BR/>сообщение зависит от improper>, shape=parallelogram, fillcolor="#dcfce7"]
+  retOk    [label=<status = ok<BR/>value = total<BR/>n = totalN<BR/>runge = totalRunge>, shape=parallelogram, fillcolor="#dcfce7"]
 
-  pv       [label=<pv = tryPrincipalValue(<BR/>*this, f, plan, EPS)<BR/>(см. отдельную блок-схему)>, shape=box, fillcolor="#fef3c7"]
+  pv       [label=<pv = tryPrincipalValue(<BR/>*this, f, plan, EPS)>, shape=box, fillcolor="#fef3c7"]
   chkPv    [label=<pv.success ∧<BR/>pv.usedPV?>, shape=diamond, fillcolor="#fff7d1"]
   retPv    [label=<status = ok_principal_value<BR/>value = pv.value<BR/>n = pv.n; runge = pv.runge>, shape=parallelogram, fillcolor="#fef3c7"]
 
   chkInd   [label=<failedStatus = "indeterminate"?>, shape=diamond, fillcolor="#fff7d1"]
-  retInd   [label=<status = indeterminate<BR/>value = total (накопленное)<BR/>n = totalN; runge = totalRunge>, shape=parallelogram, fillcolor="#fde2e2"]
+  retInd   [label=<status = indeterminate<BR/>value = total<BR/>n = totalN; runge = totalRunge>, shape=parallelogram, fillcolor="#fde2e2"]
   retDiv   [label=<status = diverges<BR/>value = NaN<BR/>«Интеграл расходится»>, shape=parallelogram, fillcolor="#fde2e2"]
 
   stop [label="Конец", shape=oval, fillcolor="#e6eefc"]

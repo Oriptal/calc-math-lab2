@@ -4,26 +4,28 @@ digraph LSLinear {
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
   start  [label="Начало: fitLinear", shape=oval, fillcolor="#e6eefc"]
-  input  [label=<Ввод: n точек (x<SUB>i</SUB>, y<SUB>i</SUB>)>, shape=parallelogram, fillcolor="#f5f5f5"]
-  zero   [label=<SX = 0<BR/>SXX = 0<BR/>SY = 0<BR/>SXY = 0<BR/>i = 1>, shape=box]
-  loop   [label=<i ≤ n?>, shape=diamond, fillcolor="#fff7d1"]
-  body   [label=<SX = SX + x<SUB>i</SUB><BR/>SXX = SXX + x<SUB>i</SUB> · x<SUB>i</SUB><BR/>SY = SY + y<SUB>i</SUB><BR/>SXY = SXY + x<SUB>i</SUB> · y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
-  det    [label=<Δ = SXX · n − SX · SX>, shape=box]
-  check  [label=<|Δ| &lt; ε?>, shape=diamond, fillcolor="#fff7d1"]
-  degen  [label="Вырождена", shape=parallelogram, fillcolor="#fde2e2"]
-  cramer [label=<Δ<SUB>1</SUB> = SXY · n − SX · SY<BR/>Δ<SUB>2</SUB> = SXX · SY − SX · SXY<BR/>a = Δ<SUB>1</SUB> / Δ<BR/>b = Δ<SUB>2</SUB> / Δ>, shape=box]
-  stats  [label="Вызов fillResidualsAndStats(a, b)", shape=box, fillcolor="#eef2ff"]
-  pear   [label=<r = Pearson(x, y)>, shape=box]
-  output [label=<Вывод: a, b, S, δ, R², r>, shape=parallelogram, fillcolor="#dcfce7"]
+  input  [label=<Ввод: data — n точек (x<SUB>i</SUB>, y<SUB>i</SUB>)>, shape=parallelogram, fillcolor="#f5f5f5"]
+  initRes [label=<res.kind = Kind::Linear<BR/>i = 1>, shape=box]
+  chkLoop [label=<i ≤ n ?>, shape=diamond, fillcolor="#fff7d1"]
+  copy    [label=<xs += {data<SUB>i</SUB>.x}<BR/>ys += {data<SUB>i</SUB>.y}<BR/>i = i + 1>, shape=box]
+
+  reg    [label=<fit = linearCramer(xs, ys)>, shape=box, fillcolor="#eef2ff"]
+  chkOk  [label=<fit.ok ?>, shape=diamond, fillcolor="#fff7d1"]
+  degen  [label=<res.status = Status::Degenerate>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  setc   [label=<res.coeffs = { fit.slope, fit.intercept }>, shape=box]
+  stats  [label=<fillResidualsAndStats(res, data, res.coeffs)>, shape=box, fillcolor="#eef2ff"]
+  pear   [label=<res.pearson = computePearson(xs, ys)>, shape=box, fillcolor="#eef2ff"]
+  output [label=<Вывод: res>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> zero -> loop
-  loop -> body [label="да"]
-  body -> loop
-  loop -> det [label="нет"]
-  det -> check
-  check -> degen [label="да"]
+  start -> input -> initRes -> chkLoop
+  chkLoop -> copy [label="да"]
+  copy -> chkLoop
+  chkLoop -> reg [label="нет"]
+  reg -> chkOk
+  chkOk -> degen [label="нет"]
   degen -> stop
-  check -> cramer [label="нет"]
-  cramer -> stats -> pear -> output -> stop
+  chkOk -> setc [label="да"]
+  setc -> stats -> pear -> output -> stop
 }
