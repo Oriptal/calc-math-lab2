@@ -4,7 +4,7 @@ if(POLICY CMP0207)
     cmake_policy(SET CMP0207 NEW)
 endif()
 
-project(HelloWorldQuickProject VERSION 1.0.0 LANGUAGES CXX)
+project(CompMath VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_DEPLOY_USE_PATCHELF ON)
@@ -13,7 +13,7 @@ find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets Concurrent)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
-qt_add_executable(appHelloWorldQuickProject
+qt_add_executable(comp-math
     main.cpp
     backend/Backend.hpp
     backend/BackendUtil.hpp
@@ -33,8 +33,8 @@ set_source_files_properties(Theme.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
 )
 
-qt_add_qml_module(appHelloWorldQuickProject
-    URI HelloWorldQuickProject
+qt_add_qml_module(comp-math
+    URI CompMath
     QML_FILES
         Main.qml
         Theme.qml
@@ -71,15 +71,15 @@ qt_add_qml_module(appHelloWorldQuickProject
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(appHelloWorldQuickProject PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appHelloWorldQuickProject
+set_target_properties(comp-math PROPERTIES
+#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.compmath
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appHelloWorldQuickProject
+target_link_libraries(comp-math
     PRIVATE
         Qt6::Quick
         Qt6::Charts
@@ -89,14 +89,14 @@ target_link_libraries(appHelloWorldQuickProject
 )
 
 include(GNUInstallDirs)
-install(TARGETS appHelloWorldQuickProject
+install(TARGETS comp-math
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 set(deploy_script_args
-    TARGET appHelloWorldQuickProject
+    TARGET comp-math
     OUTPUT_SCRIPT deploy_script
     NO_UNSUPPORTED_PLATFORM_ERROR
     NO_TRANSLATIONS
