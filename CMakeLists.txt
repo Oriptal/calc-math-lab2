@@ -27,6 +27,8 @@ qt_add_executable(comp-math
     backend/GaussModule.cpp
     backend/ApproximationModule.hpp
     backend/ApproximationModule.cpp
+    backend/InterpolationModule.hpp
+    backend/InterpolationModule.cpp
 )
 
 set_source_files_properties(Theme.qml PROPERTIES
@@ -66,6 +68,9 @@ qt_add_qml_module(comp-math
         assets/integrand3.svg
         assets/integrand4.svg
         assets/icon-256.png
+        assets/datasets/sample1_var5.txt
+        assets/datasets/sample2_sin.txt
+        assets/datasets/sample3_runge.txt
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -141,6 +146,8 @@ add_library(calc_core
     calc/gauss.cpp
     calc/Approximation.hpp
     calc/approximation.cpp
+    calc/Interpolation.hpp
+    calc/interpolation.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
