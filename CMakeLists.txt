@@ -46,6 +46,7 @@ qt_add_qml_module(comp-math
         components/ModuleApproximation.qml
         components/ModuleGauss.qml
         components/ModuleIntegration.qml
+        components/ModuleInterpolation.qml
         components/ModuleRoot.qml
         components/ModuleSettings.qml
         components/ModuleSystem.qml
