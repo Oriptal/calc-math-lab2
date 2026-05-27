@@ -1,0 +1,102 @@
+digraph UMLLab5 {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.5, ranksep=0.65, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=12, shape=plaintext]
+  edge  [fontname="CMU Serif", fontsize=11, color="#000000", arrowhead=empty]
+
+  Interp [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff">
+      <TR><TD ALIGN="CENTER"><B>&laquo;namespace&raquo; interp</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ isEquidistant(nodes, h) : bool</TD></TR>
+      <TR><TD ALIGN="LEFT">+ finiteDifferences(nodes) : vec&lt;vec&lt;double&gt;&gt;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ lagrange(nodes, X) : double</TD></TR>
+      <TR><TD ALIGN="LEFT">+ run(method, nodes, X) : MethodResult</TD></TR>
+      <TR><TD ALIGN="LEFT">+ methodKey / methodTitle(method) : char*</TD></TR>
+    </TABLE>
+  >]
+
+  MethodResult [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff">
+      <TR><TD ALIGN="CENTER"><B>MethodResult</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ method : Method</TD></TR>
+      <TR><TD ALIGN="LEFT">+ status : Status</TD></TR>
+      <TR><TD ALIGN="LEFT">+ value : double</TD></TR>
+      <TR><TD ALIGN="LEFT">+ t : double</TD></TR>
+      <TR><TD ALIGN="LEFT">+ center, order : int</TD></TR>
+      <TR><TD ALIGN="LEFT">+ note : string</TD></TR>
+    </TABLE>
+  >]
+
+  Point [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff">
+      <TR><TD ALIGN="CENTER"><B>Point</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ x : double</TD></TR>
+      <TR><TD ALIGN="LEFT">+ y : double</TD></TR>
+    </TABLE>
+  >]
+
+  Method [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#fff7d1">
+      <TR><TD ALIGN="CENTER"><B>&laquo;enum&raquo; Method</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">Lagrange</TD></TR>
+      <TR><TD ALIGN="LEFT">NewtonForward / NewtonBackward</TD></TR>
+      <TR><TD ALIGN="LEFT">GaussI / GaussII</TD></TR>
+      <TR><TD ALIGN="LEFT">Stirling / Bessel</TD></TR>
+    </TABLE>
+  >]
+
+  Status [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#fff7d1">
+      <TR><TD ALIGN="CENTER"><B>&laquo;enum&raquo; Status</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">Ok</TD></TR>
+      <TR><TD ALIGN="LEFT">NotEquidistant</TD></TR>
+      <TR><TD ALIGN="LEFT">TooFew</TD></TR>
+      <TR><TD ALIGN="LEFT">Duplicate</TD></TR>
+    </TABLE>
+  >]
+
+  InterpolationModule [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#e6eefc">
+      <TR><TD ALIGN="CENTER"><B>InterpolationModule</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ interpolate(payload) : QVariantMap</TD></TR>
+      <TR><TD ALIGN="LEFT">+ sampleInterpolation(points, xMin, xMax, n) : QVariantList</TD></TR>
+      <TR><TD ALIGN="LEFT">+ sampleFunction(funcId, a, b, n) : QVariantList</TD></TR>
+      <TR><TD ALIGN="LEFT">+ datasetList / functionList() : QVariantList</TD></TR>
+      <TR><TD ALIGN="LEFT">+ loadDataset(id) / loadFile(url) : QVariantMap</TD></TR>
+    </TABLE>
+  >]
+
+  Backend [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#e6eefc">
+      <TR><TD ALIGN="CENTER"><B>Backend : QObject</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">+ interpolate(payload) : QVariantMap</TD></TR>
+      <TR><TD ALIGN="LEFT">+ sampleInterpolation(…) : QVariantList</TD></TR>
+      <TR><TD ALIGN="LEFT">… (методы ЛР №1–№4)</TD></TR>
+    </TABLE>
+  >]
+
+  ModuleQml [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#f5f5f5">
+      <TR><TD ALIGN="CENTER"><B>ModuleInterpolation.qml</B></TD></TR>
+      <HR/>
+      <TR><TD ALIGN="LEFT">QML-компонент (RowLayout)</TD></TR>
+      <TR><TD ALIGN="LEFT">— ввод: вручную / из файла / функция</TD></TR>
+      <TR><TD ALIGN="LEFT">— таблица разностей и значения методов</TD></TR>
+      <TR><TD ALIGN="LEFT">— график: узлы, многочлен, функция</TD></TR>
+    </TABLE>
+  >]
+
+  Backend -> InterpolationModule [arrowhead=open, label="вызывает"]
+  InterpolationModule -> Interp [arrowhead=open, label="использует"]
+  Interp -> Point [arrowhead=open, label="принимает"]
+  Interp -> MethodResult [arrowhead=open, label="возвращает"]
+  MethodResult -> Method [arrowhead=open, label="хранит"]
+  MethodResult -> Status [arrowhead=open, label="хранит"]
+  ModuleQml -> Backend [arrowhead=open, label="Q_INVOKABLE"]
+}

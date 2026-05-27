@@ -1,0 +1,37 @@
+digraph Lab5Stirling {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: stirling", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: узлы, Δ<SUP>k</SUP>y, h, X, центр c>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<t = (X − x<SUB>c</SUB>) / h<BR/>t2 = t · t<BR/>result = y<SUB>c</SUB><BR/>p2 = 1<BR/>fact = 1<BR/>k = 1>, shape=box]
+  fk     [label=<fact = fact · k>, shape=box]
+  par    [label=<k — нечётное ?>, shape=diamond, fillcolor="#fff7d1"]
+
+  jodd   [label=<j = (k + 1) / 2<BR/>idxA = c − j<BR/>idxB = c − (j − 1)>, shape=box]
+  chko   [label=<idxA &lt; 0 или idxB + k &gt; n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  acco   [label=<diff = (d<SUB>k,idxA</SUB> + d<SUB>k,idxB</SUB>) / 2<BR/>result = result + t · p2 / fact · diff>, shape=box]
+
+  jeven  [label=<j = k / 2<BR/>idx = c − j>, shape=box]
+  chke   [label=<idx &lt; 0 или idx + k &gt; n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  acce   [label=<result = result + t2 · p2 / fact · d<SUB>k,idx</SUB><BR/>p2 = p2 · (t2 − j · j)>, shape=box]
+
+  nextk  [label=<k = k + 1>, shape=box]
+  output [label=<Вывод: result = P<SUB>n</SUB>(X)>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> fk -> par
+  par -> jodd [label="да"]
+  jodd -> chko
+  chko -> output [label="да"]
+  chko -> acco [label="нет"]
+  acco -> nextk
+  par -> jeven [label="нет"]
+  jeven -> chke
+  chke -> output [label="да"]
+  chke -> acce [label="нет"]
+  acce -> nextk
+  nextk -> fk
+  output -> stop
+}

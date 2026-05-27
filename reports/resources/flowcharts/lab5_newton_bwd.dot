@@ -1,0 +1,19 @@
+digraph Lab5NewtonBackward {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: newtonBackward (2-я формула)", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: узлы (x<SUB>i</SUB>, y<SUB>i</SUB>), таблица Δ<SUP>k</SUP>y, h, X>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<t = (X − x<SUB>n−1</SUB>) / h<BR/>result = y<SUB>n−1</SUB><BR/>factor = 1<BR/>k = 1>, shape=box]
+  chk    [label=<k ≤ n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  body   [label=<factor = factor · (t + (k − 1)) / k<BR/>result = result + factor · d<SUB>k,&thinsp;n−1−k</SUB><BR/>k = k + 1>, shape=box]
+  output [label=<Вывод: result = N<SUB>n</SUB>(X)>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chk
+  chk -> body [label="да"]
+  body -> chk
+  chk -> output [label="нет"]
+  output -> stop
+}

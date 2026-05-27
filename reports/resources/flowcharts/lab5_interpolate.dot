@@ -1,0 +1,66 @@
+digraph Lab5Interpolate {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.3, ranksep=0.35, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: run(метод, узлы, X)", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: метод, n узлов (x<SUB>i</SUB>, y<SUB>i</SUB>), X>, shape=parallelogram, fillcolor="#f5f5f5"]
+  chkn   [label=<n &lt; 2 ?>, shape=diamond, fillcolor="#fff7d1"]
+  errn   [label=<status = TooFew>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  di     [label=<i = 0>, shape=box]
+  chkd   [label=<i ≤ n − 2 ?>, shape=diamond, fillcolor="#fff7d1"]
+  cmp    [label=<|x<SUB>i+1</SUB> − x<SUB>i</SUB>| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
+  errd   [label=<status = Duplicate>, shape=parallelogram, fillcolor="#fde2e2"]
+  nextd  [label=<i = i + 1>, shape=box]
+
+  chkl   [label=<метод = Лагранж ?>, shape=diamond, fillcolor="#fff7d1"]
+  calll  [label=<value = lagrange(узлы, X)>, shape=box, fillcolor="#eef2ff"]
+
+  chkeq  [label=<isEquidistant(узлы) ?>, shape=diamond, fillcolor="#fff7d1"]
+  erreq  [label=<status = NotEquidistant>, shape=parallelogram, fillcolor="#fde2e2"]
+  buildd [label=<Δ = finiteDifferences(узлы)>, shape=box, fillcolor="#eef2ff"]
+
+  disp   [label=<выбор по значению «метод»>, shape=diamond, fillcolor="#fff7d1"]
+  cnf    [label=<value = newtonForward(Δ, h, X)>, shape=box, fillcolor="#eef2ff"]
+  cnb    [label=<value = newtonBackward(Δ, h, X)>, shape=box, fillcolor="#eef2ff"]
+  cg1    [label=<value = gaussForward(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
+  cg2    [label=<value = gaussBackward(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
+  cst    [label=<value = stirling(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
+  cbe    [label=<value = bessel(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
+
+  okout  [label=<Вывод: value, t, степень, заметка>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> chkn
+  chkn -> errn [label="да"]
+  errn -> stop
+  chkn -> di [label="нет"]
+  di -> chkd
+  chkd -> cmp [label="да"]
+  cmp -> errd [label="да"]
+  errd -> stop
+  cmp -> nextd [label="нет"]
+  nextd -> chkd
+  chkd -> chkl [label="нет"]
+  chkl -> calll [label="да"]
+  calll -> okout
+  chkl -> chkeq [label="нет"]
+  chkeq -> erreq [label="нет"]
+  erreq -> stop
+  chkeq -> buildd [label="да"]
+  buildd -> disp
+  disp -> cnf [label="Ньютон ↑"]
+  disp -> cnb [label="Ньютон ↓"]
+  disp -> cg1 [label="Гаусс I"]
+  disp -> cg2 [label="Гаусс II"]
+  disp -> cst [label="Стирлинг"]
+  disp -> cbe [label="Бессель"]
+  cnf -> okout
+  cnb -> okout
+  cg1 -> okout
+  cg2 -> okout
+  cst -> okout
+  cbe -> okout
+  okout -> stop
+}
