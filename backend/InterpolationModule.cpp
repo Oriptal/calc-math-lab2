@@ -147,7 +147,7 @@ const char *kDatasetFiles[] = {"sample1_var5.txt", "sample2_sin.txt",
 const char *kDatasetTitles[] = {"Вариант 5 (таблица 1.5)", "sin(x) на [0; 1,5]",
                                 "Рунге 1/(1+25x²)"};
 
-} // namespace
+}
 
 QVariantMap InterpolationModule::interpolate(const QVariantMap &payload) {
   QVariantMap result;
