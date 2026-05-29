@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.3.0 - 2026-06-04
+#### Features
+- (**lab5**) QML-модуль интерполяции и навигация - (afb9325) - Prokhor
+- (**lab5**) численное ядро и backend интерполяции - (87f3231) - Prokhor
+#### Bug Fixes
+- (**lab5**) корректная кодировка названий методов (UTF-8) - (61d1080) - Prokhor
+#### Documentation
+- (**lab5**) отчёт по интерполяции функции - (0097821) - Prokhor
+- (**lab5**) блок-схемы методов интерполяции - (7988265) - Prokhor
+- edit reports, especially UML diagrams with algo - (66f8c33) - Prokhor
+#### Style
+- (**lab5**) убрать комментарии из кода - (afcf2c1) - Prokhor
+
+- - -
+
 ## v1.2.4 - 2026-05-21
 #### Refactoring
 - rename project and binary from HelloWorldQuickProject to comp-math - (8b06e8b) - Prokhor
