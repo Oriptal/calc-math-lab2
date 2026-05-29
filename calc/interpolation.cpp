@@ -16,7 +16,6 @@ double factorial(int k) {
   return f;
 }
 
-// Индекс узла, ближайшего к X (для центральных схем Гаусса и Стирлинга).
 int nearestIndex(const std::vector<Point> &nodes, double X) {
   int best = 0;
   double bestDist = std::abs(nodes[0].x - X);
@@ -32,13 +31,12 @@ int nearestIndex(const std::vector<Point> &nodes, double X) {
 
 using Diff = std::vector<std::vector<double>>;
 
-// Многочлен Ньютона, 1-я формула (интерполирование вперёд), опорный узел x₀.
 double newtonForward(const Diff &d, const std::vector<Point> &nodes, double h,
                      double X, int &order) {
   const int n = static_cast<int>(nodes.size());
   const double t = (X - nodes[0].x) / h;
   double result = nodes[0].y;
-  double factor = 1.0; // t(t−1)…(t−k+1) / k!
+  double factor = 1.0;
   order = 0;
   for (int k = 1; k <= n - 1; ++k) {
     factor *= (t - (k - 1)) / k;
@@ -48,13 +46,12 @@ double newtonForward(const Diff &d, const std::vector<Point> &nodes, double h,
   return result;
 }
 
-// Многочлен Ньютона, 2-я формула (интерполирование назад), опорный узел xₙ.
 double newtonBackward(const Diff &d, const std::vector<Point> &nodes, double h,
                       double X, int &order) {
   const int n = static_cast<int>(nodes.size());
   const double t = (X - nodes[n - 1].x) / h;
   double result = nodes[n - 1].y;
-  double factor = 1.0; // t(t+1)…(t+k−1) / k!
+  double factor = 1.0;
   order = 0;
   for (int k = 1; k <= n - 1; ++k) {
     factor *= (t + (k - 1)) / k;
@@ -64,7 +61,6 @@ double newtonBackward(const Diff &d, const std::vector<Point> &nodes, double h,
   return result;
 }
 
-// 1-я формула Гаусса (x > a): зигзаг конечных разностей вверх от опорного узла.
 double gaussForward(const Diff &d, const std::vector<Point> &nodes, double h,
                     double X, int c, double &t, int &order) {
   const int n = static_cast<int>(nodes.size());
@@ -74,11 +70,11 @@ double gaussForward(const Diff &d, const std::vector<Point> &nodes, double h,
   double fact = 1.0;
   order = 0;
   for (int k = 1;; ++k) {
-    const int idx = c - k / 2; // базовый индекс для Δᵏ
+    const int idx = c - k / 2;
     if (idx < 0 || idx + k > n - 1) {
       break;
     }
-    const int half = k / 2; // для нечётных k совпадает с (k−1)/2
+    const int half = k / 2;
     const double f = (k % 2 == 1) ? (t + half) : (t - half);
     prod *= f;
     fact *= k;
@@ -88,7 +84,6 @@ double gaussForward(const Diff &d, const std::vector<Point> &nodes, double h,
   return result;
 }
 
-// 2-я формула Гаусса (x < a): зигзаг конечных разностей вниз от опорного узла.
 double gaussBackward(const Diff &d, const std::vector<Point> &nodes, double h,
                      double X, int c, double &t, int &order) {
   const int n = static_cast<int>(nodes.size());
@@ -102,7 +97,7 @@ double gaussBackward(const Diff &d, const std::vector<Point> &nodes, double h,
     if (idx < 0 || idx + k > n - 1) {
       break;
     }
-    const int half = k / 2; // для нечётных k совпадает с (k−1)/2
+    const int half = k / 2;
     const double f = (k % 2 == 1) ? (t - half) : (t + half);
     prod *= f;
     fact *= k;
@@ -112,14 +107,13 @@ double gaussBackward(const Diff &d, const std::vector<Point> &nodes, double h,
   return result;
 }
 
-// Формула Стирлинга — среднее 1-й и 2-й формул Гаусса (нечётное число узлов).
 double stirling(const Diff &d, const std::vector<Point> &nodes, double h,
                 double X, int c, double &t, int &order) {
   const int n = static_cast<int>(nodes.size());
   t = (X - nodes[c].x) / h;
   const double t2 = t * t;
   double result = nodes[c].y;
-  double p2 = 1.0; // ∏(t² − i²)
+  double p2 = 1.0;
   double fact = 1.0;
   order = 0;
   for (int k = 1;; ++k) {
@@ -147,9 +141,8 @@ double stirling(const Diff &d, const std::vector<Point> &nodes, double h,
   return result;
 }
 
-// Формула Бесселя — интерполирование на середину (чётное число узлов).
-double bessel(const Diff &d, const std::vector<Point> &nodes, double h, double X,
-              int c, double &t, int &order) {
+double bessel(const Diff &d, const std::vector<Point> &nodes, double h,
+              double X, int c, double &t, int &order) {
   const int n = static_cast<int>(nodes.size());
   t = (X - nodes[c].x) / h;
   double result = (d[0][c] + d[0][c + 1]) / 2.0;
@@ -158,7 +151,7 @@ double bessel(const Diff &d, const std::vector<Point> &nodes, double h, double X
     result += (t - 0.5) * d[1][c];
     order = 1;
   }
-  double g = 1.0; // ∏ парных множителей G₂ⱼ
+  double g = 1.0;
   for (int j = 1;; ++j) {
     g *= (t + (j - 1)) * (t - static_cast<double>(j));
     const int e = 2 * j;

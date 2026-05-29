@@ -15,27 +15,23 @@ RowLayout {
         Layout.fillHeight: true
         Layout.preferredWidth: 380
 
-        // --- режим ввода: 0 — вручную, 1 — из файла, 2 — функция ---
         property int inputMode: 0
 
-        // --- табличные данные ---
         property int currentSize: 7
         property var xValues: ["2.10", "2.15", "2.20", "2.25", "2.30", "2.35", "2.40"]
         property var yValues: ["3.7587", "4.1861", "4.9218", "5.3487", "5.9275", "6.4193", "7.0839"]
         property string targetX: "2.112"
 
-        // --- режим «функция» ---
         property var functions: []
         property var datasets: []
         property int funcId: 0
         property string funcA: "0"
         property string funcB: "1.5"
         property int funcN: 7
-        property int activeFunctionId: -1 // функция, по которой построена таблица (для графика)
+        property int activeFunctionId: -1
         property real activeA: 0
         property real activeB: 1
 
-        // --- результат ---
         property bool hasResult: false
         property string statusKey: ""
         property string statusMessage: ""
@@ -46,7 +42,6 @@ RowLayout {
         property real targetValue: 0
         property real target: 0
 
-        // --- видимость кривых ---
         property bool showNodes: true
         property bool showPoly: true
         property bool showFunc: true
@@ -191,7 +186,6 @@ RowLayout {
                 width: parent.width
                 spacing: 10
 
-                // ---- селектор режима ----
                 Row {
                     width: parent.width
                     spacing: 6
@@ -229,7 +223,6 @@ RowLayout {
                     }
                 }
 
-                // ---- источник: из файла ----
                 Column {
                     width: parent.width
                     spacing: 6
@@ -269,7 +262,6 @@ RowLayout {
                     }
                 }
 
-                // ---- источник: функция ----
                 Column {
                     width: parent.width
                     spacing: 6
@@ -381,7 +373,6 @@ RowLayout {
                     }
                 }
 
-                // ---- число узлов (вручную) ----
                 Item {
                     width: parent.width
                     height: 40
@@ -418,7 +409,6 @@ RowLayout {
                     }
                 }
 
-                // ---- таблица (xᵢ, yᵢ) ----
                 Text {
                     text: "Таблица (xᵢ, yᵢ)"
                     color: Theme.textMain
@@ -495,7 +485,6 @@ RowLayout {
                     }
                 }
 
-                // ---- точка интерполяции ----
                 Text {
                     text: "Точка интерполяции X*"
                     color: Theme.textMain
@@ -597,7 +586,6 @@ RowLayout {
                 Layout.leftMargin: 6
             }
 
-            // ---- таблица конечных разностей ----
             Text {
                 text: "Таблица конечных разностей"
                 color: Theme.textMain
@@ -627,7 +615,6 @@ RowLayout {
                         id: diffGrid
                         spacing: 2
 
-                        // заголовок
                         Row {
                             spacing: 0
                             Text {
@@ -652,7 +639,6 @@ RowLayout {
                             }
                         }
 
-                        // строки
                         Repeater {
                             model: rect.nodes.length
                             delegate: Row {
@@ -685,7 +671,6 @@ RowLayout {
                 }
             }
 
-            // ---- результаты методов ----
             Text {
                 text: "Значения в точке X* = " + rect.formattedNumber(rect.target)
                 color: Theme.textMain
@@ -770,7 +755,6 @@ RowLayout {
                 }
             }
 
-            // ---- управление графиком ----
             Row {
                 spacing: 16
                 Layout.leftMargin: 6
