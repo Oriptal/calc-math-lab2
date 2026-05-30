@@ -93,7 +93,8 @@ public:
   Q_INVOKABLE QVariantList sampleInterpolation(const QVariantList &points,
                                                qreal xMin, qreal xMax,
                                                qint32 samples) const {
-    return InterpolationModule::sampleInterpolation(points, xMin, xMax, samples);
+    return InterpolationModule::sampleInterpolation(points, xMin, xMax,
+                                                    samples);
   }
 
   Q_INVOKABLE QVariantList interpolationFunctions() const {

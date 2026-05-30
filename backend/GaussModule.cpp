@@ -1,7 +1,7 @@
 #include "GaussModule.hpp"
 
-#include "BackendUtil.hpp"
 #include "../calc/Gauss.hpp"
+#include "BackendUtil.hpp"
 
 #include <QDateTime>
 
@@ -65,8 +65,9 @@ QVariantMap GaussModule::solve(const QVariantMap &payload) {
     const QVariantList row = rowsVar[i].toList();
     if (row.size() != n) {
       result.insert("status", static_cast<qint32>(GAUSS_INVALID_SIZE));
-      result.insert("message",
-                    QStringLiteral("Строка %1 имеет неверную длину.").arg(i + 1));
+      result.insert(
+          "message",
+          QStringLiteral("Строка %1 имеет неверную длину.").arg(i + 1));
       return result;
     }
     for (int j = 0; j < n; ++j) {

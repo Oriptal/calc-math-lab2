@@ -111,11 +111,15 @@ SystemModule::traceZeroCurve(const std::function<double(double, double)> &F,
 
   QVector<QPointF> merged;
   qsizetype total = 0;
-  for (const auto &c : columns) total += c.size();
-  for (const auto &r : rows) total += r.size();
+  for (const auto &c : columns)
+    total += c.size();
+  for (const auto &r : rows)
+    total += r.size();
   merged.reserve(total);
-  for (const auto &c : columns) merged.append(c);
-  for (const auto &r : rows) merged.append(r);
+  for (const auto &c : columns)
+    merged.append(c);
+  for (const auto &r : rows)
+    merged.append(r);
   return merged;
 }
 
@@ -234,9 +238,8 @@ QVariantMap SystemModule::sampleSystemCurvesByEquation(qint32 equation,
                                                        qint32 points) {
   QVariantMap result;
 
-  if (!std::isfinite(left) || !std::isfinite(right) ||
-      !std::isfinite(bottom) || !std::isfinite(top) || !(left < right) ||
-      !(bottom < top)) {
+  if (!std::isfinite(left) || !std::isfinite(right) || !std::isfinite(bottom) ||
+      !std::isfinite(top) || !(left < right) || !(bottom < top)) {
     left = -1.2;
     right = 1.2;
     bottom = -1.2;

@@ -6,14 +6,7 @@
 
 namespace approx {
 
-enum class Kind {
-  Linear,
-  Poly2,
-  Poly3,
-  Exponential,
-  Logarithmic,
-  Power
-};
+enum class Kind { Linear, Poly2, Poly3, Exponential, Logarithmic, Power };
 
 enum class Status {
   Ok,

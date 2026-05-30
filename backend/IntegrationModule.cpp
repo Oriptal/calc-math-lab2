@@ -129,9 +129,10 @@ QVariantMap IntegrationModule::integrate(qint32 functionId,
     item.insert("method", name);
     item.insert("status", QString::fromStdString(r.status));
     item.insert("message", QString::fromStdString(r.message));
-    item.insert("value", std::isfinite(r.value)
-                            ? QVariant(r.value)
-                            : QVariant(std::numeric_limits<double>::quiet_NaN()));
+    item.insert("value",
+                std::isfinite(r.value)
+                    ? QVariant(r.value)
+                    : QVariant(std::numeric_limits<double>::quiet_NaN()));
     item.insert("n", r.n);
     item.insert("runge", r.runge_error);
     list.push_back(item);

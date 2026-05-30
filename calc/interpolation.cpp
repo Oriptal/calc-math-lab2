@@ -183,7 +183,7 @@ std::string rangeNote(const std::vector<Point> &nodes, double X) {
   return {};
 }
 
-}
+} // namespace
 
 bool isEquidistant(const std::vector<Point> &nodes, double &h) {
   const std::size_t n = nodes.size();
@@ -387,4 +387,4 @@ const char *methodTitle(Method m) {
   return "";
 }
 
-}
+} // namespace interp

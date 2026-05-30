@@ -1,7 +1,7 @@
 #include "ApproximationModule.hpp"
 
-#include "BackendUtil.hpp"
 #include "../calc/Approximation.hpp"
+#include "BackendUtil.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -182,15 +182,12 @@ QVariantMap resultBlock(const approx::Result &r) {
   m.insert("coeffs", ok ? toVariant(r.coeffs) : QVariantList{});
   m.insert("phi", ok ? toVariant(r.phi) : QVariantList{});
   m.insert("eps", ok ? toVariant(r.eps) : QVariantList{});
-  m.insert("S",
-           ok ? QVariant(r.S)
-              : QVariant(std::numeric_limits<double>::quiet_NaN()));
-  m.insert("delta",
-           ok ? QVariant(r.delta)
-              : QVariant(std::numeric_limits<double>::quiet_NaN()));
-  m.insert("r2",
-           ok ? QVariant(r.r2)
-              : QVariant(std::numeric_limits<double>::quiet_NaN()));
+  m.insert("S", ok ? QVariant(r.S)
+                   : QVariant(std::numeric_limits<double>::quiet_NaN()));
+  m.insert("delta", ok ? QVariant(r.delta)
+                       : QVariant(std::numeric_limits<double>::quiet_NaN()));
+  m.insert("r2", ok ? QVariant(r.r2)
+                    : QVariant(std::numeric_limits<double>::quiet_NaN()));
   if (ok && r.pearson.has_value()) {
     m.insert("pearson", QVariant(*r.pearson));
   } else {
@@ -215,32 +212,27 @@ QVariantMap ApproximationModule::approximate(const QVariantMap &payload) {
     if (!parseDoubleField(entry.value("x"), xv) ||
         !parseDoubleField(entry.value("y"), yv)) {
       result.insert("status", QStringLiteral("error"));
-      result.insert("message",
-                    QStringLiteral("Некорректное число в точке #%1")
-                        .arg(static_cast<int>(i) + 1));
+      result.insert("message", QStringLiteral("Некорректное число в точке #%1")
+                                   .arg(static_cast<int>(i) + 1));
       return result;
     }
     data.push_back({xv, yv});
   }
 
-  if (data.size() <
-      approx::LeastSquaresApproximator::kMinPoints) {
+  if (data.size() < approx::LeastSquaresApproximator::kMinPoints) {
     result.insert("status", QStringLiteral("error"));
-    result.insert(
-        "message",
-        QStringLiteral("Требуется не менее %1 точек")
-            .arg(static_cast<int>(
-                approx::LeastSquaresApproximator::kMinPoints)));
+    result.insert("message",
+                  QStringLiteral("Требуется не менее %1 точек")
+                      .arg(static_cast<int>(
+                          approx::LeastSquaresApproximator::kMinPoints)));
     return result;
   }
-  if (data.size() >
-      approx::LeastSquaresApproximator::kMaxPoints) {
+  if (data.size() > approx::LeastSquaresApproximator::kMaxPoints) {
     result.insert("status", QStringLiteral("error"));
-    result.insert(
-        "message",
-        QStringLiteral("Допустимо не более %1 точек")
-            .arg(static_cast<int>(
-                approx::LeastSquaresApproximator::kMaxPoints)));
+    result.insert("message",
+                  QStringLiteral("Допустимо не более %1 точек")
+                      .arg(static_cast<int>(
+                          approx::LeastSquaresApproximator::kMaxPoints)));
     return result;
   }
 
@@ -301,10 +293,9 @@ QVariantMap ApproximationModule::approximate(const QVariantMap &payload) {
   return result;
 }
 
-QVariantList ApproximationModule::sampleApproximation(const QString &kindStr,
-                                                     const QVariantList &coeffs,
-                                                     double xMin, double xMax,
-                                                     qint32 points) {
+QVariantList ApproximationModule::sampleApproximation(
+    const QString &kindStr, const QVariantList &coeffs, double xMin,
+    double xMax, qint32 points) {
   QVariantList out;
   if (points < 2 || xMax <= xMin) {
     return out;
