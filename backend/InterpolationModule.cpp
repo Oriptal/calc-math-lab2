@@ -79,8 +79,22 @@ QVariantMap methodBlock(const interp::MethodResult &mr) {
   m.insert("t", mr.t);
   m.insert("center", mr.center);
   m.insert("order", mr.order);
-  m.insert("note", QString::fromStdString(mr.note));
   return m;
+}
+
+bool methodFromKey(const QString &key, interp::Method &out) {
+  const interp::Method all[] = {
+      interp::Method::Lagrange,       interp::Method::NewtonForward,
+      interp::Method::NewtonBackward, interp::Method::GaussI,
+      interp::Method::GaussII,        interp::Method::Stirling,
+      interp::Method::Bessel};
+  for (interp::Method m : all) {
+    if (key == QString::fromUtf8(interp::methodKey(m))) {
+      out = m;
+      return true;
+    }
+  }
+  return false;
 }
 
 QVariantMap parsePoints(const QString &text) {
@@ -247,10 +261,12 @@ QVariantMap InterpolationModule::interpolate(const QVariantMap &payload) {
   return result;
 }
 
-QVariantList InterpolationModule::sampleInterpolation(
-    const QVariantList &points, double xMin, double xMax, qint32 samples) {
+QVariantList InterpolationModule::sampleInterpolationMethod(
+    const QString &methodKey, const QVariantList &points, double xMin,
+    double xMax, qint32 samples) {
   QVariantList out;
-  if (samples < 2 || xMax <= xMin) {
+  interp::Method method = interp::Method::Lagrange;
+  if (samples < 2 || xMax <= xMin || !methodFromKey(methodKey, method)) {
     return out;
   }
 
@@ -277,10 +293,13 @@ QVariantList InterpolationModule::sampleInterpolation(
   const double step = (xMax - xMin) / (samples - 1);
   for (qint32 i = 0; i < samples; ++i) {
     const double x = xMin + step * static_cast<double>(i);
-    const double y = interp::lagrange(nodes, x);
+    const interp::MethodResult mr = interp::run(method, nodes, x);
+    if (mr.status != interp::Status::Ok || !std::isfinite(mr.value)) {
+      continue;
+    }
     QVariantMap pm;
     pm.insert("x", x);
-    pm.insert("y", y);
+    pm.insert("y", mr.value);
     out.push_back(pm);
   }
   return out;

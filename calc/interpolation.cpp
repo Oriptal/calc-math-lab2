@@ -174,15 +174,6 @@ double bessel(const Diff &d, const std::vector<Point> &nodes, double h,
   return result;
 }
 
-std::string rangeNote(const std::vector<Point> &nodes, double X) {
-  const double lo = nodes.front().x;
-  const double hi = nodes.back().x;
-  if (X < lo - kEps || X > hi + kEps) {
-    return "экстраполяция: точка вне [x₀, xₙ]";
-  }
-  return {};
-}
-
 } // namespace
 
 bool isEquidistant(const std::vector<Point> &nodes, double &h) {
@@ -258,7 +249,6 @@ MethodResult run(Method method, const std::vector<Point> &nodes, double X) {
   if (method == Method::Lagrange) {
     r.value = lagrange(nodes, X);
     r.order = n - 1;
-    r.note = rangeNote(nodes, X);
     return r;
   }
 
@@ -269,54 +259,28 @@ MethodResult run(Method method, const std::vector<Point> &nodes, double X) {
   }
   const Diff d = finiteDifferences(nodes);
 
-  const char *edge = "точка у края таблицы: доступна низкая степень";
-  const double mid = (n - 1) / 2.0;
-
   switch (method) {
   case Method::NewtonForward:
     r.center = 0;
     r.t = (X - nodes[0].x) / h;
     r.value = newtonForward(d, nodes, h, X, r.order);
-    if (r.t > mid) {
-      r.note = "правая половина таблицы: точнее 2-я формула Ньютона";
-    }
     break;
   case Method::NewtonBackward:
     r.center = n - 1;
     r.t = (X - nodes[n - 1].x) / h;
     r.value = newtonBackward(d, nodes, h, X, r.order);
-    if (r.t < -mid) {
-      r.note = "левая половина таблицы: точнее 1-я формула Ньютона";
-    }
     break;
   case Method::GaussI:
     r.center = nearestIndex(nodes, X);
     r.value = gaussForward(d, nodes, h, X, r.center, r.t, r.order);
-    if (r.order < 2) {
-      r.note = edge;
-    } else if (r.t < -kEps) {
-      r.note = "при t < 0 точнее 2-я формула Гаусса";
-    }
     break;
   case Method::GaussII:
     r.center = nearestIndex(nodes, X);
     r.value = gaussBackward(d, nodes, h, X, r.center, r.t, r.order);
-    if (r.order < 2) {
-      r.note = edge;
-    } else if (r.t > kEps) {
-      r.note = "при t > 0 точнее 1-я формула Гаусса";
-    }
     break;
   case Method::Stirling:
     r.center = nearestIndex(nodes, X);
     r.value = stirling(d, nodes, h, X, r.center, r.t, r.order);
-    if (r.order < 2) {
-      r.note = edge;
-    } else if (n % 2 == 0) {
-      r.note = "рекомендуется нечётное число узлов";
-    } else if (std::abs(r.t) > 0.25) {
-      r.note = "рекомендуется |t| ≤ 0,25";
-    }
     break;
   case Method::Bessel: {
     int c = static_cast<int>(std::floor((X - nodes[0].x) / h));
@@ -328,22 +292,12 @@ MethodResult run(Method method, const std::vector<Point> &nodes, double X) {
     }
     r.center = c;
     r.value = bessel(d, nodes, h, X, c, r.t, r.order);
-    if (r.order < 1) {
-      r.note = edge;
-    } else if (n % 2 == 1) {
-      r.note = "рекомендуется чётное число узлов";
-    } else if (std::abs(r.t - 0.5) > 0.25) {
-      r.note = "рекомендуется 0,25 ≤ t ≤ 0,75";
-    }
     break;
   }
   case Method::Lagrange:
     break;
   }
 
-  if (r.note.empty()) {
-    r.note = rangeNote(nodes, X);
-  }
   return r;
 }
 

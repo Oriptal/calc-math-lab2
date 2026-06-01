@@ -43,8 +43,39 @@ RowLayout {
         property real target: 0
 
         property bool showNodes: true
-        property bool showPoly: true
         property bool showFunc: true
+        property var visibleMethods: ({})
+
+        function methodColor(key) {
+            switch (key) {
+            case "lagrange":
+                return "#2563EB";
+            case "newton_fwd":
+                return "#16A34A";
+            case "newton_bwd":
+                return "#0EA5E9";
+            case "gauss1":
+                return "#9333EA";
+            case "gauss2":
+                return "#BE123C";
+            case "stirling":
+                return "#DB2777";
+            case "bessel":
+                return "#CA8A04";
+            default:
+                return Theme.textDimmed;
+            }
+        }
+
+        function setMethodVisible(key, on) {
+            const v = Object.assign({}, rect.visibleMethods);
+            v[key] = on;
+            rect.visibleMethods = v;
+        }
+
+        function isMethodVisible(key) {
+            return rect.visibleMethods[key] === true;
+        }
 
         function makeEmptyArray(n) {
             return Array.from({ length: n }, () => "");
@@ -125,6 +156,12 @@ RowLayout {
                 rect.equidistant = response.equidistant;
                 rect.target = response.target;
                 rect.targetValue = response.methods.length > 0 ? Number(response.methods[0].value) : 0;
+                const v = {};
+                for (let i = 0; i < rect.methods.length; ++i) {
+                    const m = rect.methods[i];
+                    v[m.key] = m.statusKey === "ok" && m.key === "lagrange";
+                }
+                rect.visibleMethods = v;
             } else {
                 rect.nodes = [];
                 rect.methods = [];
@@ -427,7 +464,7 @@ RowLayout {
                     border.color: "transparent"
                     visible: rect.inputMode === 2
                     MyText {
-                        text: "Функция y = f(x)"
+                        text: "Функция"
                     }
                 }
 
@@ -658,6 +695,7 @@ RowLayout {
                         spacing: 6
                         Text {
                             Layout.fillWidth: true
+                            Layout.preferredWidth: 1
                             text: "xᵢ"
                             color: Theme.textDimmed
                             font.family: "JetbrainsMono Nerd Font"
@@ -670,6 +708,7 @@ RowLayout {
                                 id: diffHeader
                                 required property int index
                                 Layout.fillWidth: true
+                                Layout.preferredWidth: 1
                                 function superscript(k) {
                                     const map = { "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
                                     return map[String(k)] !== undefined ? map[String(k)] : "^" + k;
@@ -684,7 +723,7 @@ RowLayout {
                     }
 
                     Repeater {
-                        model: rect.nodes.length
+                        model: rect.nodes.length > 0 ? rect.nodes.length * 2 - 1 : 0
                         delegate: RowLayout {
                             id: diffRow
                             required property int index
@@ -692,7 +731,8 @@ RowLayout {
                             spacing: 6
                             Text {
                                 Layout.fillWidth: true
-                                text: Number(rect.nodes[diffRow.index].x).toFixed(3)
+                                Layout.preferredWidth: 1
+                                text: (diffRow.index % 2 === 0) ? Number(rect.nodes[diffRow.index / 2].x).toFixed(3) : ""
                                 color: Theme.textMain
                                 font.family: "JetbrainsMono Nerd Font"
                                 font.pixelSize: 13
@@ -701,10 +741,14 @@ RowLayout {
                             Repeater {
                                 model: rect.diffTable.length
                                 delegate: Text {
+                                    id: diffCell
                                     required property int index
                                     Layout.fillWidth: true
-                                    text: diffRow.index < rect.diffTable[index].length ? Number(rect.diffTable[index][diffRow.index]).toFixed(4) : ""
-                                    color: index === 0 ? Theme.textMain : Theme.accent
+                                    Layout.preferredWidth: 1
+                                    readonly property int srcRow: diffRow.index - diffCell.index
+                                    readonly property bool filled: srcRow >= 0 && srcRow % 2 === 0 && srcRow / 2 < rect.diffTable[diffCell.index].length
+                                    text: filled ? Number(rect.diffTable[diffCell.index][srcRow / 2]).toFixed(4) : ""
+                                    color: diffCell.index === 0 ? Theme.textMain : Theme.accent
                                     font.family: "JetbrainsMono Nerd Font"
                                     font.pixelSize: 13
                                     horizontalAlignment: Text.AlignHCenter
@@ -741,8 +785,17 @@ RowLayout {
                         width: parent.width
                         spacing: 12
                         Text {
-                            Layout.preferredWidth: 210
-                            Layout.minimumWidth: 180
+                            Layout.preferredWidth: 64
+                            text: "График"
+                            color: Theme.textMain
+                            font.bold: true
+                            font.family: "JetbrainsMono Nerd Font"
+                            font.pixelSize: 14
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                        Text {
+                            Layout.preferredWidth: 190
+                            Layout.minimumWidth: 160
                             text: "Метод"
                             color: Theme.textMain
                             font.bold: true
@@ -778,8 +831,8 @@ RowLayout {
                         }
                         Text {
                             Layout.fillWidth: true
-                            Layout.minimumWidth: 200
-                            text: "Примечание"
+                            Layout.minimumWidth: 180
+                            text: ""
                             color: Theme.textMain
                             font.bold: true
                             font.family: "JetbrainsMono Nerd Font"
@@ -795,10 +848,56 @@ RowLayout {
                             width: parent.width
                             spacing: 12
                             readonly property bool isOk: modelData.statusKey === "ok"
+                            readonly property bool curveVisible: rect.isMethodVisible(modelData.key)
+                            readonly property color curveColor: rect.methodColor(modelData.key)
+
+                            Item {
+                                Layout.preferredWidth: 64
+                                Layout.preferredHeight: 26
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 50
+                                    height: 24
+                                    radius: 5
+                                    color: methodRow.curveVisible ? methodRow.curveColor : "transparent"
+                                    border.color: methodRow.isOk ? methodRow.curveColor : Theme.textDimmed
+                                    border.width: 1.5
+                                    opacity: methodRow.isOk ? (toggleArea.containsMouse ? 0.82 : 1.0) : 0.4
+                                    scale: toggleArea.containsMouse ? 1.06 : 1.0
+                                    Behavior on scale {
+                                        NumberAnimation { duration: 120 }
+                                    }
+                                    Behavior on color {
+                                        ColorAnimation { duration: 120 }
+                                    }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: methodRow.isOk ? (methodRow.curveVisible ? "вкл" : "выкл") : "—"
+                                        color: methodRow.curveVisible ? "#ffffff" : (methodRow.isOk ? methodRow.curveColor : Theme.textDimmed)
+                                        font.family: "JetbrainsMono Nerd Font"
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                    }
+
+                                    MouseArea {
+                                        id: toggleArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        enabled: methodRow.isOk
+                                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                        onClicked: {
+                                            rect.setMethodVisible(methodRow.modelData.key, !methodRow.curveVisible);
+                                            graphView.refresh();
+                                        }
+                                    }
+                                }
+                            }
 
                             Text {
-                                Layout.preferredWidth: 210
-                                Layout.minimumWidth: 180
+                                Layout.preferredWidth: 190
+                                Layout.minimumWidth: 160
                                 text: methodRow.modelData.title
                                 color: methodRow.isOk ? Theme.textMain : Theme.textDimmed
                                 font.family: "JetbrainsMono Nerd Font"
@@ -808,7 +907,7 @@ RowLayout {
                             Text {
                                 Layout.preferredWidth: 130
                                 text: methodRow.isOk ? rect.formattedNumber(Number(methodRow.modelData.value)) : "—"
-                                color: methodRow.isOk ? Theme.accent : Theme.textDimmed
+                                color: methodRow.isOk ? methodRow.curveColor : Theme.textDimmed
                                 font.family: "JetbrainsMono Nerd Font"
                                 font.pixelSize: 14
                                 horizontalAlignment: Text.AlignRight
@@ -831,9 +930,9 @@ RowLayout {
                             }
                             Text {
                                 Layout.fillWidth: true
-                                Layout.minimumWidth: 200
-                                text: methodRow.isOk ? methodRow.modelData.note : methodRow.modelData.statusMessage
-                                color: methodRow.isOk ? Theme.textDimmed : "#D97706"
+                                Layout.minimumWidth: 180
+                                text: methodRow.isOk ? "" : methodRow.modelData.statusMessage
+                                color: "#D97706"
                                 font.family: "JetbrainsMono Nerd Font"
                                 font.pixelSize: 13
                                 elide: Text.ElideRight
@@ -851,13 +950,12 @@ RowLayout {
                 Repeater {
                     model: [
                         { "label": "Узлы", "color": "#127846", "p": "nodes" },
-                        { "label": "Многочлен", "color": "#2563EB", "p": "poly" },
                         { "label": "Функция", "color": "#D97706", "p": "func" }
                     ]
                     delegate: Row {
                         id: legendRow
                         required property var modelData
-                        readonly property bool checked: modelData.p === "nodes" ? rect.showNodes : (modelData.p === "poly" ? rect.showPoly : rect.showFunc)
+                        readonly property bool checked: modelData.p === "nodes" ? rect.showNodes : rect.showFunc
                         spacing: 6
                         visible: modelData.p !== "func" || rect.activeFunctionId >= 0
 
@@ -892,8 +990,6 @@ RowLayout {
                             onClicked: {
                                 if (legendRow.modelData.p === "nodes")
                                     rect.showNodes = !rect.showNodes;
-                                else if (legendRow.modelData.p === "poly")
-                                    rect.showPoly = !rect.showPoly;
                                 else
                                     rect.showFunc = !rect.showFunc;
                                 graphView.refresh();
@@ -922,13 +1018,24 @@ RowLayout {
                 property real plotMinY: -1
                 property real plotMaxY: 1
 
+                readonly property var seriesByKey: ({
+                        "lagrange": lagrangeSeries,
+                        "newton_fwd": newtonFwdSeries,
+                        "newton_bwd": newtonBwdSeries,
+                        "gauss1": gauss1Series,
+                        "gauss2": gauss2Series,
+                        "stirling": stirlingSeries,
+                        "bessel": besselSeries
+                    })
+
                 function refresh() {
                     nodeSeries.clear();
-                    polySeries.clear();
                     funcSeries.clear();
                     targetSeries.clear();
                     axisXLine.clear();
                     axisYLine.clear();
+                    for (const key in graphView.seriesByKey)
+                        graphView.seriesByKey[key].clear();
 
                     if (!rect.hasResult || rect.statusKey !== "ok" || rect.nodes.length < 2) {
                         return;
@@ -972,11 +1079,19 @@ RowLayout {
                             nodeSeries.append(points[i].x, points[i].y);
                     }
 
-                    if (rect.showPoly) {
-                        const samples = backend.sampleInterpolation(points, xLo, xHi, 400);
+                    for (let m = 0; m < rect.methods.length; ++m) {
+                        const meth = rect.methods[m];
+                        const series = graphView.seriesByKey[meth.key];
+                        if (series === undefined || meth.statusKey !== "ok" || !rect.isMethodVisible(meth.key)) {
+                            continue;
+                        }
+                        const samples = backend.sampleInterpolationMethod(meth.key, points, xLo, xHi, 400);
                         for (let j = 0; j < samples.length; ++j) {
                             const yv = Number(samples[j].y);
-                            polySeries.append(Number(samples[j].x), yv);
+                            if (!Number.isFinite(yv)) {
+                                continue;
+                            }
+                            series.append(Number(samples[j].x), yv);
                             if (yv > yClampLo && yv < yClampHi) {
                                 if (yv < yLo)
                                     yLo = yv;
@@ -1072,7 +1187,55 @@ RowLayout {
                     useOpenGL: true
                 }
                 LineSeries {
-                    id: polySeries
+                    id: newtonBwdSeries
+                    axisX: axisX
+                    axisY: axisY
+                    color: "#0EA5E9"
+                    width: 2
+                    useOpenGL: true
+                }
+                LineSeries {
+                    id: gauss1Series
+                    axisX: axisX
+                    axisY: axisY
+                    color: "#9333EA"
+                    width: 2
+                    useOpenGL: true
+                }
+                LineSeries {
+                    id: gauss2Series
+                    axisX: axisX
+                    axisY: axisY
+                    color: "#BE123C"
+                    width: 2
+                    useOpenGL: true
+                }
+                LineSeries {
+                    id: stirlingSeries
+                    axisX: axisX
+                    axisY: axisY
+                    color: "#DB2777"
+                    width: 2
+                    useOpenGL: true
+                }
+                LineSeries {
+                    id: besselSeries
+                    axisX: axisX
+                    axisY: axisY
+                    color: "#CA8A04"
+                    width: 2
+                    useOpenGL: true
+                }
+                LineSeries {
+                    id: newtonFwdSeries
+                    axisX: axisX
+                    axisY: axisY
+                    color: "#16A34A"
+                    width: 2
+                    useOpenGL: true
+                }
+                LineSeries {
+                    id: lagrangeSeries
                     axisX: axisX
                     axisY: axisY
                     color: "#2563EB"
