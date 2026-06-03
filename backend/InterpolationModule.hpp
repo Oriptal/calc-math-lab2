@@ -19,9 +19,5 @@ public:
   static QVariantList sampleFunction(qint32 funcId, double a, double b,
                                      qint32 points);
 
-  static QVariantList datasetList();
-
-  static QVariantMap loadDataset(qint32 id);
-
   static QVariantMap loadFile(const QUrl &url);
 };
