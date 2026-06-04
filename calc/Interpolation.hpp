@@ -48,4 +48,4 @@ MethodResult run(Method method, const std::vector<Point> &nodes, double X);
 const char *methodKey(Method m);
 const char *methodTitle(Method m);
 
-}
+} // namespace interp

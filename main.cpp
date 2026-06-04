@@ -6,8 +6,7 @@
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
-  app.setWindowIcon(
-      QIcon(":/qt/qml/CompMath/assets/icon-256.png"));
+  app.setWindowIcon(QIcon(":/qt/qml/CompMath/assets/icon-256.png"));
 
   qmlRegisterType<Backend>("Calc", 1, 0, "Backend");
   QQmlApplicationEngine engine;

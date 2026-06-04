@@ -338,8 +338,8 @@ LeastSquaresApproximator::approximate(Kind kind,
   return res;
 }
 
-std::vector<Result> LeastSquaresApproximator::approximateAll(
-    const std::vector<Point> &data) const {
+std::vector<Result>
+LeastSquaresApproximator::approximateAll(const std::vector<Point> &data) const {
   return {
       approximate(Kind::Linear, data),
       approximate(Kind::Poly2, data),

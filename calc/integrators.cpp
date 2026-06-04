@@ -456,10 +456,11 @@ PvOutcome tryPrincipalValue(Integrator &integ, IntegrandFunc f,
   return out;
 }
 
-}
+} // namespace
 
-IntegrationResult Integrator::integrate(IntegrandFunc f, double a, double b,
-                                        const std::vector<double> &discontinuities) {
+IntegrationResult
+Integrator::integrate(IntegrandFunc f, double a, double b,
+                      const std::vector<double> &discontinuities) {
   IntegrationResult out;
   if (!(a < b)) {
     out.status = "error";
@@ -511,8 +512,8 @@ IntegrationResult Integrator::integrate(IntegrandFunc f, double a, double b,
     out.value = total;
     out.n = totalN;
     out.runge_error = totalRunge;
-    out.message = improper ? "Несобственный интеграл, сходится."
-                           : "Интеграл вычислен.";
+    out.message =
+        improper ? "Несобственный интеграл, сходится." : "Интеграл вычислен.";
     return out;
   }
 
