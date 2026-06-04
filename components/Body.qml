@@ -82,8 +82,20 @@ MyRect {
             Layout.fillWidth: true
             Layout.fillHeight: true
             StackLayout {
+                id: moduleStack
                 anchors.fill: parent
                 currentIndex: content.currentModule
+                onCurrentIndexChanged: moduleFade.restart()
+
+                NumberAnimation {
+                    id: moduleFade
+                    target: moduleStack
+                    property: "opacity"
+                    from: 0.35
+                    to: 1.0
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
 
                 ModuleGauss {}
 

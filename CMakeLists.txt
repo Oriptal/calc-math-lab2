@@ -68,6 +68,11 @@ qt_add_qml_module(comp-math
         assets/integrand2.svg
         assets/integrand3.svg
         assets/integrand4.svg
+        assets/func0.svg
+        assets/func1.svg
+        assets/func2.svg
+        assets/func3.svg
+        assets/func4.svg
         assets/icon-256.png
         assets/datasets/sample1_var5.txt
         assets/datasets/sample2_sin.txt
