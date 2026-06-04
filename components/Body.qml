@@ -68,6 +68,12 @@ MyRect {
                         active: content.currentModule === 4
                         onClicked: content.currentModule = 4
                     }
+
+                    NavButton {
+                        text: "Интерполяция"
+                        active: content.currentModule === 5
+                        onClicked: content.currentModule = 5
+                    }
                 }
             }
         }
@@ -88,6 +94,8 @@ MyRect {
                 ModuleIntegration {}
 
                 ModuleApproximation {}
+
+                ModuleInterpolation {}
             }
         }
     }
