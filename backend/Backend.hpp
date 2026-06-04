@@ -4,10 +4,12 @@
 #include "ApproximationModule.hpp"
 #include "GaussModule.hpp"
 #include "IntegrationModule.hpp"
+#include "InterpolationModule.hpp"
 #include "RootModule.hpp"
 #include "SystemModule.hpp"
 
 #include <QObject>
+#include <QUrl>
 #include <QVariantList>
 #include <QVariantMap>
 
@@ -82,6 +84,38 @@ public:
                                                qint32 points) const {
     return ApproximationModule::sampleApproximation(kind, coeffs, xMin, xMax,
                                                     points);
+  }
+
+  Q_INVOKABLE QVariantMap interpolate(const QVariantMap &payload) const {
+    return InterpolationModule::interpolate(payload);
+  }
+
+  Q_INVOKABLE QVariantList sampleInterpolation(const QVariantList &points,
+                                               qreal xMin, qreal xMax,
+                                               qint32 samples) const {
+    return InterpolationModule::sampleInterpolation(points, xMin, xMax, samples);
+  }
+
+  Q_INVOKABLE QVariantList interpolationFunctions() const {
+    return InterpolationModule::functionList();
+  }
+
+  Q_INVOKABLE QVariantList sampleInterpolationFunction(qint32 funcId, qreal a,
+                                                       qreal b,
+                                                       qint32 points) const {
+    return InterpolationModule::sampleFunction(funcId, a, b, points);
+  }
+
+  Q_INVOKABLE QVariantList interpolationDatasets() const {
+    return InterpolationModule::datasetList();
+  }
+
+  Q_INVOKABLE QVariantMap loadInterpolationDataset(qint32 id) const {
+    return InterpolationModule::loadDataset(id);
+  }
+
+  Q_INVOKABLE QVariantMap loadInterpolationFile(const QUrl &url) const {
+    return InterpolationModule::loadFile(url);
   }
 };
 
