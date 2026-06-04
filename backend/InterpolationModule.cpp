@@ -44,7 +44,6 @@ QString statusMessage(interp::Status s) {
   return {};
 }
 
-// Встроенные функции для режима «Функция»: id → значение f(x).
 double evalFunction(qint32 id, double x) {
   switch (id) {
   case 0:
@@ -70,8 +69,8 @@ bool parseField(const QVariant &v, double &out) {
 
 QVariantMap methodBlock(const interp::MethodResult &mr) {
   QVariantMap m;
-  m.insert("key", QString::fromLatin1(interp::methodKey(mr.method)));
-  m.insert("title", QString::fromLatin1(interp::methodTitle(mr.method)));
+  m.insert("key", QString::fromUtf8(interp::methodKey(mr.method)));
+  m.insert("title", QString::fromUtf8(interp::methodTitle(mr.method)));
   m.insert("statusKey", statusKey(mr.status));
   m.insert("statusMessage", statusMessage(mr.status));
   const bool ok = mr.status == interp::Status::Ok;
@@ -84,8 +83,6 @@ QVariantMap methodBlock(const interp::MethodResult &mr) {
   return m;
 }
 
-// Разбор текстового файла данных: пары «x y», строки-комментарии «#…»,
-// необязательная строка «target X» (или «# target X»).
 QVariantMap parsePoints(const QString &text) {
   QVariantMap out;
   QVariantList pts;
@@ -147,8 +144,7 @@ QString readResourceText(const QString &path) {
 
 const char *kDatasetFiles[] = {"sample1_var5.txt", "sample2_sin.txt",
                                "sample3_runge.txt"};
-const char *kDatasetTitles[] = {"Вариант 5 (таблица 1.5)",
-                                "sin(x) на [0; 1,5]",
+const char *kDatasetTitles[] = {"Вариант 5 (таблица 1.5)", "sin(x) на [0; 1,5]",
                                 "Рунге 1/(1+25x²)"};
 
 } // namespace
@@ -188,21 +184,21 @@ QVariantMap InterpolationModule::interpolate(const QVariantMap &payload) {
   }
   if (nodes.size() > static_cast<std::size_t>(kMaxNodes)) {
     result.insert("status", QStringLiteral("error"));
-    result.insert("message", QStringLiteral("Допустимо не более %1 узлов")
-                                 .arg(kMaxNodes));
+    result.insert("message",
+                  QStringLiteral("Допустимо не более %1 узлов").arg(kMaxNodes));
     return result;
   }
 
-  std::sort(nodes.begin(), nodes.end(),
-            [](const interp::Point &a, const interp::Point &b) {
-              return a.x < b.x;
-            });
+  std::sort(
+      nodes.begin(), nodes.end(),
+      [](const interp::Point &a, const interp::Point &b) { return a.x < b.x; });
 
   for (std::size_t i = 1; i < nodes.size(); ++i) {
     if (std::abs(nodes[i].x - nodes[i - 1].x) < 1e-9) {
       result.insert("status", QStringLiteral("error"));
-      result.insert("message",
-                    QStringLiteral("Совпадающие узлы x = %1").arg(fmt(nodes[i].x)));
+      result.insert(
+          "message",
+          QStringLiteral("Совпадающие узлы x = %1").arg(fmt(nodes[i].x)));
       return result;
     }
   }
@@ -230,9 +226,9 @@ QVariantMap InterpolationModule::interpolate(const QVariantMap &payload) {
   }
 
   const interp::Method order[] = {
-      interp::Method::Lagrange,      interp::Method::NewtonForward,
+      interp::Method::Lagrange,       interp::Method::NewtonForward,
       interp::Method::NewtonBackward, interp::Method::GaussI,
-      interp::Method::GaussII,       interp::Method::Stirling,
+      interp::Method::GaussII,        interp::Method::Stirling,
       interp::Method::Bessel};
 
   QVariantList methods;
@@ -251,9 +247,8 @@ QVariantMap InterpolationModule::interpolate(const QVariantMap &payload) {
   return result;
 }
 
-QVariantList InterpolationModule::sampleInterpolation(const QVariantList &points,
-                                                      double xMin, double xMax,
-                                                      qint32 samples) {
+QVariantList InterpolationModule::sampleInterpolation(
+    const QVariantList &points, double xMin, double xMax, qint32 samples) {
   QVariantList out;
   if (samples < 2 || xMax <= xMin) {
     return out;
@@ -274,10 +269,9 @@ QVariantList InterpolationModule::sampleInterpolation(const QVariantList &points
   if (nodes.size() < 2) {
     return out;
   }
-  std::sort(nodes.begin(), nodes.end(),
-            [](const interp::Point &a, const interp::Point &b) {
-              return a.x < b.x;
-            });
+  std::sort(
+      nodes.begin(), nodes.end(),
+      [](const interp::Point &a, const interp::Point &b) { return a.x < b.x; });
 
   out.reserve(samples);
   const double step = (xMax - xMin) / (samples - 1);
@@ -346,7 +340,8 @@ QVariantMap InterpolationModule::loadDataset(qint32 id) {
   const QString text = readResourceText(path);
   if (text.isEmpty()) {
     result.insert("status", QStringLiteral("error"));
-    result.insert("message", QStringLiteral("Не удалось прочитать набор данных"));
+    result.insert("message",
+                  QStringLiteral("Не удалось прочитать набор данных"));
     return result;
   }
   QVariantMap parsed = parsePoints(text);
