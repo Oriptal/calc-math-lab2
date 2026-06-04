@@ -1,0 +1,32 @@
+digraph Lab5Bessel {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: bessel", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: узлы, Δ<SUP>k</SUP>y, h, X, центр c>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<t = (X − x<SUB>c</SUB>) / h<BR/>result = (d<SUB>0,c</SUB> + d<SUB>0,c+1</SUB>) / 2>, shape=box]
+  term1  [label=<result = result + (t − ½) · d<SUB>1,c</SUB>>, shape=box]
+  setg   [label=<g = 1<BR/>j = 1>, shape=box]
+  ge     [label=<g = g · (t + (j − 1)) · (t − j)>, shape=box]
+  eidx   [label=<e = 2j<BR/>eA = c − j<BR/>eB = c − (j − 1)>, shape=box]
+  chke   [label=<eA &lt; 0 или eB + e &gt; n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  acce   [label=<diff = (d<SUB>e,eA</SUB> + d<SUB>e,eB</SUB>) / 2<BR/>result = result + g / e! · diff>, shape=box]
+  oidx   [label=<o = 2j + 1<BR/>oA = c − j>, shape=box]
+  chko   [label=<oA &lt; 0 или oA + o &gt; n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  acco   [label=<result = result + (t − ½) · g / o! · d<SUB>o,oA</SUB>>, shape=box]
+  nextj  [label=<j = j + 1>, shape=box]
+  output [label=<Вывод: result = P<SUB>n</SUB>(X)>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> term1 -> setg -> ge
+  ge -> eidx -> chke
+  chke -> output [label="да"]
+  chke -> acce [label="нет"]
+  acce -> oidx -> chko
+  chko -> output [label="да"]
+  chko -> acco [label="нет"]
+  acco -> nextj
+  nextj -> ge
+  output -> stop
+}

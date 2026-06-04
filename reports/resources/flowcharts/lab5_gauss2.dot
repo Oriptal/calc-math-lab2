@@ -1,0 +1,28 @@
+digraph Lab5Gauss2 {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: gaussBackward (2-я формула)", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: узлы, Δ<SUP>k</SUP>y, h, X, центр c>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<t = (X − x<SUB>c</SUB>) / h<BR/>result = y<SUB>c</SUB><BR/>prod = 1<BR/>fact = 1<BR/>k = 1>, shape=box]
+  idx    [label=<idx = c − ⌊(k + 1) / 2⌋>, shape=box]
+  chka   [label=<idx &lt; 0 или idx + k &gt; n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  par    [label=<k — нечётное ?>, shape=diamond, fillcolor="#fff7d1"]
+  fodd   [label=<f = t − ⌊k / 2⌋>, shape=box]
+  feven  [label=<f = t + ⌊k / 2⌋>, shape=box]
+  acc    [label=<prod = prod · f<BR/>fact = fact · k<BR/>result = result + (prod / fact) · d<SUB>k,idx</SUB><BR/>k = k + 1>, shape=box]
+  output [label=<Вывод: result = P<SUB>n</SUB>(X)>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> idx
+  idx -> chka
+  chka -> output [label="да"]
+  chka -> par [label="нет"]
+  par -> fodd [label="да"]
+  par -> feven [label="нет"]
+  fodd -> acc
+  feven -> acc
+  acc -> idx
+  output -> stop
+}

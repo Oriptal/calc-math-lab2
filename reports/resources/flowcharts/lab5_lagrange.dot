@@ -1,0 +1,31 @@
+digraph Lab5Lagrange {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало: lagrange", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Ввод: n узлов (x<SUB>i</SUB>, y<SUB>i</SUB>), X>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<sum = 0<BR/>i = 0>, shape=box]
+  chki   [label=<i ≤ n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  termi  [label=<term = y<SUB>i</SUB><BR/>j = 0>, shape=box]
+  chkj   [label=<j ≤ n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  chkeq  [label=<j = i ?>, shape=diamond, fillcolor="#fff7d1"]
+  mul    [label=<term = term · (X − x<SUB>j</SUB>) / (x<SUB>i</SUB> − x<SUB>j</SUB>)>, shape=box]
+  nextj  [label=<j = j + 1>, shape=box]
+  addt   [label=<sum = sum + term<BR/>i = i + 1>, shape=box]
+  output [label=<Вывод: sum = L<SUB>n</SUB>(X)>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chki
+  chki -> termi [label="да"]
+  termi -> chkj
+  chkj -> chkeq [label="да"]
+  chkeq -> nextj [label="да"]
+  chkeq -> mul [label="нет"]
+  mul -> nextj
+  nextj -> chkj
+  chkj -> addt [label="нет"]
+  addt -> chki
+  chki -> output [label="нет"]
+  output -> stop
+}
