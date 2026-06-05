@@ -1,66 +1,88 @@
-digraph Lab5Interpolate {
+digraph Lab5Run {
   graph [fontname="CMU Serif", rankdir=TB, nodesep=0.3, ranksep=0.35, splines=polyline]
   node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
-  start  [label="Начало: run(метод, узлы, X)", shape=oval, fillcolor="#e6eefc"]
-  input  [label=<Ввод: метод, n узлов (x<SUB>i</SUB>, y<SUB>i</SUB>), X>, shape=parallelogram, fillcolor="#f5f5f5"]
-  chkn   [label=<n &lt; 2 ?>, shape=diamond, fillcolor="#fff7d1"]
-  errn   [label=<status = TooFew>, shape=parallelogram, fillcolor="#fde2e2"]
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: method, nodes, X>, shape=parallelogram, fillcolor="#f5f5f5"]
+  setn   [label=<n = nodes.size()>, shape=box]
+  chkn   [label=<n &lt; kMinPoints ?>, shape=diamond, fillcolor="#fff7d1"]
+  errn   [label=<r.status = TooFew<BR/>return r>, shape=parallelogram, fillcolor="#fde2e2"]
 
-  di     [label=<i = 0>, shape=box]
-  chkd   [label=<i ≤ n − 2 ?>, shape=diamond, fillcolor="#fff7d1"]
-  cmp    [label=<|x<SUB>i+1</SUB> − x<SUB>i</SUB>| &lt; ε ?>, shape=diamond, fillcolor="#fff7d1"]
-  errd   [label=<status = Duplicate>, shape=parallelogram, fillcolor="#fde2e2"]
-  nextd  [label=<i = i + 1>, shape=box]
+  si     [label=<i = 0>, shape=box]
+  ci     [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  sj     [label=<j = i + 1>, shape=box]
+  cj     [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  cdup   [label=<|x<SUB>i</SUB> − x<SUB>j</SUB>| &lt; kEps ?>, shape=diamond, fillcolor="#fff7d1"]
+  errd   [label=<r.status = Duplicate<BR/>return r>, shape=parallelogram, fillcolor="#fde2e2"]
+  nj     [label=<j = j + 1>, shape=box]
+  nexti  [label=<i = i + 1>, shape=box]
 
-  chkl   [label=<метод = Лагранж ?>, shape=diamond, fillcolor="#fff7d1"]
-  calll  [label=<value = lagrange(узлы, X)>, shape=box, fillcolor="#eef2ff"]
+  chkl   [label=<method == Method::Lagrange ?>, shape=diamond, fillcolor="#fff7d1"]
+  dol    [label=<r.value = lagrange(nodes, X)<BR/>r.order = n − 1<BR/>return r>, shape=box, fillcolor="#eef2ff"]
 
-  chkeq  [label=<isEquidistant(узлы) ?>, shape=diamond, fillcolor="#fff7d1"]
-  erreq  [label=<status = NotEquidistant>, shape=parallelogram, fillcolor="#fde2e2"]
-  buildd [label=<Δ = finiteDifferences(узлы)>, shape=box, fillcolor="#eef2ff"]
+  cheq   [label=<isEquidistant(nodes, h) ?>, shape=diamond, fillcolor="#fff7d1"]
+  erreq  [label=<r.status = NotEquidistant<BR/>return r>, shape=parallelogram, fillcolor="#fde2e2"]
+  buildd [label=<d = finiteDifferences(nodes)>, shape=box, fillcolor="#eef2ff"]
 
-  disp   [label=<выбор по значению «метод»>, shape=diamond, fillcolor="#fff7d1"]
-  cnf    [label=<value = newtonForward(Δ, h, X)>, shape=box, fillcolor="#eef2ff"]
-  cnb    [label=<value = newtonBackward(Δ, h, X)>, shape=box, fillcolor="#eef2ff"]
-  cg1    [label=<value = gaussForward(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
-  cg2    [label=<value = gaussBackward(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
-  cst    [label=<value = stirling(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
-  cbe    [label=<value = bessel(Δ, h, X, c)>, shape=box, fillcolor="#eef2ff"]
+  disp   [label=<switch (method)>, shape=diamond, fillcolor="#fff7d1"]
 
-  okout  [label=<Вывод: value, t, степень, заметка>, shape=parallelogram, fillcolor="#dcfce7"]
+  nf     [label=<r.center = 0<BR/>r.t = (X − x<SUB>0</SUB>) / h<BR/>r.value = newtonForward(d, nodes, h, X, r.order)>, shape=box, fillcolor="#eef2ff"]
+  nb     [label=<r.center = n − 1<BR/>r.t = (X − x<SUB>n−1</SUB>) / h<BR/>r.value = newtonBackward(d, nodes, h, X, r.order)>, shape=box, fillcolor="#eef2ff"]
+  g1     [label=<r.center = nearestIndex(nodes, X)<BR/>r.value = gaussForward(d, nodes, h, X, r.center, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
+  g2     [label=<r.center = nearestIndex(nodes, X)<BR/>r.value = gaussBackward(d, nodes, h, X, r.center, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
+  st     [label=<r.center = nearestIndex(nodes, X)<BR/>r.value = stirling(d, nodes, h, X, r.center, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
+
+  be1    [label=<c = ⌊(X − x<SUB>0</SUB>) / h⌋>, shape=box, fillcolor="#eef2ff"]
+  bec1   [label=<c &lt; 0 ?>, shape=diamond, fillcolor="#fff7d1"]
+  be2    [label=<c = 0>, shape=box, fillcolor="#eef2ff"]
+  bec2   [label=<c &gt; n − 2 ?>, shape=diamond, fillcolor="#fff7d1"]
+  be3    [label=<c = n − 2>, shape=box, fillcolor="#eef2ff"]
+  be4    [label=<r.center = c<BR/>r.value = bessel(d, nodes, h, X, c, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
+
+  ret    [label=<return r>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> chkn
+  start -> input -> setn -> chkn
   chkn -> errn [label="да"]
   errn -> stop
-  chkn -> di [label="нет"]
-  di -> chkd
-  chkd -> cmp [label="да"]
-  cmp -> errd [label="да"]
+  chkn -> si [label="нет"]
+  si -> ci
+  ci -> sj [label="да"]
+  sj -> cj
+  cj -> cdup [label="да"]
+  cdup -> errd [label="да"]
   errd -> stop
-  cmp -> nextd [label="нет"]
-  nextd -> chkd
-  chkd -> chkl [label="нет"]
-  chkl -> calll [label="да"]
-  calll -> okout
-  chkl -> chkeq [label="нет"]
-  chkeq -> erreq [label="нет"]
+  cdup -> nj [label="нет"]
+  nj -> cj
+  cj -> nexti [label="нет"]
+  nexti -> ci
+  ci -> chkl [label="нет"]
+  chkl -> dol [label="да"]
+  dol -> stop
+  chkl -> cheq [label="нет"]
+  cheq -> erreq [label="нет"]
   erreq -> stop
-  chkeq -> buildd [label="да"]
+  cheq -> buildd [label="да"]
   buildd -> disp
-  disp -> cnf [label="Ньютон ↑"]
-  disp -> cnb [label="Ньютон ↓"]
-  disp -> cg1 [label="Гаусс I"]
-  disp -> cg2 [label="Гаусс II"]
-  disp -> cst [label="Стирлинг"]
-  disp -> cbe [label="Бессель"]
-  cnf -> okout
-  cnb -> okout
-  cg1 -> okout
-  cg2 -> okout
-  cst -> okout
-  cbe -> okout
-  okout -> stop
+  disp -> nf  [label="NewtonForward"]
+  disp -> nb  [label="NewtonBackward"]
+  disp -> g1  [label="GaussI"]
+  disp -> g2  [label="GaussII"]
+  disp -> st  [label="Stirling"]
+  disp -> be1 [label="Bessel"]
+  bec1 -> be2 [label="да"]
+  be2 -> bec2
+  bec1 -> bec2 [label="нет"]
+  bec2 -> be3 [label="да"]
+  be3 -> be4
+  bec2 -> be4 [label="нет"]
+  be1 -> bec1
+  nf -> ret
+  nb -> ret
+  g1 -> ret
+  g2 -> ret
+  st -> ret
+  be4 -> ret
+  ret -> stop
 }
