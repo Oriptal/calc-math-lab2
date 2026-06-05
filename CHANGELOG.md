@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.4.0 - 2026-06-05
+#### Features
+- (**lab5**) уравнение многочлена и упрощение ввода данных - (de9eb5b) - Prokhor
+- (**lab5**) отображение кривой по каждому методу интерполяции - (f12730c) - Prokhor
+#### Bug Fixes
+- (**lab5**) отвязывать функцию при ручном изменении узлов - (5e29037) - Prokhor
+#### Documentation
+- (**lab5**) отчёт под обновлённый интерфейс ввода и формулу многочлена - (298648b) - Prokhor
+- (**lab5**) пересобрать отчёт под очищенный код - (397ebf9) - Prokhor
+#### Refactoring
+- (**lab5**) переработать UI модуля интерполяции под общий стиль - (22812e7) - Prokhor
+#### Style
+- (**lab5**) формулы функций белые, в виде y = f(x) - (26154a8) - Prokhor
+- (**lab5**) убрать маркеры закрытия namespace - (9b3570a) - Prokhor
+- добавить .clang-format/.clang-tidy и отформатировать код - (17e428c) - Prokhor
+
+- - -
+
 ## v1.3.0 - 2026-06-04
 #### Features
 - (**lab5**) QML-модуль интерполяции и навигация - (afb9325) - Prokhor
