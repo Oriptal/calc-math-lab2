@@ -7,7 +7,7 @@ digraph Lab5DiffTable {
   input  [label=<Параметры: nodes>, shape=parallelogram, fillcolor="#f5f5f5"]
   ci     [label=<i = 0>, shape=box]
   chkc   [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
-  bodyc  [label=<d<SUB>0,i</SUB> = y<SUB>i</SUB><BR/>i = i + 1>, shape=box]
+  bodyc  [label=<d<SUB>0,i</SUB> = nodes<SUB>i</SUB>.y<BR/>i = i + 1>, shape=box]
   setk   [label=<k = 1>, shape=box]
   chkk   [label=<k &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
   seti   [label=<i = 0>, shape=box]

@@ -5,7 +5,7 @@ digraph Lab5NewtonForward {
 
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label=<Параметры: d, nodes, h, X>, shape=parallelogram, fillcolor="#f5f5f5"]
-  init   [label=<t = (X − x<SUB>0</SUB>) / h<BR/>result = y<SUB>0</SUB><BR/>factor = 1<BR/>order = 0<BR/>k = 1>, shape=box]
+  init   [label=<t = (X − nodes<SUB>0</SUB>.x) / h<BR/>result = nodes<SUB>0</SUB>.y<BR/>factor = 1<BR/>order = 0<BR/>k = 1>, shape=box]
   chk    [label=<k ≤ n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
   body   [label=<factor = factor · (t − (k − 1)) / k<BR/>result = result + factor · d<SUB>k,0</SUB><BR/>order = k<BR/>k = k + 1>, shape=box]
   output [label=<return result>, shape=parallelogram, fillcolor="#dcfce7"]

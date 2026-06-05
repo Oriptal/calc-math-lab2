@@ -5,7 +5,7 @@ digraph Lab5Bessel {
 
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label=<Параметры: d, nodes, h, X, c>, shape=parallelogram, fillcolor="#f5f5f5"]
-  init   [label=<t = (X − x<SUB>c</SUB>) / h<BR/>result = (d<SUB>0,c</SUB> + d<SUB>0,c+1</SUB>) / 2<BR/>order = 0>, shape=box]
+  init   [label=<t = (X − nodes<SUB>c</SUB>.x) / h<BR/>result = (d<SUB>0,c</SUB> + d<SUB>0,c+1</SUB>) / 2<BR/>order = 0>, shape=box]
   g1chk  [label=<c + 1 ≤ n − 1 ?>, shape=diamond, fillcolor="#fff7d1"]
   term1  [label=<result = result + (t − ½) · d<SUB>1,c</SUB><BR/>order = 1>, shape=box]
   setg   [label=<g = 1<BR/>j = 1>, shape=box]
