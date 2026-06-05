@@ -93,6 +93,7 @@ RowLayout {
             rect.xValues = nx;
             rect.yValues = ny;
             rect.currentSize = n;
+            rect.activeFunctionId = -1;
             rect.hasResult = false;
         }
 
@@ -433,6 +434,7 @@ RowLayout {
                                     const a = rect.xValues.slice();
                                     a[tableRow.index] = text;
                                     rect.xValues = a;
+                                    rect.activeFunctionId = -1;
                                 }
                             }
                             MyTextField {
@@ -449,6 +451,7 @@ RowLayout {
                                     const a = rect.yValues.slice();
                                     a[tableRow.index] = text;
                                     rect.yValues = a;
+                                    rect.activeFunctionId = -1;
                                 }
                             }
                         }
