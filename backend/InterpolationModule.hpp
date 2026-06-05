@@ -9,9 +9,10 @@ class InterpolationModule {
 public:
   static QVariantMap interpolate(const QVariantMap &payload);
 
-  static QVariantList sampleInterpolation(const QVariantList &points,
-                                          double xMin, double xMax,
-                                          qint32 samples);
+  static QVariantList sampleInterpolationMethod(const QString &methodKey,
+                                                const QVariantList &points,
+                                                double xMin, double xMax,
+                                                qint32 samples);
 
   static QVariantList functionList();
 

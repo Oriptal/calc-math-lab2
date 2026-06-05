@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <string>
 #include <vector>
 
 namespace interp {
@@ -30,7 +29,6 @@ struct MethodResult {
   double t = 0.0;
   int center = 0;
   int order = 0;
-  std::string note;
 };
 
 constexpr std::size_t kMinPoints = 2;

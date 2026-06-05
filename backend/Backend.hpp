@@ -90,11 +90,12 @@ public:
     return InterpolationModule::interpolate(payload);
   }
 
-  Q_INVOKABLE QVariantList sampleInterpolation(const QVariantList &points,
-                                               qreal xMin, qreal xMax,
-                                               qint32 samples) const {
-    return InterpolationModule::sampleInterpolation(points, xMin, xMax,
-                                                    samples);
+  Q_INVOKABLE QVariantList sampleInterpolationMethod(const QString &methodKey,
+                                                     const QVariantList &points,
+                                                     qreal xMin, qreal xMax,
+                                                     qint32 samples) const {
+    return InterpolationModule::sampleInterpolationMethod(methodKey, points,
+                                                          xMin, xMax, samples);
   }
 
   Q_INVOKABLE QVariantList interpolationFunctions() const {
