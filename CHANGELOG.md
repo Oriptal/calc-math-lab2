@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.4.1 - 2026-06-05
+#### Documentation
+- (**lab5**) оформление отчёта и реальный скриншот приложения - (afd2788) - Prokhor
+- (**lab5**) блок-схемы 1:1 с кодом + схемы вспомогательных функций - (d200180) - Prokhor
+#### Refactoring
+- (**lab5**) упростить допуск равномерности и индексы в блок-схемах - (4083e26) - Prokhor
+
+- - -
+
 ## v1.4.0 - 2026-06-05
 #### Features
 - (**lab5**) уравнение многочлена и упрощение ввода данных - (de9eb5b) - Prokhor
