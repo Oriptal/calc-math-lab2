@@ -1,0 +1,40 @@
+digraph Lab5IsEquidistant {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: nodes, h (выход)>, shape=parallelogram, fillcolor="#f5f5f5"]
+  setn   [label=<n = nodes.size()>, shape=box]
+  chkn   [label=<n &lt; 2 ?>, shape=diamond, fillcolor="#fff7d1"]
+  ret0   [label=<h = 0<BR/>return false>, shape=parallelogram, fillcolor="#fde2e2"]
+  seth   [label=<h = nodes[1].x − nodes[0].x>, shape=box]
+  chkh   [label=<|h| &lt; kEps ?>, shape=diamond, fillcolor="#fff7d1"]
+  retf1  [label=<return false>, shape=parallelogram, fillcolor="#fde2e2"]
+  si     [label=<i = 1>, shape=box]
+  chk    [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
+  step   [label=<step = nodes[i].x − nodes[i−1].x>, shape=box]
+  cmp    [label=<|step − h| &gt; 10<SUP>−6</SUP> · max(1, |h|) ?>, shape=diamond, fillcolor="#fff7d1"]
+  retf2  [label=<return false>, shape=parallelogram, fillcolor="#fde2e2"]
+  nexti  [label=<i = i + 1>, shape=box]
+  rett   [label=<return true>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> setn -> chkn
+  chkn -> ret0 [label="да"]
+  ret0 -> stop
+  chkn -> seth [label="нет"]
+  seth -> chkh
+  chkh -> retf1 [label="да"]
+  retf1 -> stop
+  chkh -> si [label="нет"]
+  si -> chk
+  chk -> step [label="да"]
+  step -> cmp
+  cmp -> retf2 [label="да"]
+  retf2 -> stop
+  cmp -> nexti [label="нет"]
+  nexti -> chk
+  chk -> rett [label="нет"]
+  rett -> stop
+}

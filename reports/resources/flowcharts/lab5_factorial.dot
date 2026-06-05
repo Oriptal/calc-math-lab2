@@ -1,0 +1,19 @@
+digraph Lab5Factorial {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.3, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: k>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<f = 1<BR/>i = 2>, shape=box]
+  chk    [label=<i ≤ k ?>, shape=diamond, fillcolor="#fff7d1"]
+  body   [label=<f = f · i<BR/>i = i + 1>, shape=box]
+  output [label=<return f>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> chk
+  chk -> body [label="да"]
+  body -> chk
+  chk -> output [label="нет"]
+  output -> stop
+}
