@@ -148,19 +148,6 @@ QVariantMap parsePoints(const QString &text) {
   return out;
 }
 
-QString readResourceText(const QString &path) {
-  QFile f(path);
-  if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    return {};
-  }
-  return QString::fromUtf8(f.readAll());
-}
-
-const char *kDatasetFiles[] = {"sample1_var5.txt", "sample2_sin.txt",
-                               "sample3_runge.txt"};
-const char *kDatasetTitles[] = {"Вариант 5 (таблица 1.5)", "sin(x) на [0; 1,5]",
-                                "Рунге 1/(1+25x²)"};
-
 } // namespace
 
 QVariantMap InterpolationModule::interpolate(const QVariantMap &payload) {
@@ -334,38 +321,6 @@ QVariantList InterpolationModule::sampleFunction(qint32 funcId, double a,
     out.push_back(pm);
   }
   return out;
-}
-
-QVariantList InterpolationModule::datasetList() {
-  QVariantList out;
-  for (int i = 0; i < 3; ++i) {
-    QVariantMap m;
-    m.insert("id", i);
-    m.insert("title", QString::fromUtf8(kDatasetTitles[i]));
-    out.push_back(m);
-  }
-  return out;
-}
-
-QVariantMap InterpolationModule::loadDataset(qint32 id) {
-  QVariantMap result;
-  if (id < 0 || id >= 3) {
-    result.insert("status", QStringLiteral("error"));
-    result.insert("message", QStringLiteral("Неизвестный набор данных"));
-    return result;
-  }
-  const QString path = QStringLiteral(":/qt/qml/CompMath/assets/datasets/%1")
-                           .arg(QString::fromLatin1(kDatasetFiles[id]));
-  const QString text = readResourceText(path);
-  if (text.isEmpty()) {
-    result.insert("status", QStringLiteral("error"));
-    result.insert("message",
-                  QStringLiteral("Не удалось прочитать набор данных"));
-    return result;
-  }
-  QVariantMap parsed = parsePoints(text);
-  parsed.insert("status", QStringLiteral("ok"));
-  return parsed;
 }
 
 QVariantMap InterpolationModule::loadFile(const QUrl &url) {

@@ -23,7 +23,6 @@ RowLayout {
         property string targetX: "2.112"
 
         property var functions: []
-        property var datasets: []
         property int funcId: 0
         property string funcA: "0"
         property string funcB: "1.5"
@@ -110,21 +109,6 @@ RowLayout {
             rect.hasResult = false;
         }
 
-        function applyDataset(id) {
-            const r = backend.loadInterpolationDataset(id);
-            if (r.status !== "ok") {
-                rect.statusKey = "error";
-                rect.statusMessage = r.message;
-                rect.hasResult = true;
-                return;
-            }
-            rect.activeFunctionId = -1;
-            rect.setData(r.points);
-            if (r.target !== undefined) {
-                rect.targetX = String(r.target);
-            }
-        }
-
         function generateFromFunction() {
             const a = Number(String(rect.funcA).replace(",", "."));
             const b = Number(String(rect.funcB).replace(",", "."));
@@ -182,13 +166,73 @@ RowLayout {
             return Number(value).toFixed(5);
         }
 
+        function factorialOf(k) {
+            let f = 1;
+            for (let i = 2; i <= k; ++i) {
+                f *= i;
+            }
+            return f;
+        }
+
+        function superscriptNum(k) {
+            const map = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+            return String(k).split("").map(d => map[d] !== undefined ? map[d] : d).join("");
+        }
+
+        function compactNumber(value) {
+            const a = Math.abs(value);
+            if (a !== 0 && (a < 1e-4 || a >= 1e6)) {
+                return a.toExponential(3);
+            }
+            return String(Number(a.toPrecision(5)));
+        }
+
+        function polyEquation() {
+            if (!rect.diffTable || rect.diffTable.length === 0 || rect.nodes.length < 2) {
+                return "";
+            }
+            const parts = [];
+            for (let k = 0; k < rect.diffTable.length; ++k) {
+                if (rect.diffTable[k].length === 0) {
+                    continue;
+                }
+                const coef = Number(rect.diffTable[k][0]) / rect.factorialOf(k);
+                if (k > 0 && Math.abs(coef) < 1e-12) {
+                    continue;
+                }
+                let factor = "";
+                if (k >= 1) {
+                    factor = "·q";
+                    for (let j = 1; j < k; ++j) {
+                        factor += "(q−" + j + ")";
+                    }
+                }
+                const term = rect.compactNumber(coef) + factor;
+                if (parts.length === 0) {
+                    parts.push((coef < 0 ? "−" : "") + term);
+                } else {
+                    parts.push((coef < 0 ? " − " : " + ") + term);
+                }
+            }
+            return parts.length > 0 ? "P(x) = " + parts.join("") : "";
+        }
+
+        function qDefinition() {
+            if (rect.nodes.length < 2) {
+                return "";
+            }
+            const x0 = Number(rect.nodes[0].x);
+            const h = Number(rect.nodes[1].x) - x0;
+            const x0part = (x0 < 0 ? "+ " : "− ") + rect.compactNumber(x0);
+            return "q = (x " + x0part + ") / " + rect.compactNumber(h);
+        }
+
         Backend {
             id: backend
         }
 
         Component.onCompleted: {
             rect.functions = backend.interpolationFunctions();
-            rect.datasets = backend.interpolationDatasets();
         }
 
         FileDialog {
@@ -239,14 +283,13 @@ RowLayout {
                     Repeater {
                         model: [
                             { "k": 0, "t": "Вручную" },
-                            { "k": 1, "t": "Из файла" },
-                            { "k": 2, "t": "Функция" }
+                            { "k": 1, "t": "Функция" }
                         ]
                         delegate: Rectangle {
                             id: tab
                             required property var modelData
                             readonly property bool sel: rect.inputMode === modelData.k
-                            width: (mainColumn.width - 12) / 3
+                            width: (mainColumn.width - 6) / 2
                             height: 40
                             radius: 4
                             color: sel ? Theme.accent : (tabArea.containsMouse ? Qt.lighter(Theme.bg, 1.5) : Theme.bg)
@@ -412,57 +455,26 @@ RowLayout {
                     }
                 }
 
-                MyRect {
-                    height: 50
-                    width: parent.width
-                    border.color: "transparent"
-                    visible: rect.inputMode === 1
-                    MyText {
-                        text: "Встроенные наборы"
-                    }
-                }
-
-                Column {
+                MyButton {
                     width: parent.width - 40
                     x: 20
-                    spacing: 8
-                    visible: rect.inputMode === 1
-
-                    Repeater {
-                        model: rect.datasets
-                        delegate: MyButton {
-                            required property var modelData
-                            width: parent.width
-                            height: 44
-                            text: modelData.title
-                            leftAligned: true
-                            normalColor: Theme.bg
-                            hoverColor: Qt.lighter(Theme.bg, 1.5)
-                            textNormalColor: Theme.textMain
-                            textHoverColor: Theme.accent
-                            onClicked: rect.applyDataset(modelData.id)
-                        }
-                    }
-
-                    MyButton {
-                        width: parent.width
-                        height: 46
-                        text: "Открыть файл…"
-                        leftAligned: false
-                        bold: true
-                        normalColor: Theme.bg
-                        hoverColor: Qt.lighter(Theme.bg, 1.5)
-                        textNormalColor: Theme.accent
-                        textHoverColor: Theme.textMain
-                        onClicked: fileDialog.open()
-                    }
+                    height: 46
+                    text: "Из файла…"
+                    leftAligned: false
+                    bold: true
+                    visible: rect.inputMode === 0
+                    normalColor: Theme.bg
+                    hoverColor: Qt.lighter(Theme.bg, 1.5)
+                    textNormalColor: Theme.accent
+                    textHoverColor: Theme.textMain
+                    onClicked: fileDialog.open()
                 }
 
                 MyRect {
                     height: 50
                     width: parent.width
                     border.color: "transparent"
-                    visible: rect.inputMode === 2
+                    visible: rect.inputMode === 1
                     MyText {
                         text: "Функция"
                     }
@@ -471,7 +483,7 @@ RowLayout {
                 Column {
                     width: parent.width
                     spacing: 4
-                    visible: rect.inputMode === 2
+                    visible: rect.inputMode === 1
 
                     Repeater {
                         model: rect.functions
@@ -487,7 +499,7 @@ RowLayout {
                 Column {
                     width: parent.width
                     spacing: 8
-                    visible: rect.inputMode === 2
+                    visible: rect.inputMode === 1
 
                     Repeater {
                         model: [
@@ -748,13 +760,54 @@ RowLayout {
                                     readonly property int srcRow: diffRow.index - diffCell.index
                                     readonly property bool filled: srcRow >= 0 && srcRow % 2 === 0 && srcRow / 2 < rect.diffTable[diffCell.index].length
                                     text: filled ? Number(rect.diffTable[diffCell.index][srcRow / 2]).toFixed(4) : ""
-                                    color: diffCell.index === 0 ? Theme.textMain : Theme.accent
+                                    color: Theme.textMain
                                     font.family: "JetbrainsMono Nerd Font"
                                     font.pixelSize: 13
                                     horizontalAlignment: Text.AlignHCenter
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            Text {
+                text: "Интерполяционный многочлен (1-я формула Ньютона)"
+                color: Theme.textMain
+                font.pixelSize: 16
+                font.family: "JetbrainsMono Nerd Font"
+                font.bold: true
+                Layout.leftMargin: 6
+                visible: rect.hasResult && rect.statusKey === "ok" && rect.equidistant
+            }
+
+            MyRect {
+                Layout.fillWidth: true
+                Layout.preferredHeight: polyColumn.implicitHeight + 16
+                color: Theme.bg
+                visible: rect.hasResult && rect.statusKey === "ok" && rect.equidistant
+
+                Column {
+                    id: polyColumn
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    spacing: 6
+
+                    Text {
+                        width: parent.width
+                        text: rect.polyEquation()
+                        color: Theme.textMain
+                        wrapMode: Text.WordWrap
+                        font.family: "JetbrainsMono Nerd Font"
+                        font.pixelSize: 14
+                    }
+                    Text {
+                        width: parent.width
+                        text: rect.qDefinition()
+                        color: Theme.textDimmed
+                        wrapMode: Text.WordWrap
+                        font.family: "JetbrainsMono Nerd Font"
+                        font.pixelSize: 13
                     }
                 }
             }
@@ -907,7 +960,7 @@ RowLayout {
                             Text {
                                 Layout.preferredWidth: 130
                                 text: methodRow.isOk ? rect.formattedNumber(Number(methodRow.modelData.value)) : "—"
-                                color: methodRow.isOk ? methodRow.curveColor : Theme.textDimmed
+                                color: methodRow.isOk ? Theme.textMain : Theme.textDimmed
                                 font.family: "JetbrainsMono Nerd Font"
                                 font.pixelSize: 14
                                 horizontalAlignment: Text.AlignRight

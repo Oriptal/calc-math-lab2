@@ -108,14 +108,6 @@ public:
     return InterpolationModule::sampleFunction(funcId, a, b, points);
   }
 
-  Q_INVOKABLE QVariantList interpolationDatasets() const {
-    return InterpolationModule::datasetList();
-  }
-
-  Q_INVOKABLE QVariantMap loadInterpolationDataset(qint32 id) const {
-    return InterpolationModule::loadDataset(id);
-  }
-
   Q_INVOKABLE QVariantMap loadInterpolationFile(const QUrl &url) const {
     return InterpolationModule::loadFile(url);
   }

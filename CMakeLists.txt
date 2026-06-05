@@ -74,9 +74,6 @@ qt_add_qml_module(comp-math
         assets/func3.svg
         assets/func4.svg
         assets/icon-256.png
-        assets/datasets/sample1_var5.txt
-        assets/datasets/sample2_sin.txt
-        assets/datasets/sample3_runge.txt
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
