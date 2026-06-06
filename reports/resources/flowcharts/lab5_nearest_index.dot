@@ -5,9 +5,9 @@ digraph Lab5NearestIndex {
 
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label=<Параметры: nodes, X>, shape=parallelogram, fillcolor="#f5f5f5"]
-  init   [label=<best = 0<BR/>bestDist = |nodes[0].x − X|<BR/>i = 1>, shape=box]
+  init   [label=<best = 0<BR/>bestDist = |nodes<SUB>0</SUB>.x − X|<BR/>i = 1>, shape=box]
   chk    [label=<i &lt; nodes.size() ?>, shape=diamond, fillcolor="#fff7d1"]
-  setd   [label=<d = |nodes[i].x − X|>, shape=box]
+  setd   [label=<d = |nodes<SUB>i</SUB>.x − X|>, shape=box]
   cmp    [label=<d &lt; bestDist ?>, shape=diamond, fillcolor="#fff7d1"]
   upd    [label=<bestDist = d<BR/>best = i>, shape=box]
   nexti  [label=<i = i + 1>, shape=box]

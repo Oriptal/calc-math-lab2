@@ -188,7 +188,7 @@ bool isEquidistant(const std::vector<Point> &nodes, double &h) {
   }
   for (std::size_t i = 1; i < n; ++i) {
     const double step = nodes[i].x - nodes[i - 1].x;
-    if (std::abs(step - h) > 1e-6 * std::max(1.0, std::abs(h))) {
+    if (std::abs(step - h) > 1e-6) {
       return false;
     }
   }

@@ -13,7 +13,7 @@ digraph Lab5Run {
   ci     [label=<i &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
   sj     [label=<j = i + 1>, shape=box]
   cj     [label=<j &lt; n ?>, shape=diamond, fillcolor="#fff7d1"]
-  cdup   [label=<|x<SUB>i</SUB> − x<SUB>j</SUB>| &lt; kEps ?>, shape=diamond, fillcolor="#fff7d1"]
+  cdup   [label=<|nodes<SUB>i</SUB>.x − nodes<SUB>j</SUB>.x| &lt; kEps ?>, shape=diamond, fillcolor="#fff7d1"]
   errd   [label=<r.status = Duplicate<BR/>return r>, shape=parallelogram, fillcolor="#fde2e2"]
   nj     [label=<j = j + 1>, shape=box]
   nexti  [label=<i = i + 1>, shape=box]
@@ -27,13 +27,13 @@ digraph Lab5Run {
 
   disp   [label=<switch (method)>, shape=diamond, fillcolor="#fff7d1"]
 
-  nf     [label=<r.center = 0<BR/>r.t = (X − x<SUB>0</SUB>) / h<BR/>r.value = newtonForward(d, nodes, h, X, r.order)>, shape=box, fillcolor="#eef2ff"]
-  nb     [label=<r.center = n − 1<BR/>r.t = (X − x<SUB>n−1</SUB>) / h<BR/>r.value = newtonBackward(d, nodes, h, X, r.order)>, shape=box, fillcolor="#eef2ff"]
+  nf     [label=<r.center = 0<BR/>r.t = (X − nodes<SUB>0</SUB>.x) / h<BR/>r.value = newtonForward(d, nodes, h, X, r.order)>, shape=box, fillcolor="#eef2ff"]
+  nb     [label=<r.center = n − 1<BR/>r.t = (X − nodes<SUB>n−1</SUB>.x) / h<BR/>r.value = newtonBackward(d, nodes, h, X, r.order)>, shape=box, fillcolor="#eef2ff"]
   g1     [label=<r.center = nearestIndex(nodes, X)<BR/>r.value = gaussForward(d, nodes, h, X, r.center, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
   g2     [label=<r.center = nearestIndex(nodes, X)<BR/>r.value = gaussBackward(d, nodes, h, X, r.center, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
   st     [label=<r.center = nearestIndex(nodes, X)<BR/>r.value = stirling(d, nodes, h, X, r.center, r.t, r.order)>, shape=box, fillcolor="#eef2ff"]
 
-  be1    [label=<c = ⌊(X − x<SUB>0</SUB>) / h⌋>, shape=box, fillcolor="#eef2ff"]
+  be1    [label=<c = ⌊(X − nodes<SUB>0</SUB>.x) / h⌋>, shape=box, fillcolor="#eef2ff"]
   bec1   [label=<c &lt; 0 ?>, shape=diamond, fillcolor="#fff7d1"]
   be2    [label=<c = 0>, shape=box, fillcolor="#eef2ff"]
   bec2   [label=<c &gt; n − 2 ?>, shape=diamond, fillcolor="#fff7d1"]
