@@ -5,6 +5,7 @@
 #include "GaussModule.hpp"
 #include "IntegrationModule.hpp"
 #include "InterpolationModule.hpp"
+#include "OdeModule.hpp"
 #include "RootModule.hpp"
 #include "SystemModule.hpp"
 
@@ -110,6 +111,20 @@ public:
 
   Q_INVOKABLE QVariantMap loadInterpolationFile(const QUrl &url) const {
     return InterpolationModule::loadFile(url);
+  }
+
+  Q_INVOKABLE QVariantMap solveOde(const QVariantMap &payload) const {
+    return OdeModule::solve(payload);
+  }
+
+  Q_INVOKABLE QVariantList odeEquations() const {
+    return OdeModule::equationList();
+  }
+
+  Q_INVOKABLE QVariantList sampleOdeExact(qint32 equationId, qreal x0, qreal y0,
+                                          qreal a, qreal b,
+                                          qint32 points) const {
+    return OdeModule::sampleExact(equationId, x0, y0, a, b, points);
   }
 };
 

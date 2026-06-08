@@ -74,6 +74,12 @@ MyRect {
                         active: content.currentModule === 5
                         onClicked: content.currentModule = 5
                     }
+
+                    NavButton {
+                        text: "ОДУ"
+                        active: content.currentModule === 6
+                        onClicked: content.currentModule = 6
+                    }
                 }
             }
         }
@@ -108,6 +114,8 @@ MyRect {
                 ModuleApproximation {}
 
                 ModuleInterpolation {}
+
+                ModuleOde {}
             }
         }
     }
