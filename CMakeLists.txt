@@ -29,6 +29,8 @@ qt_add_executable(comp-math
     backend/ApproximationModule.cpp
     backend/InterpolationModule.hpp
     backend/InterpolationModule.cpp
+    backend/OdeModule.hpp
+    backend/OdeModule.cpp
 )
 
 set_source_files_properties(Theme.qml PROPERTIES
@@ -47,6 +49,7 @@ qt_add_qml_module(comp-math
         components/ModuleGauss.qml
         components/ModuleIntegration.qml
         components/ModuleInterpolation.qml
+        components/ModuleOde.qml
         components/ModuleRoot.qml
         components/ModuleSettings.qml
         components/ModuleSystem.qml
@@ -73,6 +76,10 @@ qt_add_qml_module(comp-math
         assets/func2.svg
         assets/func3.svg
         assets/func4.svg
+        assets/ode0.svg
+        assets/ode1.svg
+        assets/ode2.svg
+        assets/ode3.svg
         assets/icon-256.png
 )
 
@@ -151,6 +158,8 @@ add_library(calc_core
     calc/approximation.cpp
     calc/Interpolation.hpp
     calc/interpolation.cpp
+    calc/Ode.hpp
+    calc/ode.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
