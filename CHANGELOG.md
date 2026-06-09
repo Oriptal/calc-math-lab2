@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.5.0 - 2026-06-09
+#### Features
+- (**lab6**) модуль численного решения ОДУ (задача Коши) - (90d2d7b) - Prokhor
+#### Documentation
+- (**lab6**) задание и лекция по ОДУ - (6f451fd) - Prokhor
+- (**lab6**) отчёт по численному решению ОДУ - (242a36b) - Prokhor
+- (**lab6**) блок-схемы методов решения ОДУ - (97ae5d4) - Prokhor
+
+- - -
+
 ## v1.4.1 - 2026-06-05
 #### Documentation
 - (**lab5**) оформление отчёта и реальный скриншот приложения - (afd2788) - Prokhor
