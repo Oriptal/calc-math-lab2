@@ -1,0 +1,30 @@
+digraph Lab6Milne {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.32, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps, ε>, shape=parallelogram, fillcolor="#f5f5f5"]
+  boot   [label=<boot = min(steps, 3)<BR/>(y<SUB>0</SUB> … y<SUB>boot</SUB>) = РунгеКутта4(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, boot)<BR/>f<SUB>j</SUB> = f(x<SUB>j</SUB>, y<SUB>j</SUB>),  j = 0 … boot>, shape=box, fillcolor="#eef2ff"]
+  init   [label=<i = 4>, shape=box]
+  chk    [label=<i ≤ steps ?>, shape=diamond, fillcolor="#fff7d1"]
+  pred   [label=<x<SUB>i</SUB> = x<SUB>0</SUB> + i·h<BR/>y<SUP>прогн</SUP> = y<SUB>i−4</SUB> + (4h/3)(2f<SUB>i−3</SUB> − f<SUB>i−2</SUB> + 2f<SUB>i−1</SUB>)<BR/>y<SUB>тек</SUB> = y<SUP>прогн</SUP><BR/>it = 0>, shape=box]
+  ichk   [label=<it &lt; kMaxCorrectorIters ?>, shape=diamond, fillcolor="#fff7d1"]
+  corr   [label=<y<SUP>корр</SUP> = y<SUB>i−2</SUB> + (h/3)(f<SUB>i−2</SUB> + 4f<SUB>i−1</SUB> + f(x<SUB>i</SUB>, y<SUB>тек</SUB>))<BR/>done = |y<SUP>корр</SUP> − y<SUB>тек</SUB>| &lt; ε<BR/>y<SUB>тек</SUB> = y<SUP>корр</SUP><BR/>it = it + 1>, shape=box]
+  dchk   [label=<done ?>, shape=diamond, fillcolor="#fff7d1"]
+  store  [label=<y<SUB>i</SUB> = y<SUB>тек</SUB><BR/>f<SUB>i</SUB> = f(x<SUB>i</SUB>, y<SUB>i</SUB>)<BR/>i = i + 1>, shape=box]
+  output [label=<return y>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> boot -> init -> chk
+  chk -> pred [label="да"]
+  pred -> ichk
+  ichk -> corr [label="да"]
+  corr -> dchk
+  dchk -> store [label="да"]
+  dchk -> ichk [label="нет"]
+  ichk -> store [label="нет"]
+  store -> chk
+  chk -> output [label="нет"]
+  output -> stop
+}

@@ -1,0 +1,20 @@
+digraph Lab6Runge {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.25, ranksep=0.32, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h<SUB>0</SUB>, x<SUB>n</SUB>, ε>, shape=parallelogram, fillcolor="#f5f5f5"]
+  init   [label=<h = h<SUB>0</SUB><BR/>steps = round((x<SUB>n</SUB> − x<SUB>0</SUB>) / h)<BR/>p = порядок(метод),  guard = 0>, shape=box]
+  rcalc  [label=<y<SUP>h</SUP> = решение на конце (шаг h, steps)<BR/>y<SUP>h/2</SUP> = решение на конце (шаг h/2, 2·steps)<BR/>R = |y<SUP>h</SUP> − y<SUP>h/2</SUP>| / (2<SUP>p</SUP> − 1)>, shape=box, fillcolor="#eef2ff"]
+  chk    [label=<R &gt; ε  и  guard &lt; kMaxRefineHalvings<BR/>и  2·steps ≤ kMaxSteps ?>, shape=diamond, fillcolor="#fff7d1"]
+  halve  [label=<h = h / 2<BR/>steps = 2·steps<BR/>guard = guard + 1>, shape=box]
+  output [label=<h* = h,  узлов = steps<BR/>return R>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> init -> rcalc -> chk
+  chk -> halve [label="да"]
+  halve -> rcalc
+  chk -> output [label="нет"]
+  output -> stop
+}
