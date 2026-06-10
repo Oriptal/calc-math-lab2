@@ -1,0 +1,28 @@
+digraph Lab6Order {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.28, ranksep=0.32, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметр: метод>, shape=parallelogram, fillcolor="#f5f5f5"]
+  d1     [label=<метод = ImprovedEuler ?>, shape=diamond, fillcolor="#fff7d1"]
+  r2     [label=<return 2>, shape=parallelogram, fillcolor="#dcfce7"]
+  d2     [label=<метод = RungeKutta4 ?>, shape=diamond, fillcolor="#fff7d1"]
+  r4a    [label=<return 4>, shape=parallelogram, fillcolor="#dcfce7"]
+  d3     [label=<метод = Milne ?>, shape=diamond, fillcolor="#fff7d1"]
+  r4b    [label=<return 4>, shape=parallelogram, fillcolor="#dcfce7"]
+  r1     [label=<return 1>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> d1
+  d1 -> r2 [label="да"]
+  d1 -> d2 [label="нет"]
+  d2 -> r4a [label="да"]
+  d2 -> d3  [label="нет"]
+  d3 -> r4b [label="да"]
+  d3 -> r1  [label="нет"]
+  r2 -> stop
+  r4a -> stop
+  r4b -> stop
+  r1 -> stop
+}

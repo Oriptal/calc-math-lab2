@@ -5,7 +5,9 @@ digraph Lab6Milne {
 
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label=<Параметры: f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps, ε>, shape=parallelogram, fillcolor="#f5f5f5"]
-  boot   [label=<boot = min(steps, 3)<BR/>(y<SUB>0</SUB> … y<SUB>boot</SUB>) = РунгеКутта4(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, boot)<BR/>f<SUB>j</SUB> = f(x<SUB>j</SUB>, y<SUB>j</SUB>),  j = 0 … boot>, shape=box, fillcolor="#eef2ff"]
+  boot   [label=<boot = min(steps, 3)<BR/>start = solveRungeKutta4(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, boot)<BR/>j = 0>, shape=box, fillcolor="#eef2ff"]
+  jchk   [label=<j ≤ boot ?>, shape=diamond, fillcolor="#fff7d1"]
+  jbody  [label=<y<SUB>j</SUB> = start<SUB>j</SUB><BR/>f<SUB>j</SUB> = f(x<SUB>0</SUB> + j·h, y<SUB>j</SUB>)<BR/>j = j + 1>, shape=box]
   init   [label=<i = 4>, shape=box]
   chk    [label=<i ≤ steps ?>, shape=diamond, fillcolor="#fff7d1"]
   pred   [label=<x<SUB>i</SUB> = x<SUB>0</SUB> + i·h<BR/>y<SUP>прогн</SUP> = y<SUB>i−4</SUB> + (4h/3)(2f<SUB>i−3</SUB> − f<SUB>i−2</SUB> + 2f<SUB>i−1</SUB>)<BR/>y<SUB>тек</SUB> = y<SUP>прогн</SUP><BR/>it = 0>, shape=box]
@@ -16,7 +18,11 @@ digraph Lab6Milne {
   output [label=<return y>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> boot -> init -> chk
+  start -> input -> boot -> jchk
+  jchk -> jbody [label="да"]
+  jbody -> jchk
+  jchk -> init [label="нет"]
+  init -> chk
   chk -> pred [label="да"]
   pred -> ichk
   ichk -> corr [label="да"]

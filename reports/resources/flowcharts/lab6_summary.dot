@@ -1,0 +1,19 @@
+digraph Lab6Summary {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.28, ranksep=0.32, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, x<SUB>n</SUB>, h, ε, steps, exactError>, shape=parallelogram, fillcolor="#f5f5f5"]
+  set    [label=<s.method = метод<BR/>s.order = methodOrder(метод)<BR/>s.steps = steps<BR/>s.exactError = exactError<BR/>s.usesRunge = (метод ≠ Milne)>, shape=box, fillcolor="#eef2ff"]
+  crunge [label=<s.usesRunge ?>, shape=diamond, fillcolor="#fff7d1"]
+  runge  [label=<s.rungeError = rungeEndpointError(метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>s.refinedError = refineStepByRunge(метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, x<SUB>n</SUB>, ε, s.refinedStep, s.refinedSteps)>, shape=box, fillcolor="#eef2ff"]
+  ret    [label=<return s>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> set -> crunge
+  crunge -> runge [label="да"]
+  crunge -> ret   [label="нет"]
+  runge -> ret
+  ret -> stop
+}

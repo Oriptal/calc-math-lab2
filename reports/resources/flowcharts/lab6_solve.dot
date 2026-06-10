@@ -1,43 +1,70 @@
 digraph Lab6Solve {
-  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.28, ranksep=0.32, splines=polyline]
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.28, ranksep=0.30, splines=polyline]
   node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
   edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
 
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label=<Параметры: equationId, x<SUB>0</SUB>, y<SUB>0</SUB>, x<SUB>n</SUB>, h, ε>, shape=parallelogram, fillcolor="#f5f5f5"]
 
+  cexist [label=<equationExists(equationId) ?>, shape=diamond, fillcolor="#fff7d1"]
   cint   [label=<x<SUB>n</SUB> &gt; x<SUB>0</SUB> ?>, shape=diamond, fillcolor="#fff7d1"]
   ch     [label=<h &gt; 0 ?>, shape=diamond, fillcolor="#fff7d1"]
-  cbig   [label=<h ≤ x<SUB>n</SUB> − x<SUB>0</SUB> ?>, shape=diamond, fillcolor="#fff7d1"]
+  cbig   [label=<h ≤ x<SUB>n</SUB> − x<SUB>0</SUB> + 10<SUP>−12</SUP> ?>, shape=diamond, fillcolor="#fff7d1"]
   ceps   [label=<ε &gt; 0 ?>, shape=diamond, fillcolor="#fff7d1"]
-  err    [label=<status = код ошибки<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
 
   nstep  [label=<steps = round((x<SUB>n</SUB> − x<SUB>0</SUB>) / h)>, shape=box]
+  cmin   [label=<steps &lt; 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  setmin [label=<steps = 1>, shape=box]
   cmany  [label=<steps &gt; kMaxSteps ?>, shape=diamond, fillcolor="#fff7d1"]
-  cfew   [label=<steps &lt; 4 ?>, shape=diamond, fillcolor="#fff7d1"]
+  cfew   [label=<steps &lt; kMinSteps ?>, shape=diamond, fillcolor="#fff7d1"]
 
-  prep   [label=<f = equations<SUB>id</SUB>.f<BR/>точн(x) = equations<SUB>id</SUB>.makeExact(x<SUB>0</SUB>, y<SUB>0</SUB>)<BR/>y<SUP>Э</SUP> = УсовЭйлер(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>y<SUP>РК</SUP> = РунгеКутта4(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>y<SUP>М</SUP> = Милна(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps, ε)>, shape=box, fillcolor="#eef2ff"]
-  fill   [label=<для i = 0 … steps:<BR/>x<SUB>i</SUB> = x<SUB>0</SUB> + i·h,  таблица<SUB>i</SUB> = (x<SUB>i</SUB>, точн(x<SUB>i</SUB>), y<SUP>Э</SUP><SUB>i</SUB>, y<SUP>РК</SUP><SUB>i</SUB>, y<SUP>М</SUP><SUB>i</SUB>)<BR/>err<SUP>Э</SUP>, err<SUP>РК</SUP>, err<SUP>М</SUP> = max |точн − y|>, shape=box]
-  summ   [label=<Эйлер, РК4: оценка R по Рунге + уточнение шага<BR/>Милна: ε = max |точн − y|>, shape=box, fillcolor="#eef2ff"]
-  ret    [label=<status = Ok<BR/>return res>, shape=parallelogram, fillcolor="#dcfce7"]
+  errInt  [label=<status = Status::BadInterval<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
+  errStep [label=<status = Status::BadStep<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
+  errBig  [label=<status = Status::StepTooLarge<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
+  errEps  [label=<status = Status::BadTolerance<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
+  errMany [label=<status = Status::TooManyNodes<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
+  errFew  [label=<status = Status::TooFewNodes<BR/>return res>, shape=parallelogram, fillcolor="#fde2e2"]
+
+  prep   [label=<f = equations<SUB>id</SUB>.f<BR/>точн(x) = equations<SUB>id</SUB>.makeExact(x<SUB>0</SUB>, y<SUB>0</SUB>)<BR/>y<SUP>Э</SUP> = solveImprovedEuler(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>y<SUP>РК</SUP> = solveRungeKutta4(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>y<SUP>М</SUP> = solveMilne(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps, ε)>, shape=box, fillcolor="#eef2ff"]
+  finit  [label=<err<SUP>Э</SUP> = 0,  err<SUP>РК</SUP> = 0,  err<SUP>М</SUP> = 0<BR/>i = 0>, shape=box]
+  fchk   [label=<i ≤ steps ?>, shape=diamond, fillcolor="#fff7d1"]
+  fbody  [label=<x<SUB>i</SUB> = x<SUB>0</SUB> + i·h<BR/>y<SUB>e</SUB> = точн(x<SUB>i</SUB>)<BR/>таблица<SUB>i</SUB> = (x<SUB>i</SUB>, y<SUB>e</SUB>, y<SUP>Э</SUP><SUB>i</SUB>, y<SUP>РК</SUP><SUB>i</SUB>, y<SUP>М</SUP><SUB>i</SUB>)<BR/>err<SUP>Э</SUP> = max(err<SUP>Э</SUP>, |y<SUB>e</SUB> − y<SUP>Э</SUP><SUB>i</SUB>|)<BR/>err<SUP>РК</SUP> = max(err<SUP>РК</SUP>, |y<SUB>e</SUB> − y<SUP>РК</SUP><SUB>i</SUB>|)<BR/>err<SUP>М</SUP> = max(err<SUP>М</SUP>, |y<SUB>e</SUB> − y<SUP>М</SUP><SUB>i</SUB>|)<BR/>i = i + 1>, shape=box]
+  summ   [label=<res.improvedEuler = makeSummary(ImprovedEuler, f, x<SUB>0</SUB>, y<SUB>0</SUB>, x<SUB>n</SUB>, h, ε, steps, err<SUP>Э</SUP>)<BR/>res.rungeKutta4 = makeSummary(RungeKutta4, f, x<SUB>0</SUB>, y<SUB>0</SUB>, x<SUB>n</SUB>, h, ε, steps, err<SUP>РК</SUP>)<BR/>res.milne = makeSummary(Milne, f, x<SUB>0</SUB>, y<SUB>0</SUB>, x<SUB>n</SUB>, h, ε, steps, err<SUP>М</SUP>)>, shape=box, fillcolor="#eef2ff"]
+  ret    [label=<status = Status::Ok<BR/>return res>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> cint
-  cint -> ch   [label="да"]
-  ch   -> cbig [label="да"]
-  cbig -> ceps [label="да"]
-  ceps -> nstep [label="да"]
+  start -> input -> cexist
+  cexist -> cint  [label="да"]
+  cint   -> ch    [label="да"]
+  ch     -> cbig  [label="да"]
+  cbig   -> ceps  [label="да"]
+  ceps   -> nstep [label="да"]
 
-  cint -> err [label="нет"]
-  ch   -> err [label="нет"]
-  cbig -> err [label="нет"]
-  ceps -> err [label="нет"]
-  err -> stop
+  cexist -> errInt  [label="нет"]
+  cint   -> errInt  [label="нет"]
+  ch     -> errStep [label="нет"]
+  cbig   -> errBig  [label="нет"]
+  ceps   -> errEps  [label="нет"]
 
-  nstep -> cmany
-  cmany -> err [label="да"]
-  cmany -> cfew [label="нет"]
-  cfew -> err [label="да"]
-  cfew -> prep [label="нет"]
-  prep -> fill -> summ -> ret -> stop
+  nstep  -> cmin
+  cmin   -> setmin [label="да"]
+  cmin   -> cmany  [label="нет"]
+  setmin -> cmany
+  cmany  -> errMany [label="да"]
+  cmany  -> cfew    [label="нет"]
+  cfew   -> errFew  [label="да"]
+  cfew   -> prep    [label="нет"]
+
+  prep  -> finit -> fchk
+  fchk  -> fbody [label="да"]
+  fbody -> fchk
+  fchk  -> summ  [label="нет"]
+  summ  -> ret -> stop
+
+  errInt  -> stop
+  errStep -> stop
+  errBig  -> stop
+  errEps  -> stop
+  errMany -> stop
+  errFew  -> stop
 }

@@ -174,9 +174,9 @@ $ epsilon = max_(0 <= i <= n) |y_(i,"точн") - y_i|. $
 Общая процедура `solveCauchy` проверяет корректность входных данных, строит
 равномерную сетку $x_i = x_0 + i h$ и вызывает для неё все три метода, после чего
 формирует единую таблицу значений (точное решение и три приближённых) и сводку оценок
-точности. Блок-схема общей процедуры приведена на рис. 1.
+точности (`makeSummary`, рис. 5). Блок-схема общей процедуры приведена на рис. 1.
 
-#figure(image("resources/flowcharts/lab6_solve.png", width: 84%), caption: [Общая схема расчёта `solveCauchy`])
+#figure(image("resources/flowcharts/lab6_solve.png", width: 90%), caption: [Общая схема расчёта `solveCauchy`])
 
 == Блок-схемы методов
 
@@ -195,15 +195,47 @@ $ epsilon = max_(0 <= i <= n) |y_(i,"точн") - y_i|. $
   caption: [Метод Милна (предиктор-корректор) `solveMilne`],
 )
 
+== Сводка оценок точности
+
+Для каждого метода функция `makeSummary` (рис. 5) формирует структуру `MethodSummary`:
+порядок точности (`methodOrder`, рис. 9), число шагов и максимальное отклонение от
+точного решения $max|y_("точн") - y|$. Для одношаговых методов (поле `usesRunge` —
+истинно для всех, кроме Милна) дополнительно вычисляются оценка погрешности на конце
+отрезка по правилу Рунге (`rungeEndpointError`) и уточнённый шаг с автоматическим
+дроблением (`refineStepByRunge`).
+
+#figure(
+  image("resources/flowcharts/lab6_summary.png", width: 82%),
+  caption: [Формирование сводки точности метода `makeSummary`],
+)
+
 == Оценка точности по правилу Рунге
 
 Контроль точности одношаговых методов с автоматическим дроблением шага реализован в
-функции `refineStepByRunge` (рис. 5): пока оценка $R$ превышает $epsilon$, шаг
-уменьшается вдвое, число узлов удваивается, и оценка пересчитывается.
+функции `refineStepByRunge` (рис. 6): пока оценка $R$ превышает $epsilon$, шаг
+уменьшается вдвое, число узлов удваивается, и оценка пересчитывается. Сама оценка $R$
+на конце отрезка вычисляется функцией `rungeEndpointError` (рис. 7) по двум решениям —
+с шагом $h$ и $h\/2$, каждое из которых получает вспомогательная функция `solveEndpoint`
+(рис. 8); порядок точности $p$ возвращает `methodOrder` (рис. 9).
 
 #figure(
   image("resources/flowcharts/lab6_runge.png", width: 76%),
-  caption: [Оценка погрешности и подбор шага по правилу Рунге `refineStepByRunge`],
+  caption: [Подбор шага по правилу Рунге `refineStepByRunge`],
+)
+
+#figure(
+  image("resources/flowcharts/lab6_runge_error.png", width: 60%),
+  caption: [Оценка погрешности на конце отрезка `rungeEndpointError`],
+)
+
+#figure(
+  image("resources/flowcharts/lab6_endpoint.png", width: 66%),
+  caption: [Значение решения на конце отрезка `solveEndpoint`],
+)
+
+#figure(
+  image("resources/flowcharts/lab6_order.png", width: 46%),
+  caption: [Порядок точности метода `methodOrder`],
 )
 
 = Вычислительный пример

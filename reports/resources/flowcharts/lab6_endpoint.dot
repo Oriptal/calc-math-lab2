@@ -1,0 +1,30 @@
+digraph Lab6Endpoint {
+  graph [fontname="CMU Serif", rankdir=TB, nodesep=0.28, ranksep=0.32, splines=polyline]
+  node  [fontname="CMU Serif", fontsize=14, style="filled", fillcolor="#ffffff", color="#000000"]
+  edge  [fontname="CMU Serif", fontsize=12, color="#000000"]
+
+  start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
+  input  [label=<Параметры: метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps>, shape=parallelogram, fillcolor="#f5f5f5"]
+  d1     [label=<метод = ImprovedEuler ?>, shape=diamond, fillcolor="#fff7d1"]
+  bIE    [label=<y = solveImprovedEuler(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)>, shape=box, fillcolor="#eef2ff"]
+  d2     [label=<метод = RungeKutta4 ?>, shape=diamond, fillcolor="#fff7d1"]
+  bRK    [label=<y = solveRungeKutta4(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)>, shape=box, fillcolor="#eef2ff"]
+  bML    [label=<y = solveMilne(f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps, 10<SUP>−12</SUP>)>, shape=box, fillcolor="#eef2ff"]
+  cempty [label=<y пустой ?>, shape=diamond, fillcolor="#fff7d1"]
+  ry0    [label=<return y<SUB>0</SUB>>, shape=parallelogram, fillcolor="#dcfce7"]
+  rlast  [label=<return y<SUB>steps</SUB>>, shape=parallelogram, fillcolor="#dcfce7"]
+  stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
+
+  start -> input -> d1
+  d1 -> bIE [label="да"]
+  d1 -> d2  [label="нет"]
+  d2 -> bRK [label="да"]
+  d2 -> bML [label="нет"]
+  bIE -> cempty
+  bRK -> cempty
+  bML -> cempty
+  cempty -> ry0   [label="да"]
+  cempty -> rlast [label="нет"]
+  ry0 -> stop
+  rlast -> stop
+}
