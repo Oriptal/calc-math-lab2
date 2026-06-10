@@ -371,8 +371,17 @@ RowLayout {
                         width: parent.width
                         spacing: 10
                         Text {
-                            Layout.preferredWidth: 210
-                            Layout.minimumWidth: 150
+                            Layout.preferredWidth: 64
+                            text: "График"
+                            color: Theme.textMain
+                            font.bold: true
+                            font.family: "JetbrainsMono Nerd Font"
+                            font.pixelSize: 13
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                        Text {
+                            Layout.preferredWidth: 180
+                            Layout.minimumWidth: 140
                             text: "Метод"
                             color: Theme.textMain
                             font.bold: true
@@ -425,25 +434,60 @@ RowLayout {
                             required property var modelData
                             width: parent.width
                             spacing: 10
+                            readonly property bool curveVisible: root.legendChecked(modelData.key)
+                            readonly property color curveColor: rect.methodColor(modelData.key)
 
-                            Row {
-                                Layout.preferredWidth: 210
-                                Layout.minimumWidth: 150
-                                spacing: 8
+                            Item {
+                                Layout.preferredWidth: 64
+                                Layout.preferredHeight: 26
+
                                 Rectangle {
-                                    width: 22
-                                    height: 4
-                                    radius: 2
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    color: rect.methodColor(methodRow.modelData.key)
+                                    anchors.centerIn: parent
+                                    width: 50
+                                    height: 24
+                                    radius: 5
+                                    color: methodRow.curveVisible ? methodRow.curveColor : "transparent"
+                                    border.color: methodRow.curveColor
+                                    border.width: 1.5
+                                    opacity: toggleArea.containsMouse ? 0.82 : 1.0
+                                    scale: toggleArea.containsMouse ? 1.06 : 1.0
+                                    Behavior on scale {
+                                        NumberAnimation { duration: 120 }
+                                    }
+                                    Behavior on color {
+                                        ColorAnimation { duration: 120 }
+                                    }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: methodRow.curveVisible ? "вкл" : "выкл"
+                                        color: methodRow.curveVisible ? "#ffffff" : methodRow.curveColor
+                                        font.family: "JetbrainsMono Nerd Font"
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                    }
+
+                                    MouseArea {
+                                        id: toggleArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.legendToggle(methodRow.modelData.key);
+                                            graphView.refresh();
+                                        }
+                                    }
                                 }
-                                Text {
-                                    text: methodRow.modelData.title
-                                    color: Theme.textMain
-                                    font.family: "JetbrainsMono Nerd Font"
-                                    font.pixelSize: 13
-                                    elide: Text.ElideRight
-                                }
+                            }
+
+                            Text {
+                                Layout.preferredWidth: 180
+                                Layout.minimumWidth: 140
+                                text: methodRow.modelData.title
+                                color: Theme.textMain
+                                font.family: "JetbrainsMono Nerd Font"
+                                font.pixelSize: 13
+                                elide: Text.ElideRight
                             }
                             Text {
                                 Layout.preferredWidth: 36
@@ -569,10 +613,7 @@ RowLayout {
 
                 Repeater {
                     model: [
-                        { "label": "Точное", "color": "#0EA5E9", "p": "exact" },
-                        { "label": "Усов. Эйлер", "color": "#16A34A", "p": "improved_euler" },
-                        { "label": "РК4", "color": "#9333EA", "p": "rk4" },
-                        { "label": "Милна", "color": "#DB2777", "p": "milne" }
+                        { "label": "Точное решение", "color": "#0EA5E9", "p": "exact" }
                     ]
                     delegate: Row {
                         id: legendRow
