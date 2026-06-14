@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.6.0 - 2026-06-10
+#### Features
+- (**lab6**) кнопки вкл/выкл методов в таблице решения ОДУ - (e665b20) - Prokhor
+- (**ui**) минимальная высота графиков - (dc466c0) - Prokhor
+- (**ui**) адаптивный размер окна под разрешение экрана - (67ac436) - Prokhor
+#### Documentation
+- (**lab6**) блок-схемы 1-в-1 с кодом численного ядра - (5cb5cf0) - Prokhor
+- remove mocks from lab6.pdf screenshots - (7ce4715) - Prokhor
+
+- - -
+
 ## v1.5.0 - 2026-06-09
 #### Features
 - (**lab6**) модуль численного решения ОДУ (задача Коши) - (90d2d7b) - Prokhor
