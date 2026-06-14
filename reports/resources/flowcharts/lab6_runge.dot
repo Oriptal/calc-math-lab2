@@ -5,16 +5,22 @@ digraph Lab6Runge {
 
   start  [label="Начало", shape=oval, fillcolor="#e6eefc"]
   input  [label=<Параметры: метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h<SUB>0</SUB>, x<SUB>n</SUB>, ε>, shape=parallelogram, fillcolor="#f5f5f5"]
-  init   [label=<h = h<SUB>0</SUB><BR/>steps = round((x<SUB>n</SUB> − x<SUB>0</SUB>) / h)<BR/>p = порядок(метод),  guard = 0>, shape=box]
-  rcalc  [label=<y<SUP>h</SUP> = решение на конце (шаг h, steps)<BR/>y<SUP>h/2</SUP> = решение на конце (шаг h/2, 2·steps)<BR/>R = |y<SUP>h</SUP> − y<SUP>h/2</SUP>| / (2<SUP>p</SUP> − 1)>, shape=box, fillcolor="#eef2ff"]
+  init   [label=<h = h<SUB>0</SUB><BR/>steps = round((x<SUB>n</SUB> − x<SUB>0</SUB>) / h)>, shape=box]
+  cmin   [label=<steps &lt; 1 ?>, shape=diamond, fillcolor="#fff7d1"]
+  setmin [label=<steps = 1>, shape=box]
+  rinit  [label=<R = rungeEndpointError(метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>guard = 0>, shape=box, fillcolor="#eef2ff"]
   chk    [label=<R &gt; ε  и  guard &lt; kMaxRefineHalvings<BR/>и  2·steps ≤ kMaxSteps ?>, shape=diamond, fillcolor="#fff7d1"]
-  halve  [label=<h = h / 2<BR/>steps = 2·steps<BR/>guard = guard + 1>, shape=box]
-  output [label=<h* = h,  узлов = steps<BR/>return R>, shape=parallelogram, fillcolor="#dcfce7"]
+  halve  [label=<h = h / 2<BR/>steps = 2·steps<BR/>R = rungeEndpointError(метод, f, x<SUB>0</SUB>, y<SUB>0</SUB>, h, steps)<BR/>guard = guard + 1>, shape=box, fillcolor="#eef2ff"]
+  output [label=<outStep = h,  outSteps = steps<BR/>return R>, shape=parallelogram, fillcolor="#dcfce7"]
   stop   [label="Конец", shape=oval, fillcolor="#e6eefc"]
 
-  start -> input -> init -> rcalc -> chk
+  start -> input -> init -> cmin
+  cmin -> setmin [label="да"]
+  cmin -> rinit  [label="нет"]
+  setmin -> rinit
+  rinit -> chk
   chk -> halve [label="да"]
-  halve -> rcalc
+  halve -> chk
   chk -> output [label="нет"]
   output -> stop
 }
