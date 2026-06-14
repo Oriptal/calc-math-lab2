@@ -662,6 +662,7 @@ RowLayout {
                 id: graphView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.minimumHeight: 300
                 antialiasing: true
                 legend.visible: false
                 backgroundRoundness: 0
