@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.7.0 - 2026-06-17
+#### Build system
+- (**package**) forward EXTRA_CMAKE_ARGS to cmake configure - (902abfe) - Prokhor
+#### Continuous Integration
+- cross-platform release (linux x64/arm + macOS universal) via GitHub Actions - (feecc43) - Prokhor
+
+- - -
+
 ## v1.6.0 - 2026-06-10
 #### Features
 - (**lab6**) кнопки вкл/выкл методов в таблице решения ОДУ - (e665b20) - Prokhor
