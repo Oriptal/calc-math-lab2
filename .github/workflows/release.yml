@@ -32,10 +32,13 @@ jobs:
             os: ubuntu-22.04
             qt_host: linux
             qt_arch: linux_gcc_64
-          # If the arm64 runner label is unavailable, switch this (and the
-          # x86_64 job above) to the matching 24.04 image to keep glibc aligned.
+          # MUST be 24.04, not 22.04: Qt 6.8's prebuilt arm64 host tools
+          # (qmlimportscanner) were built against a newer base and need
+          # glibc >= 2.38 / GLIBCXX_3.4.32, absent on 22.04 (glibc 2.35).
+          # The x86_64 Qt tools run on 22.04's older glibc, so that job stays
+          # on 22.04 for wider end-user compatibility.
           - target: linux-arm64
-            os: ubuntu-22.04-arm
+            os: ubuntu-24.04-arm
             qt_host: linux_arm64
             qt_arch: linux_gcc_arm64
           - target: macos-universal
