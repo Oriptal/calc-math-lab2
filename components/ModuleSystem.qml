@@ -422,7 +422,6 @@ RowLayout {
                     markerSize: 3
                     color: Theme.accent
                     borderColor: Theme.accent
-                    useOpenGL: true
                 }
 
                 ScatterSeries {
@@ -432,7 +431,6 @@ RowLayout {
                     markerSize: 3
                     color: "#38BDF8"
                     borderColor: "#38BDF8"
-                    useOpenGL: true
                 }
 
                 ScatterSeries {

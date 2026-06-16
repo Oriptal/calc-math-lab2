@@ -922,42 +922,36 @@ RowLayout {
                     axisX: axisX
                     axisY: axisY
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: poly2Series
                     axisX: axisX
                     axisY: axisY
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: poly3Series
                     axisX: axisX
                     axisY: axisY
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: expSeries
                     axisX: axisX
                     axisY: axisY
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: logSeries
                     axisX: axisX
                     axisY: axisY
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: powerSeries
                     axisX: axisX
                     axisY: axisY
                     width: 2
-                    useOpenGL: true
                 }
             }
         }

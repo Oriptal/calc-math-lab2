@@ -1241,7 +1241,6 @@ RowLayout {
                     color: "#D97706"
                     width: 2
                     style: Qt.DashLine
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: newtonBwdSeries
@@ -1249,7 +1248,6 @@ RowLayout {
                     axisY: axisY
                     color: "#0EA5E9"
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: gauss1Series
@@ -1257,7 +1255,6 @@ RowLayout {
                     axisY: axisY
                     color: "#9333EA"
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: gauss2Series
@@ -1265,7 +1262,6 @@ RowLayout {
                     axisY: axisY
                     color: "#BE123C"
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: stirlingSeries
@@ -1273,7 +1269,6 @@ RowLayout {
                     axisY: axisY
                     color: "#DB2777"
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: besselSeries
@@ -1281,7 +1276,6 @@ RowLayout {
                     axisY: axisY
                     color: "#CA8A04"
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: newtonFwdSeries
@@ -1289,7 +1283,6 @@ RowLayout {
                     axisY: axisY
                     color: "#16A34A"
                     width: 2
-                    useOpenGL: true
                 }
                 LineSeries {
                     id: lagrangeSeries
@@ -1297,7 +1290,6 @@ RowLayout {
                     axisY: axisY
                     color: "#2563EB"
                     width: 2
-                    useOpenGL: true
                 }
                 ScatterSeries {
                     id: nodeSeries
