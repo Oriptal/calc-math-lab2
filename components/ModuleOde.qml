@@ -516,7 +516,7 @@ RowLayout {
                             Text {
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: 150
-                                text: methodRow.modelData.usesRunge ? (rect.numStr(methodRow.modelData.refinedStep) + "  (" + methodRow.modelData.refinedSteps + ")") : "точное решение"
+                                text: methodRow.modelData.usesRunge ? (rect.numStr(methodRow.modelData.refinedStep) + "  (" + methodRow.modelData.refinedSteps + ")") : "—"
                                 color: methodRow.modelData.usesRunge ? Theme.textMain : Theme.textDimmed
                                 font.family: "JetbrainsMono Nerd Font"
                                 font.pixelSize: 13
@@ -525,6 +525,17 @@ RowLayout {
                         }
                     }
                 }
+            }
+
+            Text {
+                Layout.fillWidth: true
+                Layout.leftMargin: 6
+                text: "Метод Милна — многошаговый, правило Рунге неприменимо; его погрешность оценивается по точному решению (колонка max|y−yₜ|)."
+                color: Theme.textDimmed
+                font.pixelSize: 12
+                font.family: "JetbrainsMono Nerd Font"
+                wrapMode: Text.WordWrap
+                visible: rect.hasResult && rect.statusKey === "ok"
             }
 
             Text {
@@ -823,7 +834,6 @@ RowLayout {
                     axisY: axisY
                     color: rect.exactColor
                     width: 2.5
-                    useOpenGL: true
                 }
             }
         }
