@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.7.3 - 2026-06-17
+#### Bug Fixes
+- (**macos**) render SVG/charts and bundle the UI font - (4fe103c) - Prokhor
+- (**ode**) clarify Milne accuracy note instead of overflowing cell - (00c9691) - Prokhor
+
+- - -
+
 ## v1.7.2 - 2026-06-17
 #### Bug Fixes
 - (**ci**) proper drag-to-install macOS DMG (add /Applications symlink) - (d276b67) - Prokhor
