@@ -20,7 +20,8 @@ Window {
     visible: true
     color: "transparent"
 
-    flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    title: "Вычислительная математика"
+    flags: Qt.Window | Qt.FramelessWindowHint
     MyRect {
         id: root
         anchors.fill: parent
@@ -31,6 +32,68 @@ Window {
 
         Body {
             anchors.top: header.bottom
+        }
+
+        // Ручки ресайза по краям и углам безрамочного окна.
+        MouseArea {
+            width: 6
+            height: parent.height
+            anchors.left: parent.left
+            cursorShape: Qt.SizeHorCursor
+            onPressed: appWindow.startSystemResize(Qt.LeftEdge)
+        }
+        MouseArea {
+            width: 6
+            height: parent.height
+            anchors.right: parent.right
+            cursorShape: Qt.SizeHorCursor
+            onPressed: appWindow.startSystemResize(Qt.RightEdge)
+        }
+        MouseArea {
+            width: parent.width
+            height: 6
+            anchors.top: parent.top
+            cursorShape: Qt.SizeVerCursor
+            onPressed: appWindow.startSystemResize(Qt.TopEdge)
+        }
+        MouseArea {
+            width: parent.width
+            height: 6
+            anchors.bottom: parent.bottom
+            cursorShape: Qt.SizeVerCursor
+            onPressed: appWindow.startSystemResize(Qt.BottomEdge)
+        }
+        MouseArea {
+            width: 14
+            height: 14
+            anchors.left: parent.left
+            anchors.top: parent.top
+            cursorShape: Qt.SizeFDiagCursor
+            onPressed: appWindow.startSystemResize(Qt.LeftEdge | Qt.TopEdge)
+        }
+        MouseArea {
+            width: 14
+            height: 14
+            anchors.right: parent.right
+            anchors.top: parent.top
+            cursorShape: Qt.SizeBDiagCursor
+            onPressed: appWindow.startSystemResize(Qt.RightEdge | Qt.TopEdge)
+        }
+        MouseArea {
+            width: 14
+            height: 14
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            cursorShape: Qt.SizeBDiagCursor
+            onPressed: appWindow.startSystemResize(Qt.LeftEdge | Qt.BottomEdge)
+        }
+        MouseArea {
+            width: 14
+            height: 14
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            cursorShape: Qt.SizeFDiagCursor
+            onPressed: appWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
         }
     }
 }
