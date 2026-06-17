@@ -458,7 +458,6 @@ RowLayout {
                     axisY: axisY
                     color: Theme.accent
                     width: 2.2
-                    useOpenGL: true
                 }
             }
         }

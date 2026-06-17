@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_DEPLOY_USE_PATCHELF ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets Concurrent Svg)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -85,6 +85,8 @@ qt_add_qml_module(comp-math
         assets/ode2.svg
         assets/ode3.svg
         assets/icon-256.png
+        assets/fonts/JetBrainsMonoNerdFont-Regular.ttf
+        assets/fonts/JetBrainsMonoNerdFont-Bold.ttf
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -104,6 +106,7 @@ target_link_libraries(comp-math
         Qt6::Charts
         Qt6::Widgets
         Qt6::Concurrent
+        Qt6::Svg
         calc_core
 )
 
