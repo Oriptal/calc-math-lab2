@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.7.1 - 2026-06-17
+#### Bug Fixes
+- (**ci**) build linux-arm64 on ubuntu-24.04 (Qt arm64 host tools need glibc 2.38+) - (bdc4505) - Prokhor
+- (**cmake**) set explicit C++17 standard so calc_core builds on macOS clang - (c75f7f2) - Prokhor
+
+- - -
+
 ## v1.7.0 - 2026-06-17
 #### Build system
 - (**package**) forward EXTRA_CMAKE_ARGS to cmake configure - (902abfe) - Prokhor
