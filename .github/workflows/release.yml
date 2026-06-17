@@ -1,0 +1,187 @@
+name: Release
+
+# Builds 4 targets (3 jobs — macOS is a single universal binary covering
+# both Intel and Apple Silicon) and publishes the artifacts to the Forgejo
+# release at ${FORGEJO_PUBLIC_URL}. Runs on the GitHub mirror of the repo,
+# using GitHub-hosted runners (free for public repositories).
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_VERSION: 6.8.3
+  FORGEJO_PUBLIC_URL: https://git.oriptal.dev
+  # Forgejo owner/repo — independent of the GitHub mirror's owner.
+  FORGEJO_REPO: cadmin/calc-math-lab2
+
+jobs:
+  build:
+    name: Build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x86_64
+            os: ubuntu-22.04
+            qt_host: linux
+            qt_arch: linux_gcc_64
+          # If the arm64 runner label is unavailable, switch this (and the
+          # x86_64 job above) to the matching 24.04 image to keep glibc aligned.
+          - target: linux-arm64
+            os: ubuntu-22.04-arm
+            qt_host: linux_arm64
+            qt_arch: linux_gcc_arm64
+          - target: macos-universal
+            os: macos-14
+            qt_host: mac
+            qt_arch: clang_64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake pkg-config patchelf \
+            python3 python3-venv \
+            libgl1-mesa-dev libegl1 libfontconfig1 libdbus-1-3 \
+            libxkbcommon-dev libxkbcommon-x11-0 \
+            libxcb-cursor-dev libxcb-cursor0 \
+            libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+            libxcb-randr0 libxcb-render-util0 \
+            libxcb-shape0 libxcb-sync1 \
+            libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1
+
+      - name: Install Qt ${{ env.QT_VERSION }} via aqt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/qtvenv"
+          "$RUNNER_TEMP/qtvenv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/qtvenv/bin/pip" install aqtinstall
+          "$RUNNER_TEMP/qtvenv/bin/aqt" install-qt \
+            "${{ matrix.qt_host }}" desktop "$QT_VERSION" "${{ matrix.qt_arch }}" \
+            -m qtcharts -O "$RUNNER_TEMP/Qt"
+
+          # Resolve the install dir by locating qmake — the folder name aqt
+          # picks per arch (gcc_64 / gcc_arm64 / macos) is not worth guessing.
+          QMAKE="$(find "$RUNNER_TEMP/Qt/$QT_VERSION" -type f -name qmake | head -n1)"
+          QT_DIR="$(cd "$(dirname "$QMAKE")/.." && pwd)"
+          echo "Qt resolved at: $QT_DIR"
+
+          {
+            echo "CMAKE_PREFIX_PATH=$QT_DIR"
+            echo "QT_ROOT_DIR=$QT_DIR"
+          } >> "$GITHUB_ENV"
+          echo "$QT_DIR/bin" >> "$GITHUB_PATH"
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            echo "LD_LIBRARY_PATH=$QT_DIR/lib" >> "$GITHUB_ENV"
+          fi
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        env:
+          BUILD_DIR: ${{ github.workspace }}/build
+          DIST_DIR: ${{ github.workspace }}/dist/calc-math-lab2
+          BUILD_TYPE: Release
+        run: |
+          ./package.sh
+          cd dist
+          tar -czf "calc-math-lab2-${{ matrix.target }}.tar.gz" calc-math-lab2
+
+      - name: Package (macOS universal)
+        if: runner.os == 'macOS'
+        env:
+          BUILD_DIR: ${{ github.workspace }}/build
+          DIST_DIR: ${{ github.workspace }}/dist
+          BUILD_TYPE: Release
+          # One build, both architectures. Deployment target matches Qt 6.8's floor.
+          EXTRA_CMAKE_ARGS: "-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0"
+        run: |
+          set -euo pipefail
+          ./package.sh
+          # Ad-hoc sign: arm64 macOS refuses to launch wholly-unsigned bundles.
+          # No Apple cert involved — users still clear the Gatekeeper quarantine.
+          codesign --force --deep --sign - dist/comp-math.app
+          hdiutil create -volname comp-math \
+            -srcfolder dist/comp-math.app -ov -format UDZO \
+            "dist/calc-math-lab2-${{ matrix.target }}.dmg"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: |
+            dist/*.tar.gz
+            dist/*.dmg
+          if-no-files-found: error
+
+  release:
+    name: Publish Forgejo release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish release on Forgejo
+        env:
+          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF#refs/tags/}"
+
+          # Release notes = the matching section of CHANGELOG.md.
+          NOTES=$(awk -v tag="$TAG" '
+            $0 ~ "^## " tag " " { found = 1; next }
+            found && /^- - -/      { exit }
+            found && /^## v/       { exit }
+            found                  { print }
+          ' CHANGELOG.md || true)
+          if [ -z "$NOTES" ]; then
+            NOTES="Release $TAG"
+          fi
+          NOTES="$NOTES
+
+          ---
+          ### Установка
+          - **Linux** (x86_64 / ARM64): распакуйте \`.tar.gz\` и запустите \`./bin/comp-math\`.
+          - **macOS** (Intel / Apple Silicon, universal): откройте \`.dmg\`, перетащите \`comp-math.app\` в Applications. Приложение не подписано Apple-сертификатом — при первом запуске: ПКМ → «Открыть», либо снимите карантин: \`xattr -dr com.apple.quarantine /Applications/comp-math.app\`."
+
+          REL_ID=$(curl -fsSL -X POST \
+            -H "Authorization: token ${FORGEJO_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${FORGEJO_PUBLIC_URL}/api/v1/repos/${FORGEJO_REPO}/releases" \
+            -d "$(jq -n --arg tag "$TAG" --arg name "$TAG" --arg body "$NOTES" \
+                '{tag_name: $tag, name: $name, body: $body, draft: false, prerelease: false}')" \
+            | jq -r '.id')
+          echo "Forgejo release id: $REL_ID"
+
+          # Upload every produced artifact (download-artifact lays them out as
+          # artifacts/<target>/<file>).
+          for asset in artifacts/*/*; do
+            name="$(basename "$asset")"
+            echo "Uploading $name ..."
+            curl -fsSL -X POST \
+              -H "Authorization: token ${FORGEJO_TOKEN}" \
+              -F "attachment=@${asset}" \
+              "${FORGEJO_PUBLIC_URL}/api/v1/repos/${FORGEJO_REPO}/releases/${REL_ID}/assets?name=${name}"
+          done
