@@ -118,8 +118,18 @@ jobs:
           # Ad-hoc sign: arm64 macOS refuses to launch wholly-unsigned bundles.
           # No Apple cert involved — users still clear the Gatekeeper quarantine.
           codesign --force --deep --sign - dist/comp-math.app
+
+          # Lay out a drag-to-install DMG: the .app next to an /Applications
+          # symlink, so the mounted volume shows an "Applications" folder to drag
+          # the app into. (ditto preserves the bundle's symlinks + signature.)
+          STAGING="$RUNNER_TEMP/dmg-root"
+          rm -rf "$STAGING"
+          mkdir -p "$STAGING"
+          ditto dist/comp-math.app "$STAGING/comp-math.app"
+          ln -s /Applications "$STAGING/Applications"
+
           hdiutil create -volname comp-math \
-            -srcfolder dist/comp-math.app -ov -format UDZO \
+            -srcfolder "$STAGING" -ov -format UDZO \
             "dist/calc-math-lab2-${{ matrix.target }}.dmg"
 
       - name: Upload build artifact
