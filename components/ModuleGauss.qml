@@ -137,201 +137,218 @@ RowLayout {
             id: backend
         }
 
-        Column {
-            id: mainColumn
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+        Flickable {
+            anchors.fill: parent
             anchors.margins: 5
-            spacing: 10
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-
-                MyText {
-                    text: "Размерность"
-                }
-            }
-
-            Item {
-                width: parent.width - 40
-                height: 40
-                x: 20
-
-                MyButton {
-                    text: "−"
-                    width: 40
-                    height: 40
-                    anchors.left: parent.left
-                    leftAligned: false
-                    bold: true
-                    textNormalColor: Theme.textMain
-                    textHoverColor: Theme.textDimmed
-                    onClicked: rect.resizeTo(rect.currentSize - 1)
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "n = " + rect.currentSize
-                    color: Theme.textMain
-                    font.pixelSize: 20
-                    font.family: "JetbrainsMono Nerd Font"
-                }
-
-                MyButton {
-                    text: "+"
-                    width: 40
-                    height: 40
-                    anchors.right: parent.right
-                    leftAligned: false
-                    bold: true
-                    textNormalColor: Theme.textMain
-                    textHoverColor: Theme.textDimmed
-                    onClicked: rect.resizeTo(rect.currentSize + 1)
-                }
-            }
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-
-                MyText {
-                    text: "Матрица [A | b]"
-                }
-            }
+            contentHeight: leftColumn.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
 
             Column {
-                id: matrixBlock
-                width: parent.width - 40
-                x: 20
-                spacing: 4
+                id: leftColumn
+                width: parent.width
+                spacing: 10
 
-                Repeater {
-                    model: rect.currentSize
+                Column {
+                    id: mainColumn
+                    width: parent.width
+                    spacing: 10
 
-                    delegate: RowLayout {
-                        id: matrixRow
-                        required property int index
-                        width: matrixBlock.width
-                        spacing: 3
+                    MyRect {
+                        height: 50
+                        width: parent.width
+                        border.color: "transparent"
+
+                        MyText {
+                            text: "Размерность"
+                        }
+                    }
+
+                    Item {
+                        width: parent.width - 40
+                        height: 40
+                        x: 20
+
+                        MyButton {
+                            text: "−"
+                            width: 40
+                            height: 40
+                            anchors.left: parent.left
+                            leftAligned: false
+                            bold: true
+                            textNormalColor: Theme.textMain
+                            textHoverColor: Theme.textDimmed
+                            onClicked: rect.resizeTo(rect.currentSize - 1)
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "n = " + rect.currentSize
+                            color: Theme.textMain
+                            font.pixelSize: 20
+                            font.family: "JetbrainsMono Nerd Font"
+                        }
+
+                        MyButton {
+                            text: "+"
+                            width: 40
+                            height: 40
+                            anchors.right: parent.right
+                            leftAligned: false
+                            bold: true
+                            textNormalColor: Theme.textMain
+                            textHoverColor: Theme.textDimmed
+                            onClicked: rect.resizeTo(rect.currentSize + 1)
+                        }
+                    }
+
+                    MyRect {
+                        height: 50
+                        width: parent.width
+                        border.color: "transparent"
+
+                        MyText {
+                            text: "Матрица [A | b]"
+                        }
+                    }
+
+                    Column {
+                        id: matrixBlock
+                        width: parent.width - 40
+                        x: 20
+                        spacing: 4
 
                         Repeater {
                             model: rect.currentSize
 
-                            delegate: MyTextField {
+                            delegate: RowLayout {
+                                id: matrixRow
                                 required property int index
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 30
-                                Layout.minimumWidth: 28
-                                horizontalAlignment: TextInput.AlignHCenter
-                                font.pixelSize: 12
-                                placeholderText: "0"
-                                text: rect.matrixValues[matrixRow.index] && rect.matrixValues[matrixRow.index][index] !== undefined ? rect.matrixValues[matrixRow.index][index] : ""
+                                width: matrixBlock.width
+                                spacing: 3
 
-                                validator: RegularExpressionValidator {
-                                    regularExpression: /-?\d*([.,]\d*)?/
+                                Repeater {
+                                    model: rect.currentSize
+
+                                    delegate: MyTextField {
+                                        required property int index
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 30
+                                        Layout.minimumWidth: 28
+                                        horizontalAlignment: TextInput.AlignHCenter
+                                        font.pixelSize: 12
+                                        placeholderText: "0"
+                                        text: rect.matrixValues[matrixRow.index] && rect.matrixValues[matrixRow.index][index] !== undefined ? rect.matrixValues[matrixRow.index][index] : ""
+
+                                        validator: RegularExpressionValidator {
+                                            regularExpression: /-?\d*([.,]\d*)?/
+                                        }
+
+                                        onTextEdited: {
+                                            const m = rect.matrixValues.slice();
+                                            m[matrixRow.index] = m[matrixRow.index].slice();
+                                            m[matrixRow.index][index] = text;
+                                            rect.matrixValues = m;
+                                        }
+                                    }
                                 }
 
-                                onTextEdited: {
-                                    const m = rect.matrixValues.slice();
-                                    m[matrixRow.index] = m[matrixRow.index].slice();
-                                    m[matrixRow.index][index] = text;
-                                    rect.matrixValues = m;
+                                Rectangle {
+                                    Layout.preferredWidth: 1
+                                    Layout.preferredHeight: 22
+                                    Layout.alignment: Qt.AlignVCenter
+                                    color: Theme.border
                                 }
-                            }
-                        }
 
-                        Rectangle {
-                            Layout.preferredWidth: 1
-                            Layout.preferredHeight: 22
-                            Layout.alignment: Qt.AlignVCenter
-                            color: Theme.border
-                        }
+                                MyTextField {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 30
+                                    Layout.minimumWidth: 28
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    font.pixelSize: 12
+                                    placeholderText: "b"
+                                    text: rect.augmentationValues[matrixRow.index] !== undefined ? rect.augmentationValues[matrixRow.index] : ""
 
-                        MyTextField {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            Layout.minimumWidth: 28
-                            horizontalAlignment: TextInput.AlignHCenter
-                            font.pixelSize: 12
-                            placeholderText: "b"
-                            text: rect.augmentationValues[matrixRow.index] !== undefined ? rect.augmentationValues[matrixRow.index] : ""
+                                    validator: RegularExpressionValidator {
+                                        regularExpression: /-?\d*([.,]\d*)?/
+                                    }
 
-                            validator: RegularExpressionValidator {
-                                regularExpression: /-?\d*([.,]\d*)?/
-                            }
-
-                            onTextEdited: {
-                                const a = rect.augmentationValues.slice();
-                                a[matrixRow.index] = text;
-                                rect.augmentationValues = a;
+                                    onTextEdited: {
+                                        const a = rect.augmentationValues.slice();
+                                        a[matrixRow.index] = text;
+                                        rect.augmentationValues = a;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
 
-        MyButton {
-            id: randomButton
-            text: "Случайные коэффициенты"
-            anchors.top: mainColumn.bottom
-            anchors.topMargin: 28
-            width: parent.width - 50
-            height: 50
-            anchors.horizontalCenter: parent.horizontalCenter
-            textNormalColor: Theme.textMain
-            textHoverColor: Theme.textDimmed
-            leftAligned: false
-            bold: true
-
-            onClicked: {
-                const response = backend.generateLinearSystem(rect.currentSize);
-                if (response.status === 0) {
-                    rect.applyFromGenerated(response.matrix, response.augmentation);
+                Item {
+                    width: parent.width
+                    height: 28
                 }
-            }
-        }
 
-        MyButton {
-            id: calculateButton
-            text: "Вычислить"
-            anchors.top: randomButton.bottom
-            anchors.topMargin: 10
-            width: parent.width - 50
-            height: 50
-            anchors.horizontalCenter: parent.horizontalCenter
-            textNormalColor: Theme.textMain
-            textHoverColor: Theme.textDimmed
-            leftAligned: false
-            bold: true
+                MyButton {
+                    id: randomButton
+                    text: "Случайные коэффициенты"
+                    width: parent.width - 50
+                    height: 50
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    textNormalColor: Theme.textMain
+                    textHoverColor: Theme.textDimmed
+                    leftAligned: false
+                    bold: true
 
-            onClicked: {
-                const payload = {
-                    "size": rect.currentSize,
-                    "matrix": rect.matrixValues,
-                    "augmentation": rect.augmentationValues
-                };
-                const response = backend.solveLinearSystem(payload);
-                rect.resultStatus = response.status;
-                rect.errorMessage = response.message !== undefined ? response.message : "";
-                if (response.status === 0) {
-                    rect.determinant = response.determinant;
-                    rect.solution = response.solution;
-                    rect.residuals = response.residuals;
-                    rect.triangular = response.triangular;
-                    rect.reducedAugmentation = response.reducedAugmentation;
-                } else {
-                    rect.determinant = response.determinant !== undefined ? response.determinant : Number.NaN;
-                    rect.solution = [];
-                    rect.residuals = [];
-                    rect.triangular = response.triangular !== undefined ? response.triangular : [];
-                    rect.reducedAugmentation = response.reducedAugmentation !== undefined ? response.reducedAugmentation : [];
+                    onClicked: {
+                        const response = backend.generateLinearSystem(rect.currentSize);
+                        if (response.status === 0) {
+                            rect.applyFromGenerated(response.matrix, response.augmentation);
+                        }
+                    }
                 }
-                rect.hasResult = true;
+
+                Item {
+                    width: parent.width
+                    height: 10
+                }
+
+                MyButton {
+                    id: calculateButton
+                    text: "Вычислить"
+                    width: parent.width - 50
+                    height: 50
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    textNormalColor: Theme.textMain
+                    textHoverColor: Theme.textDimmed
+                    leftAligned: false
+                    bold: true
+
+                    onClicked: {
+                        const payload = {
+                            "size": rect.currentSize,
+                            "matrix": rect.matrixValues,
+                            "augmentation": rect.augmentationValues
+                        };
+                        const response = backend.solveLinearSystem(payload);
+                        rect.resultStatus = response.status;
+                        rect.errorMessage = response.message !== undefined ? response.message : "";
+                        if (response.status === 0) {
+                            rect.determinant = response.determinant;
+                            rect.solution = response.solution;
+                            rect.residuals = response.residuals;
+                            rect.triangular = response.triangular;
+                            rect.reducedAugmentation = response.reducedAugmentation;
+                        } else {
+                            rect.determinant = response.determinant !== undefined ? response.determinant : Number.NaN;
+                            rect.solution = [];
+                            rect.residuals = [];
+                            rect.triangular = response.triangular !== undefined ? response.triangular : [];
+                            rect.reducedAugmentation = response.reducedAugmentation !== undefined ? response.reducedAugmentation : [];
+                        }
+                        rect.hasResult = true;
+                    }
+                }
             }
         }
     }

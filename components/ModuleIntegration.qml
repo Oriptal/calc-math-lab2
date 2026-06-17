@@ -110,175 +110,192 @@ RowLayout {
             id: backend
         }
 
-        Column {
-            id: mainColumn
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+        Flickable {
+            anchors.fill: parent
             anchors.margins: 5
-            spacing: 10
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-                MyText {
-                    text: "Функция"
-                }
-            }
-
-            Repeater {
-                model: 5
-                delegate: EquationCard {
-                    required property int index
-                    source: `../assets/integrand${index}.svg`
-                    active: rect.currentFunction === index
-                    onClicked: {
-                        rect.currentFunction = index;
-                        const disc = backend.integrandDiscontinuities(index);
-                        if (disc.length > 0) {
-                            if (mainColumn.borderValues.left === "")
-                                mainColumn.borderValues.left = "0";
-                            if (mainColumn.borderValues.right === "")
-                                mainColumn.borderValues.right = "1";
-                        }
-                    }
-                }
-            }
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-                MyText {
-                    text: "Пределы и точность"
-                }
-            }
-
-            property var borders: [
-                {
-                    key: "left",
-                    text: "a:",
-                    placeholderText: "Например, 2"
-                },
-                {
-                    key: "right",
-                    text: "b:",
-                    placeholderText: "Например, 4"
-                },
-                {
-                    key: "eps",
-                    text: "ε:",
-                    placeholderText: "Например, 0.0001"
-                }
-            ]
-
-            property var borderValues: {
-                "left": "",
-                "right": "",
-                "eps": ""
-            }
-
-            Repeater {
-                model: parent.borders
-                RowLayout {
-                    required property var modelData
-                    spacing: 2
-                    width: parent.width
-
-                    Text {
-                        text: parent.modelData.text
-                        color: Theme.textMain
-                        Layout.leftMargin: 20
-                        font.pixelSize: 20
-                        font.family: "JetbrainsMono Nerd Font"
-                    }
-
-                    MyTextField {
-                        text: mainColumn.borderValues[parent.modelData.key]
-                        Layout.preferredHeight: 40
-                        Layout.fillWidth: true
-                        placeholderText: parent.modelData.placeholderText
-                        Layout.rightMargin: 20
-
-                        validator: RegularExpressionValidator {
-                            regularExpression: /-?\d*([.,]\d*)?/
-                        }
-
-                        onTextEdited: mainColumn.borderValues[parent.modelData.key] = text
-                    }
-                }
-            }
-        }
-
-        MyButton {
-            id: calculateButton
-            text: "Вычислить"
-            anchors.top: mainColumn.bottom
-            anchors.margins: 30
-            width: parent.width - 50
-            height: 50
-            anchors.horizontalCenter: parent.horizontalCenter
-            textNormalColor: Theme.textMain
-            textHoverColor: Theme.textDimmed
-            leftAligned: false
-            bold: true
-
-            onClicked: {
-                const response = backend.integrate(rect.currentFunction, mainColumn.borderValues);
-                rect.resultStatus = response.status;
-                rect.resultMessage = response.message || "";
-                rect.resultsModel = response.methods || [];
-                rect.hasResult = true;
-                rect.updateGraph();
-            }
-        }
-
-        MyRect {
-            id: resultCard
-            anchors.top: calculateButton.bottom
-            anchors.topMargin: 14
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width - 50
-            height: resultColumn.implicitHeight + 20
-            color: Theme.bg
-            visible: rect.hasResult
+            contentHeight: outerColumn.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
 
             Column {
-                id: resultColumn
-                anchors.fill: parent
-                anchors.margins: 10
-                spacing: 6
+                id: outerColumn
+                width: parent.width
+                spacing: 10
 
-                Row {
-                    spacing: 8
+                Column {
+                    id: mainColumn
                     width: parent.width
+                    spacing: 10
 
-                    Rectangle {
-                        width: 10
-                        height: 10
-                        radius: 5
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: rect.statusColor(rect.resultStatus)
+                    MyRect {
+                        height: 50
+                        width: parent.width
+                        border.color: "transparent"
+                        MyText {
+                            text: "Функция"
+                        }
                     }
 
-                    Text {
-                        text: rect.statusText(rect.resultStatus)
-                        color: Theme.textMain
-                        font.pixelSize: 15
-                        font.bold: true
-                        font.family: "JetbrainsMono Nerd Font"
+                    Repeater {
+                        model: 5
+                        delegate: EquationCard {
+                            required property int index
+                            source: `../assets/integrand${index}.svg`
+                            active: rect.currentFunction === index
+                            onClicked: {
+                                rect.currentFunction = index;
+                                const disc = backend.integrandDiscontinuities(index);
+                                if (disc.length > 0) {
+                                    if (mainColumn.borderValues.left === "")
+                                        mainColumn.borderValues.left = "0";
+                                    if (mainColumn.borderValues.right === "")
+                                        mainColumn.borderValues.right = "1";
+                                }
+                            }
+                        }
+                    }
+
+                    MyRect {
+                        height: 50
+                        width: parent.width
+                        border.color: "transparent"
+                        MyText {
+                            text: "Пределы и точность"
+                        }
+                    }
+
+                    property var borders: [
+                        {
+                            key: "left",
+                            text: "a:",
+                            placeholderText: "Например, 2"
+                        },
+                        {
+                            key: "right",
+                            text: "b:",
+                            placeholderText: "Например, 4"
+                        },
+                        {
+                            key: "eps",
+                            text: "ε:",
+                            placeholderText: "Например, 0.0001"
+                        }
+                    ]
+
+                    property var borderValues: {
+                        "left": "",
+                        "right": "",
+                        "eps": ""
+                    }
+
+                    Repeater {
+                        model: parent.borders
+                        RowLayout {
+                            required property var modelData
+                            spacing: 2
+                            width: parent.width
+
+                            Text {
+                                text: parent.modelData.text
+                                color: Theme.textMain
+                                Layout.leftMargin: 20
+                                font.pixelSize: 20
+                                font.family: "JetbrainsMono Nerd Font"
+                            }
+
+                            MyTextField {
+                                text: mainColumn.borderValues[parent.modelData.key]
+                                Layout.preferredHeight: 40
+                                Layout.fillWidth: true
+                                placeholderText: parent.modelData.placeholderText
+                                Layout.rightMargin: 20
+
+                                validator: RegularExpressionValidator {
+                                    regularExpression: /-?\d*([.,]\d*)?/
+                                }
+
+                                onTextEdited: mainColumn.borderValues[parent.modelData.key] = text
+                            }
+                        }
                     }
                 }
 
-                Text {
-                    text: rect.resultMessage
-                    color: Theme.textDimmed
-                    wrapMode: Text.WordWrap
+                Item {
                     width: parent.width
-                    font.pixelSize: 12
-                    font.family: "JetbrainsMono Nerd Font"
-                    visible: rect.resultMessage.length > 0
+                    height: 94
+
+                    MyButton {
+                        id: calculateButton
+                        text: "Вычислить"
+                        anchors.centerIn: parent
+                        width: parent.width - 50
+                        height: 50
+                        textNormalColor: Theme.textMain
+                        textHoverColor: Theme.textDimmed
+                        leftAligned: false
+                        bold: true
+
+                        onClicked: {
+                            const response = backend.integrate(rect.currentFunction, mainColumn.borderValues);
+                            rect.resultStatus = response.status;
+                            rect.resultMessage = response.message || "";
+                            rect.resultsModel = response.methods || [];
+                            rect.hasResult = true;
+                            rect.updateGraph();
+                        }
+                    }
+                }
+
+                MyRect {
+                    id: resultCard
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width - 50
+                    height: resultColumn.implicitHeight + 20
+                    color: Theme.bg
+                    visible: rect.hasResult
+
+                    Column {
+                        id: resultColumn
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 6
+
+                        Row {
+                            spacing: 8
+                            width: parent.width
+
+                            Rectangle {
+                                width: 10
+                                height: 10
+                                radius: 5
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: rect.statusColor(rect.resultStatus)
+                            }
+
+                            Text {
+                                text: rect.statusText(rect.resultStatus)
+                                color: Theme.textMain
+                                font.pixelSize: 15
+                                font.bold: true
+                                font.family: "JetbrainsMono Nerd Font"
+                            }
+                        }
+
+                        Text {
+                            text: rect.resultMessage
+                            color: Theme.textDimmed
+                            wrapMode: Text.WordWrap
+                            width: parent.width
+                            font.pixelSize: 12
+                            font.family: "JetbrainsMono Nerd Font"
+                            visible: rect.resultMessage.length > 0
+                        }
+                    }
+                }
+
+                Item {
+                    width: parent.width
+                    height: 6
                 }
             }
         }

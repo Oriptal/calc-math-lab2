@@ -320,10 +320,19 @@ RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        ColumnLayout {
+        Flickable {
+            id: rightFlick
             anchors.fill: parent
             anchors.margins: 12
-            spacing: 8
+            contentWidth: width
+            contentHeight: rightCol.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+
+            ColumnLayout {
+                id: rightCol
+                width: rightFlick.width
+                spacing: 8
 
             Text {
                 Layout.fillWidth: true
@@ -620,6 +629,7 @@ RowLayout {
             Row {
                 spacing: 18
                 Layout.leftMargin: 6
+                Layout.topMargin: 12
                 visible: rect.hasResult && rect.statusKey === "ok"
 
                 Repeater {
@@ -672,8 +682,8 @@ RowLayout {
             ChartView {
                 id: graphView
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.minimumHeight: 300
+                Layout.preferredHeight: Math.max(460, rightFlick.height * 0.7)
+                Layout.minimumHeight: 360
                 antialiasing: true
                 legend.visible: false
                 backgroundRoundness: 0
@@ -836,6 +846,7 @@ RowLayout {
                     width: 2.5
                 }
             }
+        }
         }
     }
 

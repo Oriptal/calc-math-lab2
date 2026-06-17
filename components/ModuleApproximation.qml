@@ -196,340 +196,354 @@ RowLayout {
             id: backend
         }
 
-        Column {
-            id: mainColumn
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+        Flickable {
+            anchors.fill: parent
             anchors.margins: 5
-            spacing: 10
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-                MyText {
-                    text: "Количество точек"
-                }
-            }
-
-            Item {
-                width: parent.width - 40
-                height: 40
-                x: 20
-
-                MyButton {
-                    text: "−"
-                    width: 40
-                    height: 40
-                    anchors.left: parent.left
-                    leftAligned: false
-                    bold: true
-                    textNormalColor: Theme.textMain
-                    textHoverColor: Theme.textDimmed
-                    onClicked: rect.resizeTo(rect.currentSize - 1)
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "n = " + rect.currentSize
-                    color: Theme.textMain
-                    font.pixelSize: 20
-                    font.family: "JetbrainsMono Nerd Font"
-                }
-
-                MyButton {
-                    text: "+"
-                    width: 40
-                    height: 40
-                    anchors.right: parent.right
-                    leftAligned: false
-                    bold: true
-                    textNormalColor: Theme.textMain
-                    textHoverColor: Theme.textDimmed
-                    onClicked: rect.resizeTo(rect.currentSize + 1)
-                }
-            }
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-                MyText {
-                    text: "Таблица (xᵢ, yᵢ)"
-                }
-            }
+            contentHeight: mainColumn.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
 
             Column {
-                id: tableBlock
-                width: parent.width - 40
-                x: 20
-                spacing: 3
+                id: mainColumn
+                width: parent.width
+                spacing: 10
 
-                Row {
+                MyRect {
+                    height: 50
                     width: parent.width
-                    spacing: 6
-
-                    Text {
-                        width: (parent.width - 6) / 2
-                        text: "xᵢ"
-                        color: Theme.textDimmed
-                        horizontalAlignment: Text.AlignHCenter
-                        font.family: "JetbrainsMono Nerd Font"
-                        font.pixelSize: 14
-                    }
-
-                    Text {
-                        width: (parent.width - 6) / 2
-                        text: "yᵢ"
-                        color: Theme.textDimmed
-                        horizontalAlignment: Text.AlignHCenter
-                        font.family: "JetbrainsMono Nerd Font"
-                        font.pixelSize: 14
+                    border.color: "transparent"
+                    MyText {
+                        text: "Количество точек"
                     }
                 }
 
-                Repeater {
-                    model: rect.currentSize
+                Item {
+                    width: parent.width - 40
+                    height: 40
+                    x: 20
 
-                    delegate: RowLayout {
-                        id: tableRow
-                        required property int index
-                        width: tableBlock.width
+                    MyButton {
+                        text: "−"
+                        width: 40
+                        height: 40
+                        anchors.left: parent.left
+                        leftAligned: false
+                        bold: true
+                        textNormalColor: Theme.textMain
+                        textHoverColor: Theme.textDimmed
+                        onClicked: rect.resizeTo(rect.currentSize - 1)
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "n = " + rect.currentSize
+                        color: Theme.textMain
+                        font.pixelSize: 20
+                        font.family: "JetbrainsMono Nerd Font"
+                    }
+
+                    MyButton {
+                        text: "+"
+                        width: 40
+                        height: 40
+                        anchors.right: parent.right
+                        leftAligned: false
+                        bold: true
+                        textNormalColor: Theme.textMain
+                        textHoverColor: Theme.textDimmed
+                        onClicked: rect.resizeTo(rect.currentSize + 1)
+                    }
+                }
+
+                MyRect {
+                    height: 50
+                    width: parent.width
+                    border.color: "transparent"
+                    MyText {
+                        text: "Таблица (xᵢ, yᵢ)"
+                    }
+                }
+
+                Column {
+                    id: tableBlock
+                    width: parent.width - 40
+                    x: 20
+                    spacing: 3
+
+                    Row {
+                        width: parent.width
                         spacing: 6
 
-                        MyTextField {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            horizontalAlignment: TextInput.AlignHCenter
-                            font.pixelSize: 13
-                            placeholderText: "0"
-                            text: rect.xValues[tableRow.index] !== undefined ? rect.xValues[tableRow.index] : ""
-
-                            validator: RegularExpressionValidator {
-                                regularExpression: /-?\d*([.,]\d*)?/
-                            }
-
-                            onTextEdited: {
-                                const a = rect.xValues.slice();
-                                a[tableRow.index] = text;
-                                rect.xValues = a;
-                            }
+                        Text {
+                            width: (parent.width - 6) / 2
+                            text: "xᵢ"
+                            color: Theme.textDimmed
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: "JetbrainsMono Nerd Font"
+                            font.pixelSize: 14
                         }
 
-                        MyTextField {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            horizontalAlignment: TextInput.AlignHCenter
-                            font.pixelSize: 13
-                            placeholderText: "0"
-                            text: rect.yValues[tableRow.index] !== undefined ? rect.yValues[tableRow.index] : ""
-
-                            validator: RegularExpressionValidator {
-                                regularExpression: /-?\d*([.,]\d*)?/
-                            }
-
-                            onTextEdited: {
-                                const a = rect.yValues.slice();
-                                a[tableRow.index] = text;
-                                rect.yValues = a;
-                            }
-                        }
-                    }
-                }
-            }
-
-            MyRect {
-                height: 50
-                width: parent.width
-                border.color: "transparent"
-                MyText {
-                    text: "Уровень шума"
-                }
-            }
-
-            Item {
-                width: parent.width - 40
-                height: 28
-                x: 20
-
-                Slider {
-                    id: noiseSlider
-                    anchors.left: parent.left
-                    anchors.right: noiseLabel.left
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 0
-                    to: 0.40
-                    value: 0.15
-                    stepSize: 0.01
-
-                    background: Rectangle {
-                        x: noiseSlider.leftPadding
-                        y: noiseSlider.topPadding + noiseSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 200
-                        implicitHeight: 4
-                        width: noiseSlider.availableWidth
-                        height: implicitHeight
-                        radius: 2
-                        color: Theme.border
-
-                        Rectangle {
-                            width: noiseSlider.visualPosition * parent.width
-                            height: parent.height
-                            color: Theme.accent
-                            radius: 2
+                        Text {
+                            width: (parent.width - 6) / 2
+                            text: "yᵢ"
+                            color: Theme.textDimmed
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: "JetbrainsMono Nerd Font"
+                            font.pixelSize: 14
                         }
                     }
 
-                    handle: Rectangle {
-                        x: noiseSlider.leftPadding + noiseSlider.visualPosition * (noiseSlider.availableWidth - width)
-                        y: noiseSlider.topPadding + noiseSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 16
-                        implicitHeight: 16
-                        radius: 8
-                        color: noiseSlider.pressed ? Theme.textMain : Theme.accent
-                        border.color: "#ffffff"
-                        border.width: 1
-                    }
-                }
+                    Repeater {
+                        model: rect.currentSize
 
-                Text {
-                    id: noiseLabel
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: Math.round(noiseSlider.value * 100) + "%"
-                    color: Theme.textMain
-                    font.family: "JetbrainsMono Nerd Font"
-                    font.pixelSize: 14
-                    width: 48
-                    horizontalAlignment: Text.AlignRight
-                }
-            }
-        }
+                        delegate: RowLayout {
+                            id: tableRow
+                            required property int index
+                            width: tableBlock.width
+                            spacing: 6
 
-        MyButton {
-            id: randomButton
-            text: "Случайные данные"
-            anchors.top: mainColumn.bottom
-            anchors.topMargin: 28
-            width: parent.width - 50
-            height: 50
-            anchors.horizontalCenter: parent.horizontalCenter
-            textNormalColor: Theme.textMain
-            textHoverColor: Theme.textDimmed
-            leftAligned: false
-            bold: true
+                            MyTextField {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 30
+                                horizontalAlignment: TextInput.AlignHCenter
+                                font.pixelSize: 13
+                                placeholderText: "0"
+                                text: rect.xValues[tableRow.index] !== undefined ? rect.xValues[tableRow.index] : ""
 
-            onClicked: rect.generateRandom()
-        }
+                                validator: RegularExpressionValidator {
+                                    regularExpression: /-?\d*([.,]\d*)?/
+                                }
 
-        MyButton {
-            id: calculateButton
-            text: "Рассчитать"
-            anchors.top: randomButton.bottom
-            anchors.topMargin: 10
-            width: parent.width - 50
-            height: 50
-            anchors.horizontalCenter: parent.horizontalCenter
-            textNormalColor: Theme.textMain
-            textHoverColor: Theme.textDimmed
-            leftAligned: false
-            bold: true
+                                onTextEdited: {
+                                    const a = rect.xValues.slice();
+                                    a[tableRow.index] = text;
+                                    rect.xValues = a;
+                                }
+                            }
 
-            onClicked: {
-                const payload = [];
-                for (let i = 0; i < rect.currentSize; ++i) {
-                    payload.push({
-                        "x": rect.xValues[i],
-                        "y": rect.yValues[i]
-                    });
-                }
-                const response = backend.approximate({ "points": payload });
-                rect.statusKey = response.status;
-                rect.statusMessage = response.message !== undefined ? response.message : "";
-                if (response.status === "ok") {
-                    rect.methods = response.methods;
-                    rect.points = response.points;
-                    rect.xMin = response.xMin;
-                    rect.xMax = response.xMax;
-                    rect.bestIndex = response.best;
-                    rect.bestMessage = response.bestMessage;
-                    const v = {};
-                    for (let i = 0; i < rect.methods.length; ++i) {
-                        const m = rect.methods[i];
-                        if (m.status === "ok") {
-                            v[m.kind] = (i === rect.bestIndex) || (m.kind === "linear");
+                            MyTextField {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 30
+                                horizontalAlignment: TextInput.AlignHCenter
+                                font.pixelSize: 13
+                                placeholderText: "0"
+                                text: rect.yValues[tableRow.index] !== undefined ? rect.yValues[tableRow.index] : ""
+
+                                validator: RegularExpressionValidator {
+                                    regularExpression: /-?\d*([.,]\d*)?/
+                                }
+
+                                onTextEdited: {
+                                    const a = rect.yValues.slice();
+                                    a[tableRow.index] = text;
+                                    rect.yValues = a;
+                                }
+                            }
                         }
                     }
-                    rect.visibleKinds = v;
-                } else {
-                    rect.methods = [];
-                    rect.points = [];
-                    rect.bestIndex = -1;
-                    rect.bestMessage = "";
                 }
-                rect.hasResult = true;
-                graphView.refresh();
-            }
-        }
 
-        MyRect {
-            id: statusCard
-            anchors.top: calculateButton.bottom
-            anchors.topMargin: 14
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width - 50
-            height: statusColumn.implicitHeight + 20
-            color: Theme.bg
-            visible: rect.hasResult
-
-            Column {
-                id: statusColumn
-                anchors.fill: parent
-                anchors.margins: 10
-                spacing: 6
-
-                Row {
-                    spacing: 8
+                MyRect {
+                    height: 50
                     width: parent.width
+                    border.color: "transparent"
+                    MyText {
+                        text: "Уровень шума"
+                    }
+                }
 
-                    Rectangle {
-                        width: 10
-                        height: 10
-                        radius: 5
+                Item {
+                    width: parent.width - 40
+                    height: 28
+                    x: 20
+
+                    Slider {
+                        id: noiseSlider
+                        anchors.left: parent.left
+                        anchors.right: noiseLabel.left
+                        anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        color: rect.statusColor(rect.statusKey === "ok" ? "ok" : "error")
+                        from: 0
+                        to: 0.40
+                        value: 0.15
+                        stepSize: 0.01
+
+                        background: Rectangle {
+                            x: noiseSlider.leftPadding
+                            y: noiseSlider.topPadding + noiseSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 200
+                            implicitHeight: 4
+                            width: noiseSlider.availableWidth
+                            height: implicitHeight
+                            radius: 2
+                            color: Theme.border
+
+                            Rectangle {
+                                width: noiseSlider.visualPosition * parent.width
+                                height: parent.height
+                                color: Theme.accent
+                                radius: 2
+                            }
+                        }
+
+                        handle: Rectangle {
+                            x: noiseSlider.leftPadding + noiseSlider.visualPosition * (noiseSlider.availableWidth - width)
+                            y: noiseSlider.topPadding + noiseSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: noiseSlider.pressed ? Theme.textMain : Theme.accent
+                            border.color: "#ffffff"
+                            border.width: 1
+                        }
                     }
 
                     Text {
-                        text: rect.statusKey === "ok" ? "Расчёт выполнен" : "Ошибка"
+                        id: noiseLabel
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Math.round(noiseSlider.value * 100) + "%"
                         color: Theme.textMain
-                        font.pixelSize: 15
-                        font.bold: true
                         font.family: "JetbrainsMono Nerd Font"
+                        font.pixelSize: 14
+                        width: 48
+                        horizontalAlignment: Text.AlignRight
                     }
                 }
 
-                Text {
-                    visible: rect.statusKey === "ok" && rect.bestMessage.length > 0
-                    text: rect.bestMessage
-                    color: Theme.accent
-                    wrapMode: Text.WordWrap
+                Item {
                     width: parent.width
-                    font.pixelSize: 13
-                    font.bold: true
-                    font.family: "JetbrainsMono Nerd Font"
+                    height: 18
                 }
 
-                Text {
-                    visible: rect.statusKey !== "ok" && rect.statusMessage.length > 0
-                    text: rect.statusMessage
-                    color: Theme.textDimmed
-                    wrapMode: Text.WordWrap
+                MyButton {
+                    id: randomButton
+                    text: "Случайные данные"
+                    width: parent.width - 50
+                    height: 50
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    textNormalColor: Theme.textMain
+                    textHoverColor: Theme.textDimmed
+                    leftAligned: false
+                    bold: true
+
+                    onClicked: rect.generateRandom()
+                }
+
+                MyButton {
+                    id: calculateButton
+                    text: "Рассчитать"
+                    width: parent.width - 50
+                    height: 50
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    textNormalColor: Theme.textMain
+                    textHoverColor: Theme.textDimmed
+                    leftAligned: false
+                    bold: true
+
+                    onClicked: {
+                        const payload = [];
+                        for (let i = 0; i < rect.currentSize; ++i) {
+                            payload.push({
+                                "x": rect.xValues[i],
+                                "y": rect.yValues[i]
+                            });
+                        }
+                        const response = backend.approximate({ "points": payload });
+                        rect.statusKey = response.status;
+                        rect.statusMessage = response.message !== undefined ? response.message : "";
+                        if (response.status === "ok") {
+                            rect.methods = response.methods;
+                            rect.points = response.points;
+                            rect.xMin = response.xMin;
+                            rect.xMax = response.xMax;
+                            rect.bestIndex = response.best;
+                            rect.bestMessage = response.bestMessage;
+                            const v = {};
+                            for (let i = 0; i < rect.methods.length; ++i) {
+                                const m = rect.methods[i];
+                                if (m.status === "ok") {
+                                    v[m.kind] = (i === rect.bestIndex) || (m.kind === "linear");
+                                }
+                            }
+                            rect.visibleKinds = v;
+                        } else {
+                            rect.methods = [];
+                            rect.points = [];
+                            rect.bestIndex = -1;
+                            rect.bestMessage = "";
+                        }
+                        rect.hasResult = true;
+                        graphView.refresh();
+                    }
+                }
+
+                Item {
                     width: parent.width
-                    font.pixelSize: 12
-                    font.family: "JetbrainsMono Nerd Font"
+                    height: 4
+                }
+
+                MyRect {
+                    id: statusCard
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width - 50
+                    height: statusColumn.implicitHeight + 20
+                    color: Theme.bg
+                    visible: rect.hasResult
+
+                    Column {
+                        id: statusColumn
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 6
+
+                        Row {
+                            spacing: 8
+                            width: parent.width
+
+                            Rectangle {
+                                width: 10
+                                height: 10
+                                radius: 5
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: rect.statusColor(rect.statusKey === "ok" ? "ok" : "error")
+                            }
+
+                            Text {
+                                text: rect.statusKey === "ok" ? "Расчёт выполнен" : "Ошибка"
+                                color: Theme.textMain
+                                font.pixelSize: 15
+                                font.bold: true
+                                font.family: "JetbrainsMono Nerd Font"
+                            }
+                        }
+
+                        Text {
+                            visible: rect.statusKey === "ok" && rect.bestMessage.length > 0
+                            text: rect.bestMessage
+                            color: Theme.accent
+                            wrapMode: Text.WordWrap
+                            width: parent.width
+                            font.pixelSize: 13
+                            font.bold: true
+                            font.family: "JetbrainsMono Nerd Font"
+                        }
+
+                        Text {
+                            visible: rect.statusKey !== "ok" && rect.statusMessage.length > 0
+                            text: rect.statusMessage
+                            color: Theme.textDimmed
+                            wrapMode: Text.WordWrap
+                            width: parent.width
+                            font.pixelSize: 12
+                            font.family: "JetbrainsMono Nerd Font"
+                        }
+                    }
+                }
+
+                Item {
+                    width: parent.width
+                    height: 6
                 }
             }
         }
@@ -539,10 +553,19 @@ RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        ColumnLayout {
+        Flickable {
+            id: rightFlick
             anchors.fill: parent
             anchors.margins: 12
-            spacing: 8
+            contentWidth: width
+            contentHeight: rightCol.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+
+            ColumnLayout {
+                id: rightCol
+                width: rightFlick.width
+                spacing: 8
 
             Text {
                 Layout.fillWidth: true
@@ -772,8 +795,8 @@ RowLayout {
             ChartView {
                 id: graphView
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.minimumHeight: 300
+                Layout.preferredHeight: Math.max(460, rightFlick.height * 0.7)
+                Layout.minimumHeight: 360
                 antialiasing: true
                 legend.visible: false
                 backgroundRoundness: 0
@@ -954,6 +977,7 @@ RowLayout {
                     width: 2
                 }
             }
+        }
         }
     }
 }
