@@ -9,6 +9,15 @@ MyRect {
     anchors.right: parent.right
     anchors.margins: 12
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        onPressed: Window.window.startSystemMove()
+        onDoubleClicked: Window.window.visibility === Window.Maximized
+                         ? Window.window.showNormal()
+                         : Window.window.showMaximized()
+    }
+
     MyText {
         text: "Вычислительная математика"
         anchors.horizontalCenter: parent.horizontalCenter
