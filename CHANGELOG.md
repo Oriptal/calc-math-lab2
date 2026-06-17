@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v1.8.0 - 2026-06-17
+#### Features
+- (**ui**) draggable and resizable window - (0dcf3ea) - Prokhor
+#### Bug Fixes
+- (**ui**) scroll overflowing panes and enlarge charts on small screens - (d8d02b5) - Prokhor
+
+- - -
+
 ## v1.7.3 - 2026-06-17
 #### Bug Fixes
 - (**macos**) render SVG/charts and bundle the UI font - (4fe103c) - Prokhor
