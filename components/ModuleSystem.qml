@@ -130,12 +130,21 @@ RowLayout {
             id: backend
         }
 
+        Flickable {
+            anchors.fill: parent
+            anchors.margins: 5
+            contentHeight: outerColumn.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+
+            Column {
+                id: outerColumn
+                width: parent.width
+                spacing: 10
+
         Column {
             id: mainColumn
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 5
+            width: parent.width
             spacing: 10
 
             MyRect {
@@ -257,11 +266,14 @@ RowLayout {
             }
         }
 
+        Item {
+            width: parent.width
+            height: 40
+        }
+
         MyButton {
             id: calculateButton
             text: "Вычислить"
-            anchors.top: mainColumn.bottom
-            anchors.margins: 40
             width: parent.width - 50
             height: 50
             anchors.horizontalCenter: parent.horizontalCenter
@@ -281,10 +293,13 @@ RowLayout {
             }
         }
 
+        Item {
+            width: parent.width
+            height: 14
+        }
+
         MyRect {
             id: resultCard
-            anchors.top: calculateButton.bottom
-            anchors.topMargin: 14
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 50
             height: resultColumn.implicitHeight + 24
@@ -357,6 +372,8 @@ RowLayout {
                     font.bold: true
                     font.family: "JetbrainsMono Nerd Font"
                 }
+            }
+        }
             }
         }
     }

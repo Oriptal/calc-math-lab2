@@ -668,10 +668,19 @@ RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        ColumnLayout {
+        Flickable {
+            id: rightFlick
             anchors.fill: parent
             anchors.margins: 12
-            spacing: 8
+            contentWidth: width
+            contentHeight: rightCol.implicitHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+
+            ColumnLayout {
+                id: rightCol
+                width: rightFlick.width
+                spacing: 8
 
             Text {
                 Layout.fillWidth: true
@@ -1008,47 +1017,49 @@ RowLayout {
                         { "label": "Узлы", "color": "#127846", "p": "nodes" },
                         { "label": "Функция", "color": "#D97706", "p": "func" }
                     ]
-                    delegate: Row {
-                        id: legendRow
+                    delegate: MouseArea {
+                        id: legendArea
                         required property var modelData
                         readonly property bool checked: modelData.p === "nodes" ? rect.showNodes : rect.showFunc
-                        spacing: 6
                         visible: modelData.p !== "func" || rect.activeFunctionId >= 0
+                        implicitWidth: legendInner.implicitWidth
+                        implicitHeight: legendInner.implicitHeight
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            if (legendArea.modelData.p === "nodes")
+                                rect.showNodes = !rect.showNodes;
+                            else
+                                rect.showFunc = !rect.showFunc;
+                            graphView.refresh();
+                        }
 
-                        Rectangle {
-                            width: 18
-                            height: 18
-                            radius: 4
-                            anchors.verticalCenter: parent.verticalCenter
-                            color: legendRow.checked ? legendRow.modelData.color : "transparent"
-                            border.color: legendRow.modelData.color
-                            border.width: 2
-                            scale: legendArea.containsMouse ? 1.12 : 1.0
-                            Behavior on color {
-                                ColorAnimation { duration: 150 }
+                        Row {
+                            id: legendInner
+                            spacing: 6
+
+                            Rectangle {
+                                width: 18
+                                height: 18
+                                radius: 4
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: legendArea.checked ? legendArea.modelData.color : "transparent"
+                                border.color: legendArea.modelData.color
+                                border.width: 2
+                                scale: legendArea.containsMouse ? 1.12 : 1.0
+                                Behavior on color {
+                                    ColorAnimation { duration: 150 }
+                                }
+                                Behavior on scale {
+                                    NumberAnimation { duration: 120 }
+                                }
                             }
-                            Behavior on scale {
-                                NumberAnimation { duration: 120 }
-                            }
-                        }
-                        Text {
-                            text: legendRow.modelData.label
-                            color: Theme.textMain
-                            font.family: "JetbrainsMono Nerd Font"
-                            font.pixelSize: 14
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                        MouseArea {
-                            id: legendArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                if (legendRow.modelData.p === "nodes")
-                                    rect.showNodes = !rect.showNodes;
-                                else
-                                    rect.showFunc = !rect.showFunc;
-                                graphView.refresh();
+                            Text {
+                                text: legendArea.modelData.label
+                                color: Theme.textMain
+                                font.family: "JetbrainsMono Nerd Font"
+                                font.pixelSize: 14
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
                     }
@@ -1058,8 +1069,8 @@ RowLayout {
             ChartView {
                 id: graphView
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.minimumHeight: 300
+                Layout.preferredHeight: Math.max(460, rightFlick.height * 0.7)
+                Layout.minimumHeight: 360
                 antialiasing: true
                 legend.visible: false
                 backgroundRoundness: 0
@@ -1308,6 +1319,7 @@ RowLayout {
                     borderColor: "#ffffff"
                 }
             }
+        }
         }
     }
 }
