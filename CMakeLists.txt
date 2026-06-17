@@ -6,6 +6,10 @@ endif()
 
 project(CompMath VERSION 1.0.0 LANGUAGES CXX)
 
+# calc_core links no Qt target, so it does NOT inherit Qt's cxx_std_17 compile
+# feature. Without an explicit standard, GCC (Linux) happens to default to C++17
+# but Apple Clang (macOS) falls back to a pre-C++11 default and the build fails.
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_DEPLOY_USE_PATCHELF ON)
 
